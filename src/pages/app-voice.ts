@@ -238,7 +238,7 @@ export class AppVoice extends LitElement {
             }
 
             this.recog.canceled = async (s?: any, e?: any) => {
-                console.log(`CANCELED: Reason=${e.reason}`);
+                console.log(`CANCELED: Reason=${e.reason}, ${s}`);
 
                 if (e.reason == this.sdk.CancellationReason.Error) {
                     console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
@@ -252,7 +252,7 @@ export class AppVoice extends LitElement {
                 await this.recog.startContinuousRecognitionAsync();
             };
 
-            this.recog.sessionStopped = (s?: any, e?: any) => {
+            this.recog.sessionStopped = () => {
                 console.log("\n    Session stopped event.");
                 this.recog.stopContinuousRecognitionAsync();
             };
