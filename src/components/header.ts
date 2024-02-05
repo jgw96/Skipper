@@ -33,7 +33,7 @@ export class AppHeader extends LitElement {
         left: env(titlebar-area-x, 0);
         top: env(titlebar-area-y, 0);
         height: env(titlebar-area-height, 38px);
-        right: 0;
+        width: calc(env(titlebar-area-width, 100%) - 18px);
         -webkit-app-region: drag;
 
         z-index: 1
@@ -78,6 +78,8 @@ export class AppHeader extends LitElement {
 
       #back-button-block img {
         height: 20px;
+        border-radius: 50%;
+        width: 20px;
       }
 
       @media(prefers-color-scheme: light) {

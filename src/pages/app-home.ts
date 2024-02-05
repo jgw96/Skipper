@@ -36,8 +36,33 @@ export class AppHome extends LitElement {
       styles,
       css`
         fluent-button, fluent-text-field, fluent-listbox, fluent-card {
-          --accent-fill-rest: #5e11fd;
-          --accent-stroke-control-rest: #5e11fd;
+          --accent-fill-rest: #8c6ee0;
+          --accent-stroke-control-rest: #8c6ee0;
+          --accent-fill-active: #8c6ee0;
+          --accent-stroke-control-active: #8c6ee0;
+          --accent-fill-hover: #8c6ee0;
+          --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        #suggested {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          width: 62%;
+          padding: 0;
+          margin: 0;
+        }
+
+        #suggested li {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          background: #ffffff0f;
+          font-size: 14px;
+        }
+
+        fluent-card {
+          animation: quickup 0.3s ease;
         }
 
         #extra-actions {
@@ -56,8 +81,8 @@ export class AppHome extends LitElement {
         }
 
         #input-block #extra-actions fluent-button img {
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
         }
 
         fluent-card {
@@ -65,7 +90,7 @@ export class AppHome extends LitElement {
         }
 
         #new-convo {
-          width: 16.5vw;
+          width: 18.5vw;
         }
 
         #input-inner {
@@ -222,7 +247,7 @@ export class AppHome extends LitElement {
 
         main {
           display: grid;
-          grid-template-columns: 18vw 82vw;
+          grid-template-columns: 20vw 80vw;
         }
 
         #saved {
@@ -231,6 +256,16 @@ export class AppHome extends LitElement {
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
           padding: 8px;
+          animation: slideStart 0.3s ease;
+        }
+
+        @keyframes slideStart {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(0);
+          }
         }
 
         #convo-list {
@@ -287,6 +322,8 @@ export class AppHome extends LitElement {
         #input-block {
           display: flex;
           flex-direction: column;
+
+          animation: quickup 0.3s ease;
         }
 
         #input-block fluent-button {
@@ -296,11 +333,13 @@ export class AppHome extends LitElement {
         li {
           padding: 8px;
           border-radius: 6px;
+
+          animation: quickup 0.3s ease;
         }
 
         li.user {
           align-self: flex-end;
-          background: rgb(94 17 253 / 97%);
+          background: #8c6ee0;
           margin-left: 10vw;
         }
 
@@ -386,6 +425,8 @@ export class AppHome extends LitElement {
         #no-messages img {
           width: 260px;
           border-radius: 50%;
+
+          animation: fadein 0.8s ease;
         }
 
         #no-messages p {
@@ -460,7 +501,7 @@ export class AppHome extends LitElement {
 
         @media(min-width: 860px) {
           #convo-name {
-            left: 18vw;
+            left: 20vw;
             top: 31px;
             right: 0px;
             margin-top: 0;
@@ -477,7 +518,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 83vh;
+            height: 79vh;
             width: unset;
             padding-top: 97px;
           }
@@ -514,6 +555,30 @@ export class AppHome extends LitElement {
           #mobileSaved {
             padding-bottom: 0;
           }
+
+          #suggested {
+            width: 82%;
+          }
+        }
+
+        @keyframes quickup {
+          from {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadein {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
     `];
   }
@@ -538,6 +603,13 @@ export class AppHome extends LitElement {
         url: 'https://github.com/pwa-builder/pwa-starter',
       });
     }
+  }
+
+  preDefinedChat(chat: string) {
+    const input: any = this.shadowRoot?.querySelector('fluent-text-field');
+    input.value = chat;
+
+    this.send();
   }
 
   async addImageToConvo(base64data?: string | undefined) {
@@ -617,6 +689,8 @@ export class AppHome extends LitElement {
       if (this.previousMessages.length > 3) {
         console.log("look here", this.convoName, this.previousMessages)
         await saveConversation(this.convoName as string, this.previousMessages);
+
+        this.savedConvos = await getConversations();
       }
 
       // get last element of list
@@ -657,6 +731,7 @@ export class AppHome extends LitElement {
   async newConvo() {
     this.previousMessages = [];
     this.convoName = undefined;
+    this.currentPhoto = "";
 
     await this.updated;
 
@@ -709,6 +784,8 @@ export class AppHome extends LitElement {
           `
       }
        </div>
+
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
       </sl-drawer>
 
       <main>
@@ -728,6 +805,8 @@ export class AppHome extends LitElement {
         </fluent-card>`
       }
       )}
+      </ul>
+    </div>
 
 <div id="toolbar">
       <fluent-button id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
@@ -779,8 +858,15 @@ export class AppHome extends LitElement {
 
        ` : html`
           <div id="no-messages">
-            <img src="/assets/new-convo.png" alt="chat" />
+            <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
             <p>Start a new chat </p>
+
+            <ul id="suggested">
+              <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
+              <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
+              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
+              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
+            </ul>
           </div>
        `}
 

@@ -28,7 +28,7 @@ export const requestGPT = async (prompt: string) => {
         image: currentBase64Data
     })
 
-    const response = await fetch(`http://localhost:3000/sendchat?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/sendchat?prompt=${prompt}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export const requestGPT = async (prompt: string) => {
 };
 
 export const makeTitleRequest = async (prompt: string) => {
-    const response = await fetch(`http://localhost:3000/createtitle?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/createtitle?prompt=${prompt}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",

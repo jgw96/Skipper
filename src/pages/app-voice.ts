@@ -114,8 +114,12 @@ export class AppVoice extends LitElement {
     }
 
     fluent-button {
-        --accent-fill-rest: #5e11fd;
-        --accent-stroke-control-rest: #5e11fd;
+      --accent-fill-rest: #8c6ee0;
+      --accent-stroke-control-rest: #8c6ee0;
+      --accent-fill-active: #8c6ee0;
+      --accent-stroke-control-active: #8c6ee0;
+      --accent-fill-hover: #8c6ee0;
+      --accent-stroke-control-hover: #8c6ee0;
     }
 
     ul {
