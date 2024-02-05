@@ -1,0 +1,45 @@
+{
+  "name": "pwa-starter",
+  "version": "0.0.1",
+  "description": "A starter kit for building PWAs!",
+  "main": "index.js",
+  "scripts": {
+    "dev-server": "vite --open --port 3002",
+    "dev": "npm run dev-server",
+    "dev-task": "vite",
+    "deploy": " npx @azure/static-web-apps-cli login --no-use-keychain && npx @azure/static-web-apps-cli deploy",
+    "build": "tsc && vite build",
+    "start": "npm run dev",
+    "start-remote": "vite --host"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fluentui/web-components": "^2.5.16",
+    "@shoelace-style/shoelace": "^2.0.0-beta.82",
+    "@thepassle/app-tools": "^0.9.12",
+    "@vaadin/router": "^1.7.4",
+    "browser-fs-access": "^0.35.0",
+    "lit": "^3.1.2",
+    "microsoft-cognitiveservices-speech-sdk": "^1.33.1",
+    "urlpattern-polyfill": "^10.0.0",
+    "workbox-build": "^6.5.2",
+    "workbox-core": "^6.5.2",
+    "workbox-precaching": "^6.5.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vite-plugin-pwa": "^0.17.5"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "consistent",
+    "trailingComma": "es5",
+    "endOfLine": "crlf",
+    "bracketSpacing": true
+  }
+}

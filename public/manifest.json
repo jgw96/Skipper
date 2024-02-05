@@ -1,0 +1,58 @@
+{
+  "id": "/",
+  "scope": "/",
+  "name": "Charles: A GPT-4 Client",
+  "display": "standalone",
+  "start_url": "/",
+  "short_name": "Charles",
+  "theme_color": "#232734db",
+  "description": "A multi-modal AI client for GPT-4",
+  "orientation": "any",
+  "background_color": "#232734db",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay"],
+  "icons": [
+    {
+      "src": "assets/icons/maskable_icon_x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/maskable_icon_x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/maskable_icon_x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screen.png",
+      "sizes": "1617x1012",
+      "type": "image/png"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "fast",
+    "simple"
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "shortcuts": [
+    {
+      "name": "Open About",
+      "short_name": "About",
+      "description": "Open the about page",
+      "url": "/about",
+      "icons": [{ "src": "assets/icons/192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+
+/*
+  This file is used for all of your global styles and CSS variables.
+  Check here https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties for more info on using CSS variables.
+*/
+:root {
+  --font-family: sans-serif;
+
+  --sl-color-primary-50: var(--sl-color-violet-50);
+  --sl-color-primary-100: var(--sl-color-violet-100);
+  --sl-color-primary-200: var(--sl-color-violet-200);
+  --sl-color-primary-300: var(--sl-color-violet-300);
+  --sl-color-primary-400: var(--sl-color-violet-400);
+  --sl-color-primary-500: var(--sl-color-violet-500);
+  --sl-color-primary-600: var(--sl-color-violet-600);
+  --sl-color-primary-700: var(--sl-color-violet-700);
+  --sl-color-primary-800: var(--sl-color-violet-800);
+  --sl-color-primary-900: var(--sl-color-violet-900);
+  --sl-color-primary-950: var(--sl-color-violet-950);
+
+  --accent-fill-rest: #5e11fd;
+  --accent-stroke-control-rest: #5e11fd;
+}
+
+html, body {
+  font-family: var(--font-family);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  html,
+  body {
+    color: white;
+
+        background-color: #232734db;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+
+  html,
+  body {
+    background-color: #eaeaea;
+    color: black;
+  }
+}

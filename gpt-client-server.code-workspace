@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../gpt-client-server"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
