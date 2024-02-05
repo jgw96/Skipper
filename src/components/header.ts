@@ -90,6 +90,10 @@ export class AppHeader extends LitElement {
         nav a {
           color: initial;
         }
+
+        fluent-anchor::part(control), fluent-button::part(control) {
+          background: #c4c4c4;
+        }
       }
 
       @media(prefers-color-scheme: dark) {
@@ -146,7 +150,7 @@ export class AppHeader extends LitElement {
         </div>
 
         <div>
-          ${!this.enableBack ? html` <fluent-anchor appearance="stealth" href="/voice">Voice</fluent-anchor>` : null}
+          ${!this.enableBack ? html` <fluent-anchor size="small" appearance="stealth" href="/voice">Voice</fluent-anchor>` : null}
         </div>
       </header>
     `;

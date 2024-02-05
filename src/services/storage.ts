@@ -21,11 +21,22 @@ export async function getConversations() {
             continue;
         }
         const goodFile = await file.getFile();
+        console.log("goodFile", goodFile);
         conversations.push({
             name: file.name,
             content: JSON.parse(await goodFile.text()),
+            date: goodFile.lastModified
         });
     }
+    console.log("conversations", conversations);
+
+    // sort by date, which is a timestamp
+    conversations.sort((a, b) => {
+        return b.date - a.date;
+    });
+
+    console.log("conversations sorted", conversations);
+
     return conversations;
 }
 

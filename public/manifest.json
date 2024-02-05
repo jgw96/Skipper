@@ -33,9 +33,52 @@
   ],
   "screenshots": [
     {
-      "src": "assets/screenshots/screen.png",
-      "sizes": "1617x1012",
-      "type": "image/png"
+      "src": "assets/screenshots/screenshot-one.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/screenshot-two.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/screenshot-three.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/screenshot-four.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/mobile-one.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/screenshots/mobile-two.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/screenshots/mobile-three.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/screenshots/mobile-four.png",
+      "sizes": "1082x2402",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ],
   "features": [
@@ -48,11 +91,11 @@
   ],
   "shortcuts": [
     {
-      "name": "Open About",
-      "short_name": "About",
-      "description": "Open the about page",
-      "url": "/about",
-      "icons": [{ "src": "assets/icons/192x192.png", "sizes": "192x192" }]
+      "name": "Start with Voice",
+      "short_name": "Voice",
+      "description": "Start Charles with voice",
+      "url": "/voice",
+      "icons": [{ "src": "assets/icons/maskable_icon_x192.png", "sizes": "192x192" }]
     }
   ]
 }

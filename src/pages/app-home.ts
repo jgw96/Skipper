@@ -44,10 +44,31 @@ export class AppHome extends LitElement {
           --accent-stroke-control-hover: #8c6ee0;
         }
 
+        .title-bar {
+          display: flex;
+          flex-direction: column-reverse;
+        }
+
+        #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar .date-display {
+          font-size: 10px;
+          color: #cccccc;
+        }
+
         #suggested {
           display: grid;
           grid-template-columns: 1fr 1fr;
           width: 62%;
+          padding: 0;
+          margin: 0;
+        }
+
+        .system ul {
+          padding: 0;
+          margin: 0;
+          list-style: initial;
+        }
+
+        .system p {
           padding: 0;
           margin: 0;
         }
@@ -59,6 +80,7 @@ export class AppHome extends LitElement {
           text-align: center;
           background: #ffffff0f;
           font-size: 14px;
+          cursor: pointer;
         }
 
         fluent-card {
@@ -131,6 +153,8 @@ export class AppHome extends LitElement {
           bottom: 0;
           top: initial;
           position: fixed;
+
+          animation: quickup 0.3s ease;
         }
 
 
@@ -216,7 +240,7 @@ export class AppHome extends LitElement {
           flex-direction: column;
           padding: 8px;
 
-          height: 86px;
+          height: 104px;
 
           justify-content: space-between;
           padding-top: 18px;
@@ -278,7 +302,7 @@ export class AppHome extends LitElement {
           height: 96vh;
         }
 
-        #saved fluent-card span {
+        #saved fluent-card span, #mobileSaved fluent-card span {
           max-width: 82%;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -424,6 +448,7 @@ export class AppHome extends LitElement {
 
         #no-messages img {
           width: 260px;
+          height: 260px;
           border-radius: 50%;
 
           animation: fadein 0.8s ease;
@@ -459,6 +484,10 @@ export class AppHome extends LitElement {
 
         @media(prefers-color-scheme: light) {
           li.system {
+            background: white;
+          }
+
+          #suggested li {
             background: white;
           }
 
@@ -508,6 +537,10 @@ export class AppHome extends LitElement {
           }
         }
 
+        sl-drawer::part(footer) {
+          padding-right: 30px;
+        }
+
         @media(max-width: 860px) {
           #saved {
             display: none;
@@ -518,7 +551,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 79vh;
+            height: 76vh;
             width: unset;
             padding-top: 97px;
           }
@@ -536,7 +569,7 @@ export class AppHome extends LitElement {
           }
 
           ul {
-            padding: 8px;
+            padding: 6px;
           }
 
           #input-block {
@@ -558,6 +591,12 @@ export class AppHome extends LitElement {
 
           #suggested {
             width: 82%;
+          }
+        }
+
+        @media(max-width: 860px) and (min-height: 910px) {
+          #convo-list {
+            height: 80vh;
           }
         }
 
@@ -593,6 +632,15 @@ export class AppHome extends LitElement {
     console.log('This is your home page');
 
     this.savedConvos = await getConversations();
+
+    // set up enter key to send message
+    const input: any = this.shadowRoot?.querySelector('fluent-text-field');
+    input.addEventListener("keyup", (event: any) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        this.send();
+      }
+    });
   }
 
   share() {
@@ -613,7 +661,7 @@ export class AppHome extends LitElement {
   }
 
   async addImageToConvo(base64data?: string | undefined) {
-    if (base64data){
+    if (base64data) {
       this.currentPhoto = base64data;
       return;
     }
@@ -669,8 +717,6 @@ export class AppHome extends LitElement {
           image: this.currentPhoto
         }
       ]
-
-      this.handleScroll(list);
 
       // const data = await requestGPT(inputValue as string)
       // console.log("home data", data)
@@ -768,12 +814,24 @@ export class AppHome extends LitElement {
     return html`
       <!-- <app-header></app-header> -->
 
-      <sl-drawer class="mobile-saved" placement="bottom" has-header>
+      <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
         <div>
         ${this.savedConvos.length > 0 ? html`
           <ul id="mobileSaved">
             ${this.savedConvos.map((convo) => {
-      return html`<li @click="${() => this.startConvo(convo)}">${convo.name}</li>`
+      return html`<fluent-card @click="${() => this.startConvo(convo)}">
+      <div class="title-bar">
+        <span>${convo.name}</span>
+
+        <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
+      </div>
+
+      <div class="action-bar">
+        <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
+          <img src="/assets/trash-outline.svg" alt="delete" />
+        </sl-button>
+      </div>
+    </fluent-card>`
     }
     )}
           </ul>
@@ -795,7 +853,11 @@ export class AppHome extends LitElement {
           <ul>
             ${this.savedConvos.map((convo) => {
         return html`<fluent-card @click="${() => this.startConvo(convo)}">
-          <span>${convo.name}</span>
+          <div class="title-bar">
+            <span>${convo.name}</span>
+
+            <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
+          </div>
 
           <div class="action-bar">
             <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
@@ -849,7 +911,7 @@ export class AppHome extends LitElement {
 
           <div class="content-bar">
             ${message.image ? html`<img src="${message.image}" alt="photo" width="100" height="100" />` : html``}
-            ${message.content}
+            <div .innerHTML="${message.content}"></div>
           </div>
         </li>`
       })
