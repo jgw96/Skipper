@@ -306,6 +306,14 @@ export class AppHome extends LitElement {
           contain: strict;
         }
 
+        #convo-list code {
+          display: block;
+          padding: 8px;
+          background: #272b38;
+          border-radius: 8px;
+          margin: 10px;
+        }
+
         #mainBlock > div {
           height: 96vh;
         }
@@ -493,6 +501,14 @@ export class AppHome extends LitElement {
         @media(prefers-color-scheme: light) {
           li.system {
             background: white;
+          }
+
+          #convo-list code {
+            background: #eaeaea;
+          }
+
+          #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar .date-display {
+            color: black;
           }
 
           #suggested li {

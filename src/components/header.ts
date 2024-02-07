@@ -82,6 +82,11 @@ export class AppHeader extends LitElement {
         width: 20px;
       }
 
+      fluent-anchor::part(control) {
+        margin-top: 0;
+        padding-top: 0;
+      }
+
       @media(prefers-color-scheme: light) {
         header {
           color: black;
