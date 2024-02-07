@@ -12,7 +12,6 @@ provideFluentDesignSystem().register(fluentButton(), fluentTextField(), fluentOp
 import { styles } from '../styles/shared-styles';
 import { makeAIRequest } from '../services/ai';
 import { deleteConversation, getConversations, saveConversation } from '../services/storage';
-import { router } from '../router';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
