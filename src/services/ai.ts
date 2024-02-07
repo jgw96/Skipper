@@ -5,7 +5,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     currentBase64Data = base64data;
 
     // add instruction to format response as HTML
-    prompt = prompt + " " + "format your response as HTML, but dont mention that it has been formatted to HTML";
+    prompt = prompt + " " + "format your response as HTML, but dont mention that it has been formatted to HTML and just return the HTML";
 
     const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/sendchat?prompt=${prompt}`, {
         method: 'POST',
@@ -26,7 +26,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
 export const requestGPT = async (prompt: string) => {
     // add instruction to format response as HTML
-    prompt = prompt + " " + "format your response as HTML, but dont mention that it has been formatted to HTML";
+    prompt = prompt + " " + "format your response as HTML, but dont mention that it has been formatted to HTML and just return the HTML";
 
     previousMessages.push({
         role: "user",

@@ -12,6 +12,7 @@ provideFluentDesignSystem().register(fluentButton(), fluentTextField(), fluentOp
 import { styles } from '../styles/shared-styles';
 import { makeAIRequest } from '../services/ai';
 import { deleteConversation, getConversations, saveConversation } from '../services/storage';
+import { router } from '../router';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -49,6 +50,11 @@ export class AppHome extends LitElement {
           flex-direction: column-reverse;
         }
 
+        #input-inner img {
+          object-fit: contain;
+          animation: quickup 0.3s ease;
+        }
+
         #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar .date-display {
           font-size: 10px;
           color: #cccccc;
@@ -81,6 +87,7 @@ export class AppHome extends LitElement {
           background: #ffffff0f;
           font-size: 14px;
           cursor: pointer;
+          min-height: 50px;
         }
 
         fluent-card {
@@ -135,7 +142,7 @@ export class AppHome extends LitElement {
           gap: 8px;
           padding: 0;
 
-          padding-bottom: 80px;
+          // padding-bottom: 80px;
           padding-left: 10px;
 
           overflow: scroll;
@@ -281,6 +288,7 @@ export class AppHome extends LitElement {
           backdrop-filter: blur(40px);
           padding: 8px;
           animation: slideStart 0.3s ease;
+          contain: strict;
         }
 
         @keyframes slideStart {
@@ -294,8 +302,9 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 71vh;
+          height: 77vh;
           padding-top: 53px;
+          contain: strict;
         }
 
         #mainBlock > div {
@@ -395,7 +404,7 @@ export class AppHome extends LitElement {
 
 
           padding: 0px;
-    height: 87vh;
+    height: 89vh;
     overflow: hidden auto;
     position: sticky;
     top: 38px;
@@ -557,7 +566,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-name {
-            margin-top: 38px;
+            margin-top: 37px;
           }
 
           #mobile-menu {
@@ -653,6 +662,25 @@ export class AppHome extends LitElement {
     }
   }
 
+  async shareConvo(name: string, convo: Array<any>) {
+    const text = convo.map((message) => message.content).join(" ");
+    // remove name from text
+    const index = text.indexOf(name);
+    if (index === -1) {
+      return;
+    }
+
+    const textWithoutName = text.slice(index + name.length, text.length);
+
+    const shareURL = `/convo?title=${name}&text=${textWithoutName}`;
+
+    await navigator.share({
+      title: name,
+      text: textWithoutName,
+      url: shareURL
+    });
+  }
+
   preDefinedChat(chat: string) {
     const input: any = this.shadowRoot?.querySelector('fluent-text-field');
     input.value = chat;
@@ -732,7 +760,7 @@ export class AppHome extends LitElement {
 
       this.loading = false;
 
-      if (this.previousMessages.length > 3) {
+      if (this.previousMessages.length > 1) {
         console.log("look here", this.convoName, this.previousMessages)
         await saveConversation(this.convoName as string, this.previousMessages);
 
@@ -891,7 +919,7 @@ export class AppHome extends LitElement {
         <h2>${this.convoName}</h2>
 
           <div class="action-bar">
-            <fluent-button circle @click="${() => this.share()}" class="copy-button">
+            <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
               <img src="/assets/share-social-outline.svg" alt="share" />
             </fluent-button>
           </div>

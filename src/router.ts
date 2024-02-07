@@ -34,6 +34,14 @@ export const router = new Router({
         render: () => html`<app-voice></app-voice>`
       },
       {
+        path: resolveRouterPath('convo'),
+        title: 'Conversation',
+        plugins: [
+          lazy(() => import('./pages/app-convo.js')),
+        ],
+        render: () => html`<app-convo></app-convo>`
+      },
+      {
         path: resolveRouterPath('about'),
         title: 'About',
         plugins: [

@@ -404,7 +404,7 @@ export class AppVoice extends LitElement {
 
                 await doTextToSpeech(data.choices[0].message.content);
 
-                if (this.previousMessages.length > 3) {
+                if (this.previousMessages.length > 1) {
                     console.log("look here", this.convoName, this.previousMessages)
                     await saveConversation(this.convoName as string, this.previousMessages);
                 }
