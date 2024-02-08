@@ -28,8 +28,9 @@
     "workbox-precaching": "^6.5.2"
   },
   "devDependencies": {
+    "rollup-plugin-minify-html-literals": "^1.2.6",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12",
+    "vite": "^5.1.0",
     "vite-plugin-pwa": "^0.17.5"
   },
   "prettier": {

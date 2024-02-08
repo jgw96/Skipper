@@ -5,9 +5,9 @@ import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 
-import { fluentButton, fluentTextField, fluentOption, fluentListbox, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components';
 
-provideFluentDesignSystem().register(fluentButton(), fluentTextField(), fluentOption(), fluentListbox(), fluentCard());
+provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard());
 
 import { styles } from '../styles/shared-styles';
 import { makeAIRequest } from '../services/ai';
@@ -35,13 +35,28 @@ export class AppHome extends LitElement {
     return [
       styles,
       css`
-        fluent-button, fluent-text-field, fluent-listbox, fluent-card {
+        fluent-button, fluent-text-area, fluent-listbox, fluent-card {
           --accent-fill-rest: #8c6ee0;
           --accent-stroke-control-rest: #8c6ee0;
           --accent-fill-active: #8c6ee0;
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        fluent-text-area {
+          --neutral-fill-input-rest: #272b37;
+          --neutral-fill-input-hover: #272b37;
+          --neutral-fill-input-active: #272b37;
+          --neutral-fill-input-focus: #272b37;
+          color: white;
+          border: none;
+        }
+
+        fluent-text-area::part(control) {
+          border: none;
+          background: #272b37;
+          color: white;
         }
 
         .title-bar {
@@ -301,7 +316,7 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 77vh;
+          height: 75vh;
           padding-top: 53px;
           contain: strict;
         }
@@ -355,7 +370,7 @@ export class AppHome extends LitElement {
           height: 12px;
         }
 
-        fluent-text-field::part(root) {
+        fluent-text-area::part(root) {
           height: 2.8em;
         }
 
@@ -368,6 +383,8 @@ export class AppHome extends LitElement {
 
         #input-block fluent-button {
           height: 2.8em;
+          align-self: end;
+          margin-bottom: 1px;
         }
 
         li {
@@ -402,7 +419,7 @@ export class AppHome extends LitElement {
           cursor: pointer;
         }
 
-        #saved fluent-text-field {
+        #saved fluent-text-area {
           margin-bottom: 8px;
           flex: 1;
         }
@@ -433,7 +450,7 @@ export class AppHome extends LitElement {
           border-radius: 6px;
         }
 
-        #input-block fluent-text-field {
+        #input-block fluent-text-area {
           flex: 1;
         }
 
@@ -475,7 +492,7 @@ export class AppHome extends LitElement {
         }
 
         @media(prefers-color-scheme: dark) {
-          fluent-text-field::part(root) {
+          fluent-text-area::part(root) {
             background: #232734db;
             color: white;
             backdrop-filter: blur(40px);
@@ -559,6 +576,10 @@ export class AppHome extends LitElement {
             right: 0px;
             margin-top: 0;
           }
+
+          li.user, li.system {
+            max-width: 45vw;
+          }
         }
 
         sl-drawer::part(footer) {
@@ -575,7 +596,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 76vh;
+            height: 74vh;
             width: unset;
             padding-top: 97px;
           }
@@ -620,7 +641,13 @@ export class AppHome extends LitElement {
 
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
-            height: 80vh;
+            height: 76vh;
+          }
+        }
+
+        @media(min-height: 1000px) {
+          #convo-list {
+            height: 79vh;
           }
         }
 
@@ -658,7 +685,7 @@ export class AppHome extends LitElement {
     this.savedConvos = await getConversations();
 
     // set up enter key to send message
-    const input: any = this.shadowRoot?.querySelector('fluent-text-field');
+    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.addEventListener("keyup", (event: any) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -697,7 +724,7 @@ export class AppHome extends LitElement {
   }
 
   preDefinedChat(chat: string) {
-    const input: any = this.shadowRoot?.querySelector('fluent-text-field');
+    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = chat;
 
     this.send();
@@ -735,7 +762,7 @@ export class AppHome extends LitElement {
   }
 
   async send() {
-    const input: any = this.shadowRoot?.querySelector('fluent-text-field');
+    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     const inputValue = input?.value;
     const list = this.shadowRoot?.querySelector('ul');
 
@@ -988,7 +1015,7 @@ export class AppHome extends LitElement {
         <div id="input-inner">
           ${this.currentPhoto ? html`<img src="${this.currentPhoto}" alt="photo" width="40" height="40" />` : html``}
 
-          <fluent-text-field placeholder="Enter your message"></fluent-text-field>
+          <fluent-text-area placeholder="Enter your message"></fluent-text-area>
 
           <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.send}>
             <img src="/assets/send-outline.svg" alt="send" />
