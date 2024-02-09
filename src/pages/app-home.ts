@@ -814,7 +814,7 @@ export class AppHome extends LitElement {
     // remove newline character from inputValue
     const prompt = inputValue?.replace(/\n/g, " ");
 
-    if (input && prompt) {
+    if (input && inputValue && prompt) {
       let streamedContent = "";
 
       this.loading = true;
@@ -846,7 +846,7 @@ export class AppHome extends LitElement {
         }
       ]
 
-      evtSource.onmessage = (event) => {
+      evtSource.onmessage = async (event) => {
         console.log('event', event);
 
         const data = JSON.parse(event.data);
@@ -854,9 +854,9 @@ export class AppHome extends LitElement {
 
         // close evtSource if the response is complete
         if (data.choices[0].finish_reason !== null) {
-            evtSource.close();
+          evtSource.close();
 
-            streamedContent = "";
+          streamedContent = "";
         }
 
         // continuously add to the last message in this.previousMessages
@@ -871,10 +871,24 @@ export class AppHome extends LitElement {
 
             this.previousMessages = this.previousMessages;
 
+            console.log("this.previousMessages", this.previousMessages)
+
+            if (this.previousMessages.length > 1) {
+              const goodMessages = this.previousMessages;
+
+              const { saveConversation } = await import('../services/storage');
+              await saveConversation(this.convoName as string, goodMessages);
+
+              const { getConversations } = await import('../services/storage');
+              this.savedConvos = await getConversations();
+
+              console.log("this.savedConvos", this.savedConvos)
+            }
+
             this.requestUpdate();
           }
         }
-    }
+      }
 
       // this.previousMessages = [
       //   ...this.previousMessages,
@@ -887,15 +901,21 @@ export class AppHome extends LitElement {
 
       this.loading = false;
 
-      if (this.previousMessages.length > 1) {
-        console.log("look here", this.convoName, this.previousMessages);
+      // if (this.previousMessages.length > 1) {
+      //   console.log("look here", this.convoName, this.previousMessages);
 
-        const { saveConversation } = await import('../services/storage');
-        await saveConversation(this.convoName as string, this.previousMessages);
+      //   const goodMessages = this.previousMessages;
 
-        const { getConversations } = await import('../services/storage');
-        this.savedConvos = await getConversations();
-      }
+      //   console.log("goodMessages", goodMessages)
+
+      //   const { saveConversation } = await import('../services/storage');
+      //   await saveConversation(this.convoName as string, goodMessages);
+
+      //   const { getConversations } = await import('../services/storage');
+      //   this.savedConvos = await getConversations();
+
+      //   console.log("this.savedConvos", this.savedConvos)
+      // }
 
       // get last element of list
       this.handleScroll(list);
