@@ -1,7 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
 
-import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 
@@ -10,8 +9,8 @@ import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, 
 provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard());
 
 import { styles } from '../styles/shared-styles';
-import { makeAIRequest } from '../services/ai';
-import { deleteConversation, getConversations, saveConversation } from '../services/storage';
+
+import "../components/app-dictate";
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -261,10 +260,10 @@ export class AppHome extends LitElement {
           flex-direction: column;
           padding: 8px;
 
+
           height: 104px;
 
           justify-content: space-between;
-          padding-top: 18px;
         }
 
         fluent-card fluent-button {
@@ -277,6 +276,7 @@ export class AppHome extends LitElement {
           align-items: center;
           padding-bottom: 4px;
           display: flex;
+          gap: 4px;
         }
 
         .content-bar {
@@ -316,7 +316,7 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 75vh;
+          height: 74vh;
           padding-top: 53px;
           contain: strict;
         }
@@ -520,6 +520,11 @@ export class AppHome extends LitElement {
             background: white;
           }
 
+          fluent-text-area::part(control) {
+            background: white;
+            color: black;
+          }
+
           #convo-list code {
             background: #eaeaea;
           }
@@ -560,8 +565,8 @@ export class AppHome extends LitElement {
             background: white;
           }
 
-          .copy-button::part(base) {
-            background: transparent;
+          li.system .copy-button::part(base) {
+            background: #c4c4c4;
           }
         }
 
@@ -651,6 +656,36 @@ export class AppHome extends LitElement {
           }
         }
 
+        @media (max-height: 420px) and (orientation: landscape){
+          #convo-list {
+            height: 50vh;
+          }
+
+          #saved ul {
+            height: 79vh;
+          }
+
+          #no-messages {
+            flex-direction: row;
+          }
+
+          #no-messages img {
+            width: 170px;
+            height: 170px;
+          }
+
+          #suggested {
+            width: 50%;
+          }
+        }
+
+        @media(max-height: 670px) {
+          #no-messages img {
+            width: 170px;
+            height: 170px;
+          }
+        }
+
         @keyframes quickup {
           from {
             transform: translateY(100%);
@@ -681,6 +716,7 @@ export class AppHome extends LitElement {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
     console.log('This is your home page');
+    const { getConversations } = await import('../services/storage');
 
     this.savedConvos = await getConversations();
 
@@ -790,6 +826,7 @@ export class AppHome extends LitElement {
 
       // const data = await requestGPT(inputValue as string)
       // console.log("home data", data)
+      const { makeAIRequest } = await import('../services/ai');
       const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
       this.previousMessages = [
@@ -803,9 +840,12 @@ export class AppHome extends LitElement {
       this.loading = false;
 
       if (this.previousMessages.length > 1) {
-        console.log("look here", this.convoName, this.previousMessages)
+        console.log("look here", this.convoName, this.previousMessages);
+
+        const { saveConversation } = await import('../services/storage');
         await saveConversation(this.convoName as string, this.previousMessages);
 
+        const { getConversations } = await import('../services/storage');
         this.savedConvos = await getConversations();
       }
 
@@ -875,9 +915,29 @@ export class AppHome extends LitElement {
   }
 
   async deleteConvo(convo: any) {
+    const { deleteConversation } = await import('../services/storage');
     await deleteConversation(convo.name);
 
+    const { getConversations } = await import('../services/storage');
     this.savedConvos = await getConversations();
+  }
+
+  handleDictate(event: any) {
+    // const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+    // input.value = event.detail.messageData;
+    console.log('event', event.detail.messageData)
+
+    const text = event.detail.messageData.join(" ");
+
+    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+    input.value = text;
+  }
+
+  handleContinuiousDictate(event: any) {
+    console.log('event', event.detail.messageData)
+
+    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+    input.value = event.detail.messageData;
   }
 
   render() {
@@ -1004,9 +1064,13 @@ export class AppHome extends LitElement {
 
        <div id="input-block">
         <div id="extra-actions">
+          <div>
           <fluent-button @click="${() => this.addImageToConvo()}" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>
+
+          <app-dictate @got-text=${this.handleDictate}></app-dictate>
+        </div>
 
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />

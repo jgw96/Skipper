@@ -155,7 +155,7 @@ export class AppHeader extends LitElement {
         </div>
 
         <div>
-          ${!this.enableBack ? html` <fluent-anchor size="small" appearance="stealth" href="/voice">Voice</fluent-anchor>` : null}
+
         </div>
       </header>
     `;
