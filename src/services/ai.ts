@@ -9,7 +9,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
 
-    const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/sendchat?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
@@ -26,6 +26,36 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     return data;
 }
 
+export async function makeAIRequestStreaming(base64data: string, prompt: string, previousMessages: any[]) {
+    currentBase64Data = base64data;
+
+    // add instruction to format response as HTML
+    prompt = prompt + ". " + extraPrompt;
+
+    // const response = await fetch(`http://localhost:3000/sendchatstreaming?prompt=${prompt}`, {
+    //     method: 'POST',
+    //     headers: new Headers({
+    //         "Content-Type": "application/json",
+    //     }),
+    //     body: JSON.stringify({
+    //         image: base64data,
+    //         previousMessages: previousMessages
+    //     })
+    // });
+
+    // const data = await response.json();
+    // console.log(data.choices[0]);
+
+    // return data;
+
+    // previousMessages is an array, but I need to send it as a query param
+    // so I'm going to convert it to a string
+    const stringifiedPreviousMessages = JSON.stringify(previousMessages);
+
+    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&image=${base64data}&previousMessages=${stringifiedPreviousMessages}`);
+    return evtSource;
+}
+
 export const requestGPT = async (prompt: string) => {
     // add instruction to format response as HTML
     prompt = prompt + " " + extraPrompt;
@@ -36,7 +66,7 @@ export const requestGPT = async (prompt: string) => {
         image: currentBase64Data
     })
 
-    const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/sendchat?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -61,7 +91,7 @@ export const requestGPT = async (prompt: string) => {
 };
 
 export const makeTitleRequest = async (prompt: string) => {
-    const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/createtitle?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/createtitle?prompt=${prompt}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -74,7 +104,7 @@ export const makeTitleRequest = async (prompt: string) => {
 
 export async function doTextToSpeech(script: string) {
     return new Promise(async (resolve) => {
-        const response = await fetch(`https://gpt-server-qsqckaz7va-uw.a.run.app/texttospeech?text=${script}`, {
+        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}`, {
             method: "POST",
             headers: new Headers({
                 "Content-Type": "application/json",

@@ -11,6 +11,7 @@ provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOpt
 import { styles } from '../styles/shared-styles';
 
 import "../components/app-dictate";
+import { makeAIRequestStreaming } from '../services/ai';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -810,7 +811,12 @@ export class AppHome extends LitElement {
       this.convoName = convoName;
     }
 
-    if (input) {
+    // remove newline character from inputValue
+    const prompt = inputValue?.replace(/\n/g, " ");
+
+    if (input && prompt) {
+      let streamedContent = "";
+
       this.loading = true;
 
       input.value = "";
@@ -819,23 +825,65 @@ export class AppHome extends LitElement {
         ...this.previousMessages,
         {
           role: "user",
-          content: inputValue,
+          content: prompt,
           image: this.currentPhoto
         }
       ]
 
+
       // const data = await requestGPT(inputValue as string)
       // console.log("home data", data)
-      const { makeAIRequest } = await import('../services/ai');
-      const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+      // const { makeAIRequest } = await import('../services/ai');
+      // const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+      const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
 
       this.previousMessages = [
         ...this.previousMessages,
         {
           role: "system",
-          content: data.choices[0].message.content,
+          // content: data.choices[0].message.content,
+          content: ""
         }
       ]
+
+      evtSource.onmessage = (event) => {
+        console.log('event', event);
+
+        const data = JSON.parse(event.data);
+        console.log('data', data);
+
+        // close evtSource if the response is complete
+        if (data.choices[0].finish_reason !== null) {
+            evtSource.close();
+
+            streamedContent = "";
+        }
+
+        // continuously add to the last message in this.previousMessages
+        // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+
+        if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
+          streamedContent += data.choices[0].delta.content;
+
+          if (streamedContent && streamedContent.length > 0) {
+
+            this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
+
+            this.previousMessages = this.previousMessages;
+
+            this.requestUpdate();
+          }
+        }
+    }
+
+      // this.previousMessages = [
+      //   ...this.previousMessages,
+      //   {
+      //     role: "system",
+      //     // content: data.choices[0].message.content,
+      //     content: data
+      //   }
+      // ]
 
       this.loading = false;
 
