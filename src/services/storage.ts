@@ -13,6 +13,29 @@ export async function saveConversation(name: string, convo: any[]) {
     await writer.close();
 }
 
+export async function exportAllConversations() {
+    const conversations = await getConversations();
+    const blob = new Blob([JSON.stringify(conversations)], { type: 'application/json' });
+
+    // save with file-system-access api
+    // @ts-ignore
+    const handle = await window.showSaveFilePicker({
+        suggestedName: 'conversations.json',
+        types: [
+            {
+                description: 'JSON',
+                accept: {
+                    'application/json': ['.json'],
+                },
+            },
+        ],
+    });
+
+    const writable = await handle.createWritable();
+    await writable.write(blob);
+    await writable.close()
+}
+
 export async function getConversations() {
     const conversations: any[] = [];
     // @ts-ignore

@@ -44,19 +44,10 @@ export class AppHome extends LitElement {
           --accent-stroke-control-hover: #8c6ee0;
         }
 
-        fluent-text-area {
-          --neutral-fill-input-rest: #272b37;
-          --neutral-fill-input-hover: #272b37;
-          --neutral-fill-input-active: #272b37;
-          --neutral-fill-input-focus: #272b37;
-          color: white;
-          border: none;
-        }
-
-        fluent-text-area::part(control) {
-          border: none;
-          background: #272b37;
-          color: white;
+        #inner-extra-actions {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .title-bar {
@@ -69,9 +60,9 @@ export class AppHome extends LitElement {
           animation: quickup 0.3s ease;
         }
 
-        #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar .date-display {
+        #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar {
           font-size: 10px;
-          color: #cccccc;
+
         }
 
         #suggested {
@@ -106,6 +97,7 @@ export class AppHome extends LitElement {
 
         fluent-card {
           animation: quickup 0.3s ease;
+          border: none;
         }
 
         #extra-actions {
@@ -298,7 +290,7 @@ export class AppHome extends LitElement {
 
         #saved {
           /* color: white; */
-          background-color: #232734db;
+          background-color: var(--theme-color);
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
           padding: 8px;
@@ -494,20 +486,18 @@ export class AppHome extends LitElement {
 
         @media(prefers-color-scheme: dark) {
           fluent-text-area::part(root) {
-            background: #232734db;
+            background: var(--theme-color);
             color: white;
             backdrop-filter: blur(40px);
           }
 
           fluent-card {
             background: rgba(255, 255, 255, 0.06);
-            color: white;
             border: none;
           }
 
           fluent-card fluent-button::part(control) {
             background: rgba(255, 255, 255, 0.06);
-            color: white;
             border: none;
           }
 
@@ -518,28 +508,23 @@ export class AppHome extends LitElement {
 
         @media(prefers-color-scheme: light) {
           li.system {
-            background: white;
-          }
-
-          fluent-text-area::part(control) {
-            background: white;
-            color: black;
+            background: var(--theme-color);
           }
 
           #convo-list code {
             background: #eaeaea;
           }
 
-          #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar .date-display {
-            color: black;
+          #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar {
+
           }
 
           #suggested li {
-            background: white;
+            background: var(--theme-color);
           }
 
           fluent-card {
-            background: #eaeaea;
+            background: var(--theme-color);
           }
 
           .delete-button::part(base) {
@@ -551,7 +536,7 @@ export class AppHome extends LitElement {
           }
 
           #saved {
-            background: white;
+            background: var(--theme-color);
           }
 
           #mobile-menu::part(base) {
@@ -559,11 +544,11 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            background: rgb(0 0 0 / 17%);
+            background: #1e1e1e0f;
           }
 
           #saved li {
-            background: white;
+            background: var(--theme-color);
           }
 
           li.system .copy-button::part(base) {
@@ -803,6 +788,8 @@ export class AppHome extends LitElement {
     const inputValue = input?.value;
     const list = this.shadowRoot?.querySelector('ul');
 
+    console.log("this.currentPhoto", this.currentPhoto)
+
     if (this.previousMessages.length === 0) {
       console.log("doign title request")
       // first coupe of words of inputValue
@@ -830,72 +817,106 @@ export class AppHome extends LitElement {
         }
       ]
 
+      if (this.currentPhoto) {
+        const { makeAIRequest } = await import('../services/ai');
+        const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "system",
+            content: data.choices[0].message.content,
+            // content: data
+          }
+        ];
+
+        if (this.previousMessages.length > 1) {
+          console.log("look here", this.convoName, this.previousMessages);
+
+          const goodMessages = this.previousMessages;
+
+          console.log("goodMessages", goodMessages)
+
+          const { saveConversation } = await import('../services/storage');
+          await saveConversation(this.convoName as string, goodMessages);
+
+          const { getConversations } = await import('../services/storage');
+          this.savedConvos = await getConversations();
+
+          console.log("this.savedConvos", this.savedConvos)
+        }
+      }
+      else {
+        const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "system",
+            // content: data.choices[0].message.content,
+            content: ""
+          }
+        ]
+
+        evtSource.onmessage = async (event) => {
+          console.log('event', event);
+
+          const data = JSON.parse(event.data);
+          console.log('data', data);
+
+          // close evtSource if the response is complete
+          if (data.choices[0].finish_reason !== null) {
+            evtSource.close();
+
+            streamedContent = "";
+          }
+
+          // continuously add to the last message in this.previousMessages
+          // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+
+          if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
+            streamedContent += data.choices[0].delta.content;
+
+            if (streamedContent && streamedContent.length > 0) {
+
+              this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
+
+              this.previousMessages = this.previousMessages;
+
+              window.requestIdleCallback(async () => {
+                if (this.previousMessages.length > 1) {
+                  const goodMessages = this.previousMessages;
+
+                  const { saveConversation } = await import('../services/storage');
+                  await saveConversation(this.convoName as string, goodMessages);
+
+                  const { getConversations } = await import('../services/storage');
+                  this.savedConvos = await getConversations();
+
+                  console.log("this.savedConvos", this.savedConvos)
+                }
+
+
+              }, { timeout: 1000 });
+
+              this.requestUpdate();
+            }
+          }
+        }
+      }
+
 
       // const data = await requestGPT(inputValue as string)
       // console.log("home data", data)
       // const { makeAIRequest } = await import('../services/ai');
       // const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
-      const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
-
-      this.previousMessages = [
-        ...this.previousMessages,
-        {
-          role: "system",
-          // content: data.choices[0].message.content,
-          content: ""
-        }
-      ]
-
-      evtSource.onmessage = async (event) => {
-        console.log('event', event);
-
-        const data = JSON.parse(event.data);
-        console.log('data', data);
-
-        // close evtSource if the response is complete
-        if (data.choices[0].finish_reason !== null) {
-          evtSource.close();
-
-          streamedContent = "";
-        }
-
-        // continuously add to the last message in this.previousMessages
-        // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
-
-        if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
-          streamedContent += data.choices[0].delta.content;
-
-          if (streamedContent && streamedContent.length > 0) {
-
-            this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
-
-            this.previousMessages = this.previousMessages;
-
-            console.log("this.previousMessages", this.previousMessages)
-
-            if (this.previousMessages.length > 1) {
-              const goodMessages = this.previousMessages;
-
-              const { saveConversation } = await import('../services/storage');
-              await saveConversation(this.convoName as string, goodMessages);
-
-              const { getConversations } = await import('../services/storage');
-              this.savedConvos = await getConversations();
-
-              console.log("this.savedConvos", this.savedConvos)
-            }
-
-            this.requestUpdate();
-          }
-        }
-      }
 
       // this.previousMessages = [
       //   ...this.previousMessages,
       //   {
       //     role: "system",
-      //     // content: data.choices[0].message.content,
-      //     content: data
+      //     content: data.choices[0].message.content,
+      //     // content: data
       //   }
       // ]
 
@@ -999,6 +1020,8 @@ export class AppHome extends LitElement {
 
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = text;
+
+    this.send();
   }
 
   handleContinuiousDictate(event: any) {
@@ -1132,7 +1155,7 @@ export class AppHome extends LitElement {
 
        <div id="input-block">
         <div id="extra-actions">
-          <div>
+          <div id="inner-extra-actions">
           <fluent-button @click="${() => this.addImageToConvo()}" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>

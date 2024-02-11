@@ -13,4 +13,34 @@ export const styles = css`
     margin-top: 30px;
     height: calc(100vh - 30px);
   }
+
+  fluent-card{
+    --neutral-foreground-rest: white;
+  }
+
+  fluent-text-area, fluent-text-area::part(control), fluent-select::part(control), fluent-select::part(listbox) {
+    --neutral-fill-input-rest: var(--theme-color);
+    --neutral-fill-input-hover: var(--theme-color);
+    --neutral-fill-input-active: var(--theme-color);
+    --neutral-fill-input-focus: var(--theme-color);
+    background: var(--theme-color);
+    color: white;
+    border: none;
+  }
+
+  @media(prefers-color-scheme: light) {
+    fluent-card{
+      --neutral-foreground-rest: black;
+    }
+
+    fluent-text-area, fluent-text-area::part(control), fluent-select::part(control), fluent-select::part(listbox) {
+      --neutral-fill-input-rest: var(--theme-color);
+      --neutral-fill-input-hover: var(--theme-color);
+      --neutral-fill-input-active: var(--theme-color);
+      --neutral-fill-input-focus: var(--theme-color);
+      background: var(--theme-color);
+      color: black;
+      border: none;
+    }
+  }
 `;

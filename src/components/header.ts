@@ -26,13 +26,15 @@ export class AppHeader extends LitElement {
         // /* border-color: #2d2d2d1a; */
         // backdrop-filter: blur(40px);
 
+        background: var(--theme-color);
+
         padding-left: 10px;
         padding-right: 10px;
 
         position: fixed;
         left: env(titlebar-area-x, 0);
         top: env(titlebar-area-y, 0);
-        height: env(titlebar-area-height, 38px);
+        height: env(titlebar-area-height, 30px);
         width: calc(env(titlebar-area-width, 100%) - 18px);
         -webkit-app-region: drag;
 
@@ -56,6 +58,10 @@ export class AppHeader extends LitElement {
       #actions fluent-button::part(control) {
         background: transparent;
         border: none;
+      }
+
+      fluent-button {
+        height: 25px;
       }
 
       header h1 {
@@ -97,25 +103,23 @@ export class AppHeader extends LitElement {
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
-          background: #c4c4c4;
+          background: var(--theme-color);
         }
       }
 
       @media(prefers-color-scheme: dark) {
         header {
           /* color: white; */
-          background-color: #232734db;
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
         }
-      }
 
-      @media(min-width: 800px) and (prefers-color-scheme: light) {
-        header {
-          background: white;
-          backdrop-filter: none;
+        fluent-anchor::part(control), fluent-button::part(control) {
+          background: #343743;
+          color: white;
         }
       }
+
     `;
   }
 
@@ -141,6 +145,14 @@ export class AppHeader extends LitElement {
     // this.enableBack = true;
   }
 
+  openSettings() {
+    // fire a custom event
+    this.dispatchEvent(new CustomEvent('open-settings', {
+      bubbles: true,
+      composed: true
+    }));
+  }
+
   render() {
     return html`
       <header>
@@ -155,7 +167,7 @@ export class AppHeader extends LitElement {
         </div>
 
         <div>
-
+          <fluent-button @click="${this.openSettings}">Settings</fluent-button>
         </div>
       </header>
     `;

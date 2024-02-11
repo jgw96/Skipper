@@ -2,6 +2,10 @@ import { LitElement, css, html } from "lit";
 
 import { customElement, state } from "lit/decorators.js";
 
+import { fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
+
+provideFluentDesignSystem().register(fluentProgressRing());
+
 @customElement("app-dictate")
 export class AppDictate extends LitElement {
     @state() recog: any | null = null;
@@ -16,12 +20,16 @@ export class AppDictate extends LitElement {
                 background: var(--app-color-primary);
             }
 
-            #stop {
-                background: red;
+            #stop::part(control) {
+              color: white;
             }
 
             md-filled-tonal-button, md-filled-button, md-outlined-button{
                 font-family: system-ui;
+            }
+
+            fluent-button {
+                animation: quickSlideFromLeft 0.3s;
             }
 
             fluent-button::part(control) {
@@ -32,6 +40,29 @@ export class AppDictate extends LitElement {
                 margin-top: 6px;
                 width: 20px;
                 height: 20px;
+            }
+
+            fluent-progress-ring {
+                height: 20px;
+                width: 20px;
+                --progress-ring-foreground: #0078d4;
+            }
+
+            @media(prefers-color-scheme: light) {
+                #stop::part(control) {
+                    color: black;
+                }
+            }
+
+            @keyframes quickSlideFromLeft {
+                from {
+                    transform: translateY(30%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
             }
     `;
     }
@@ -100,13 +131,6 @@ export class AppDictate extends LitElement {
         if (this.wakeLock) {
             this.wakeLock.release();
         }
-
-        // let event = new CustomEvent("got-text", {
-        //     detail: {
-        //         messageData: this.lines,
-        //     },
-        // });
-        // this.dispatchEvent(event);
     }
 
     setUpListeners() {
@@ -128,7 +152,7 @@ export class AppDictate extends LitElement {
                 });
                 this.dispatchEvent(event);
 
-                // this.transcript = e.result.text;
+                this.thinkingLines = [];
             };
 
             this.recog.recognized = (s?: any, e?: any) => {
@@ -144,6 +168,8 @@ export class AppDictate extends LitElement {
                         },
                     });
                     this.dispatchEvent(event);
+
+                    this.lines = [];
                 }
             };
         }
@@ -174,8 +200,10 @@ export class AppDictate extends LitElement {
                 <img src="/assets/mic-outline.svg" />
           </fluent-button>`
                 : html`
-            <fluent-button @click="${() => this.stop()}">
-              <img src="/assets/mic-off-outline.svg" />
+            <fluent-button id="stop" @click="${() => this.stop()}">
+              <fluent-progress-ring slot="start"></fluent-progress-ring>
+
+              Stop Dictating
             </fluent-button>
           `}
     `;

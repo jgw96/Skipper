@@ -4,6 +4,7 @@ let currentBase64Data: string = "";
 const extraPrompt = "You are a helpful chat assistant with a calming tone. You are formal, but not too formal. Format your response to the former message as HTML, but dont mention that it has been formatted to HTML and just return the HTML. All code snippets should be wrapped in the HTML <code> element, but don't use that element for things that are not code snippets. ";
 
 export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {
+    console.log("makeAIRequest", base64data, prompt, previousMessages)
     currentBase64Data = base64data;
 
     // add instruction to format response as HTML
@@ -11,9 +12,6 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
     const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}`, {
         method: 'POST',
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
         body: JSON.stringify({
             image: base64data,
             previousMessages: previousMessages

@@ -3,6 +3,7 @@ import { customElement } from 'lit/decorators.js';
 
 import './pages/app-home';
 import './components/header';
+import './components/app-settings';
 import './styles/global.css';
 import { router } from './router';
 
@@ -12,6 +13,10 @@ export class AppIndex extends LitElement {
     return css`
       main {
 
+      }
+
+      sl-drawer::part(panel) {
+        backdrop-filter: blur(40px);
       }
     `;
   }
@@ -31,14 +36,25 @@ export class AppIndex extends LitElement {
     });
   }
 
+  doOpenSettings() {
+    const drawer = this.shadowRoot?.querySelector('.settings-drawer');
+    if (drawer) {
+      // @ts-ignore
+      drawer.show();
+    }
+  }
+
   render() {
     return html`
-    <app-header></app-header>
+    <app-header @open-settings="${this.doOpenSettings}"></app-header>
+    <sl-drawer label="Settings" class="settings-drawer">
+      <app-settings></app-settings>
+    </sl-drawer>
+
       <div>
         <main>
-          ${
-            router.render()
-          }
+          ${router.render()
+      }
         </main>
       </div>
     `;
