@@ -78,9 +78,14 @@ export class AppSettings extends LitElement {
 
     async firstUpdated() {
         const theme = localStorage.getItem('theme');
+        const themeInput = this.shadowRoot?.querySelector('#theme') as any;
         if (theme) {
-            (this.shadowRoot?.querySelector('#theme') as any).value = theme;
+            themeInput.value = theme;
             document.documentElement.setAttribute('data-theme', theme);
+        }
+        else {
+            themeInput.value = 'fluent';
+            document.documentElement.setAttribute('data-theme', 'fluent');
         }
 
         (this.shadowRoot?.querySelector('#theme') as any).addEventListener('change', (e: any) => {
