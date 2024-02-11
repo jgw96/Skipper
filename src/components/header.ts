@@ -44,6 +44,8 @@ export class AppHeader extends LitElement {
       fluent-button, fluent-text-field, fluent-listbox, fluent-card {
           --accent-fill-rest: #5e11fd;
           --accent-stroke-control-rest: #5e11fd;
+
+          app-region: no-drag;
         }
 
       fluent-anchor::part(control) {
