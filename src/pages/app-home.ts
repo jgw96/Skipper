@@ -63,17 +63,17 @@ export class AppHome extends LitElement {
         #input-inner img {
           object-fit: contain;
           animation: quickup 0.3s ease;
+          border-radius: 8px;
         }
 
-        #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar {
+        #saved fluent-card .title-bar .date-display, .mobile-saved #mobileSaved fluent-card .title-bar span.date-display {
           font-size: 10px;
-
         }
 
         #suggested {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          width: 62%;
+          width: 420px;
           padding: 0;
           margin: 0;
         }
@@ -123,6 +123,10 @@ export class AppHome extends LitElement {
         #input-block #extra-actions fluent-button img {
           width: 20px;
           height: 20px;
+        }
+
+        #input-block.drag-over {
+          background: #8c6ee042;
         }
 
         fluent-card {
@@ -478,8 +482,8 @@ export class AppHome extends LitElement {
         }
 
         #no-messages img {
-          width: 260px;
-          height: 260px;
+          width: 220px;
+          height: 220px;
           border-radius: 50%;
 
           animation: fadein 0.8s ease;
@@ -702,7 +706,6 @@ export class AppHome extends LitElement {
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    console.log('This is your home page');
     const { getConversations } = await import('../services/storage');
 
     this.savedConvos = await getConversations();
@@ -717,6 +720,40 @@ export class AppHome extends LitElement {
         this.send();
       }
     });
+
+    this.addImageWithDragDrop();
+  }
+
+  addImageWithDragDrop() {
+    if (this.modelShipper !== "google") {
+      const dropElement: HTMLDivElement | null | undefined = this.shadowRoot?.querySelector('#input-block');
+
+      dropElement?.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropElement.classList.add("drag-over");
+      });
+
+      dropElement?.addEventListener('dragleave', (event) => {
+        event.preventDefault();
+        dropElement.classList.remove("drag-over");
+      });
+
+      dropElement?.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropElement.classList.remove("drag-over");
+
+        const dt = event.dataTransfer;
+        const files = dt!.files;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64data = e.target?.result;
+          this.addImageToConvo(base64data as string);
+        }
+
+        reader.readAsDataURL(files[0]);
+      });
+    }
   }
 
   share() {

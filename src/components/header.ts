@@ -41,6 +41,12 @@ export class AppHeader extends LitElement {
         z-index: 1
       }
 
+      #header-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
       fluent-button img, fluent-anchor img {
         height: 20px;
         width: 20px;
@@ -124,7 +130,7 @@ export class AppHeader extends LitElement {
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
-          background: #343743;
+          background: transparent;
           color: white;
         }
       }
@@ -175,7 +181,7 @@ export class AppHeader extends LitElement {
           <img src="/assets/icons/maskable_icon_x48.png" alt="app icon">` : null}
         </div>
 
-        <div>
+        <div id="header-actions">
           <fluent-anchor href="/voice">
             <img src="/assets/headset-outline.svg">
           </fluent-anchor>

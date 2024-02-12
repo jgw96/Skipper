@@ -36,9 +36,23 @@ export class AppSettings extends LitElement {
             border-radius: 8px;
         }
 
+        .setting h3 {
+            margin: 0;
+        }
+
+        .setting p {
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
         fluent-option {
             margin-top: 3px;
             margin-bottom: 3px;
+        }
+
+        label {
+            font-weight: bold;
         }
 
         @media(prefers-color-scheme: dark) {
@@ -154,7 +168,19 @@ export class AppSettings extends LitElement {
     render() {
         return html`
             <div class="setting">
-                <label for="model">AI Model</label>
+                <h3>About Charles</h3>
+
+                <p>
+                    Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or
+                    Google's Gemini Pro. Charles can work with you how you want, want to interact with your voice? You can.
+                    Need Charles to see something? Give it an image! Simply want text chat? That works too.
+
+                    Charles works on any of your devices!
+                </p>
+            </div>
+
+            <div class="setting">
+                <label for="model">Choose AI Model</label>
                 <fluent-select @change="${this.chooseModel}" id="model" title="Select an AI model">
                     <fluent-option value="openai">GPT-4</fluent-option>
                     <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
@@ -163,7 +189,7 @@ export class AppSettings extends LitElement {
             </div>
 
             <div class="setting">
-                <label for="theme">Theme</label>
+                <label for="theme">Choose Theme</label>
                 <fluent-select @change="${this.chooseTheme}" id="theme" title="Select a theme">
                     <fluent-option value="fluent">Fluent</fluent-option>
                     <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
