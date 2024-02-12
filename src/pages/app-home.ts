@@ -11,7 +11,7 @@ provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOpt
 import { styles } from '../styles/shared-styles';
 
 import "../components/app-dictate";
-import { makeAIRequestStreaming } from '../services/ai';
+import { chosenModelShipper, makeAIRequestStreaming } from '../services/ai';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -30,6 +30,7 @@ export class AppHome extends LitElement {
   @state() currentPhoto: string | undefined;
 
   captureStream: any;
+  modelShipper: string = "";
 
   static get styles() {
     return [
@@ -710,6 +711,8 @@ export class AppHome extends LitElement {
 
     this.savedConvos = await getConversations();
 
+    this.modelShipper = chosenModelShipper;
+
     // set up enter key to send message
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.addEventListener("keyup", (event: any) => {
@@ -794,6 +797,8 @@ export class AppHome extends LitElement {
 
     console.log("this.currentPhoto", this.currentPhoto)
 
+    const modelShipper = chosenModelShipper;
+
     if (this.previousMessages.length === 0) {
       console.log("doign title request")
       // first coupe of words of inputValue
@@ -821,7 +826,36 @@ export class AppHome extends LitElement {
         }
       ]
 
-      if (this.currentPhoto) {
+      if (modelShipper === "google") {
+        const { makeAIRequestWithGemini } = await import('../services/ai');
+        const data = await makeAIRequestWithGemini(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "system",
+            content: data.choices[0].message.content,
+            // content: data
+          }
+        ];
+
+        if (this.previousMessages.length > 1) {
+          console.log("look here", this.convoName, this.previousMessages);
+
+          const goodMessages = this.previousMessages;
+
+          console.log("goodMessages", goodMessages)
+
+          const { saveConversation } = await import('../services/storage');
+          await saveConversation(this.convoName as string, goodMessages);
+
+          const { getConversations } = await import('../services/storage');
+          this.savedConvos = await getConversations();
+
+          console.log("this.savedConvos", this.savedConvos)
+        }
+      }
+      else if (this.currentPhoto) {
         const { makeAIRequest } = await import('../services/ai');
         const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
@@ -1160,9 +1194,9 @@ export class AppHome extends LitElement {
        <div id="input-block">
         <div id="extra-actions">
           <div id="inner-extra-actions">
-          <fluent-button @click="${() => this.addImageToConvo()}" size="small">
+          ${this.modelShipper !== "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
-          </fluent-button>
+          </fluent-button>` : null}
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
         </div>

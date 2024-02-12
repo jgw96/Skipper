@@ -7,6 +7,7 @@ import {
     fluentSelect,
     fluentOption
 } from "@fluentui/web-components";
+import { setChosenModelShipper } from "../services/ai";
 
 provideFluentDesignSystem()
     .register(
@@ -27,8 +28,12 @@ export class AppSettings extends LitElement {
 
         .setting {
             display: flex;
-            gap: 8px;
+            gap: 14px;
             flex-direction: column;
+
+            background: #ffffff0f;
+            padding: 8px;
+            border-radius: 8px;
         }
 
         fluent-option {
@@ -74,8 +79,8 @@ export class AppSettings extends LitElement {
                 background: white;
               }
 
-              fluent-button::part(control) {
-                white;
+              .setting {
+                background: #0000002b;
               }
         }
         `;
@@ -89,11 +94,13 @@ export class AppSettings extends LitElement {
         const theme = localStorage.getItem('theme');
         const themeInput = this.shadowRoot?.querySelector('#theme') as any;
         if (theme) {
-            themeInput.value = theme;
+            console.log("theme loaded", theme, themeInput);
+            themeInput.currentValue = theme;
+            console.log("theme loaded", themeInput.currentValue);
             document.documentElement.setAttribute('data-theme', theme);
         }
         else {
-            themeInput.value = 'fluent';
+            themeInput.currentValue = 'fluent';
             document.documentElement.setAttribute('data-theme', 'fluent');
         }
 
@@ -101,6 +108,18 @@ export class AppSettings extends LitElement {
             localStorage.setItem('theme', e.target.value);
             document.documentElement.setAttribute('data-theme', e.target.value);
         });
+
+        const model = localStorage.getItem('model');
+        const modelInput = this.shadowRoot?.querySelector('#model') as any;
+        if (model) {
+            modelInput.currentValue = model;
+
+            setChosenModelShipper((model as "openai" | "google"));
+        }
+        else {
+            modelInput.currentValue = 'openai';
+            setChosenModelShipper('openai');
+        }
     }
 
     chooseTheme($event: any) {
@@ -115,6 +134,18 @@ export class AppSettings extends LitElement {
         this.dispatchEvent(event);
     }
 
+    chooseModel($event: any) {
+        setChosenModelShipper($event.target.value);
+
+        localStorage.setItem('model', $event.target.value);
+        const event = new CustomEvent('model-changed', {
+            detail: {
+                model: $event.target.value
+            }
+        });
+        this.dispatchEvent(event);
+    }
+
     async exportData() {
         const { exportAllConversations } = await import('../services/storage');
         await exportAllConversations();
@@ -122,6 +153,15 @@ export class AppSettings extends LitElement {
 
     render() {
         return html`
+            <div class="setting">
+                <label for="model">AI Model</label>
+                <fluent-select @change="${this.chooseModel}" id="model" title="Select an AI model">
+                    <fluent-option value="openai">GPT-4</fluent-option>
+                    <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
+                    <fluent-option value="google">Google Gemini Pro</fluent-option>
+                </fluent-select>
+            </div>
+
             <div class="setting">
                 <label for="theme">Theme</label>
                 <fluent-select @change="${this.chooseTheme}" id="theme" title="Select a theme">

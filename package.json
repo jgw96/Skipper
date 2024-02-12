@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@fluentui/web-components": "^2.5.16",
+    "@google/generative-ai": "^0.2.0",
     "@shoelace-style/shoelace": "^2.0.0-beta.82",
     "@thepassle/app-tools": "^0.9.12",
     "@vaadin/router": "^1.7.4",

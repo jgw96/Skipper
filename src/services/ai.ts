@@ -1,7 +1,67 @@
+import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
+
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
 const extraPrompt = "You are a helpful chat assistant with a calming tone. You are formal, but not too formal. Format your response to the former message as HTML, but dont mention that it has been formatted to HTML and just return the HTML. ";
+
+const apiKey = "AIzaSyCdVnZtDMnmKPo8fhw-4MWybfAA1zcEbDs";
+let potentialGemeniModel: GenerativeModel | null = null;
+export let chosenModelShipper: "openai" | "google" = "openai";
+let genAI: GoogleGenerativeAI | null = null;
+
+export async function setChosenModelShipper(shipper: "openai" | "google") {
+    chosenModelShipper = shipper;
+}
+
+export async function makeAIRequestWithGemini(base64data: string, prompt: string, previousMessages: any[]) {
+    if (!genAI) {
+        const newGenAI = new GoogleGenerativeAI(apiKey);
+        genAI = newGenAI;
+
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        potentialGemeniModel = model;
+    }
+
+    // fix previousMessages to google history format
+    const history = previousMessages.map((message) => {
+        return {
+            role: message.role === "user" ? "user" : "model",
+            parts: message.content
+        }
+    });
+
+    const modelMessageIndex = history.findIndex((message) => message.parts.trim() === prompt.trim());
+    console.log("modelMessageIndex", modelMessageIndex, prompt, history)
+    if (modelMessageIndex !== -1) {
+        history.splice(modelMessageIndex, 1);
+    }
+
+    console.log("history", history)
+
+    const chat = potentialGemeniModel!.startChat({
+        history,
+        generationConfig: {
+            maxOutputTokens: 2000,
+        },
+    });
+
+    const result = await chat.sendMessage(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    const dataResponse = {
+        choices: [
+            {
+                message: {
+                    content: text
+                }
+            }
+        ]
+    };
+
+    return dataResponse;
+}
 
 export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {
     console.log("makeAIRequest", base64data, prompt, previousMessages)
