@@ -14,6 +14,7 @@ export async function setChosenModelShipper(shipper: "openai" | "google") {
     chosenModelShipper = shipper;
 }
 
+// @ts-ignore
 export async function makeAIRequestWithGemini(base64data: string, prompt: string, previousMessages: any[]) {
     if (!genAI) {
         const newGenAI = new GoogleGenerativeAI(apiKey);
