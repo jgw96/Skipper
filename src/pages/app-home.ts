@@ -578,10 +578,6 @@ export class AppHome extends LitElement {
           }
         }
 
-        sl-drawer::part(footer) {
-          padding-right: 30px;
-        }
-
         @media(max-width: 860px) {
           #saved {
             display: none;
