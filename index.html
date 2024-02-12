@@ -36,6 +36,24 @@
     href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.73/dist/themes/dark.css"
     onload="document.documentElement.classList.add('sl-theme-dark');">
 
+
+  <script>
+    // requestIdleCallback polyfill
+    if (!window.requestIdleCallback) {
+      window.requestIdleCallback = function (cb) {
+        var start = Date.now();
+        return setTimeout(function () {
+          cb({
+            didTimeout: false,
+            timeRemaining: function () {
+              return Math.max(0, 50 - (Date.now() - start));
+            }
+          });
+        }, 1);
+      }
+    }
+  </script>
+
   <script type="module" src="/src/app-index.ts"></script>
 </head>
 
