@@ -730,20 +730,14 @@ export class AppHome extends LitElement {
   }
 
   async shareConvo(name: string, convo: Array<any>) {
+    console.log("sharing convo", name, convo)
     const text = convo.map((message) => message.content).join(" ");
-    // remove name from text
-    const index = text.indexOf(name);
-    if (index === -1) {
-      return;
-    }
 
-    const textWithoutName = text.slice(index + name.length, text.length);
-
-    const shareURL = `/convo?title=${name}&text=${textWithoutName}`;
+    const shareURL = `/convo?title=${name}&text=${text}`;
 
     await navigator.share({
       title: name,
-      text: textWithoutName,
+      text: text,
       url: shareURL
     });
   }
