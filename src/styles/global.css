@@ -64,7 +64,7 @@ html::-webkit-scrollbar {
 @media (prefers-color-scheme: light) {
   html[data-theme="fluent"], html[data-theme="fluent"] body {
     --theme-color: #1e1e1e0f;
-    background-color: var(--theme-color);
+    background-color: white;
     --neutral-foreground-rest: black;
   }
 

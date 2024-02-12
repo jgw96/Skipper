@@ -31,6 +31,11 @@ export class AppSettings extends LitElement {
             flex-direction: column;
         }
 
+        fluent-option {
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+
         @media(prefers-color-scheme: dark) {
             fluent-select::part(control), fluent-select::part(listbox) {
                 --neutral-fill-rest: var(--theme-color);
@@ -60,9 +65,13 @@ export class AppSettings extends LitElement {
                 border: none;
               }
 
-              fluent-select::part(listbox), fluent-option {
-                background: var(--theme-color);
+              fluent-select::part(listbox) {
+                background: #9d9d9d;
                 color: white;
+              }
+
+              fluent-option {
+                background: white;
               }
 
               fluent-button::part(control) {
@@ -117,7 +126,7 @@ export class AppSettings extends LitElement {
                 <label for="theme">Theme</label>
                 <fluent-select @change="${this.chooseTheme}" id="theme" title="Select a theme">
                     <fluent-option value="fluent">Fluent</fluent-option>
-                    <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option>
+                    <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
                     <fluent-option value="pastel">Pastel</fluent-option>
                 </fluent-select>
             </div>

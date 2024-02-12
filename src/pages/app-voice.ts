@@ -427,6 +427,11 @@ export class AppVoice extends LitElement {
         this.status = "Stopped";
     }
 
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.stop();
+    }
+
     render() {
         return html`
       <!-- <app-header></app-header> -->

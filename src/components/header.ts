@@ -41,7 +41,14 @@ export class AppHeader extends LitElement {
         z-index: 1
       }
 
-      fluent-button, fluent-text-field, fluent-listbox, fluent-card {
+      fluent-button img, fluent-anchor img {
+        height: 20px;
+        width: 20px;
+
+        padding-top: 4px;
+      }
+
+      fluent-button, fluent-text-field, fluent-listbox, fluent-card, fluent-anchor {
           --accent-fill-rest: #5e11fd;
           --accent-stroke-control-rest: #5e11fd;
 
@@ -57,12 +64,12 @@ export class AppHeader extends LitElement {
         height: 20px;
       }
 
-      #actions fluent-button::part(control) {
+      #actions fluent-button::part(control), #actions fluent-anchor::part(control){
         background: transparent;
         border: none;
       }
 
-      fluent-button {
+      fluent-button, fluent-anchor {
         height: 25px;
       }
 
@@ -105,7 +112,7 @@ export class AppHeader extends LitElement {
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
-          background: var(--theme-color);
+          background: #cecece;
         }
       }
 
@@ -169,7 +176,12 @@ export class AppHeader extends LitElement {
         </div>
 
         <div>
-          <fluent-button @click="${this.openSettings}">Settings</fluent-button>
+          <fluent-anchor href="/voice">
+            <img src="/assets/headset-outline.svg">
+          </fluent-anchor>
+          <fluent-button @click="${this.openSettings}">
+            <img src="/assets/settings-outline.svg">
+          </fluent-button>
         </div>
       </header>
     `;

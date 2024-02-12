@@ -44,6 +44,10 @@ export class AppHome extends LitElement {
           --accent-stroke-control-hover: #8c6ee0;
         }
 
+        .mobile-saved::part(panel) {
+          backdrop-filter: blur(40px);
+        }
+
         #inner-extra-actions {
           display: flex;
           align-items: center;
@@ -524,7 +528,7 @@ export class AppHome extends LitElement {
           }
 
           fluent-card {
-            background: var(--theme-color);
+            background: white;
           }
 
           .delete-button::part(base) {
@@ -544,7 +548,7 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            background: #1e1e1e0f;
+            background: #9d9d9d80;
           }
 
           #saved li {
@@ -563,7 +567,7 @@ export class AppHome extends LitElement {
         @media(min-width: 860px) {
           #convo-name {
             left: 20vw;
-            top: 31px;
+            top: 29px;
             right: 0px;
             margin-top: 0;
           }
@@ -593,7 +597,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-name {
-            margin-top: 37px;
+            margin-top: 30px;
           }
 
           #mobile-menu {
