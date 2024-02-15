@@ -28,6 +28,23 @@ export const styles = css`
     border: none;
   }
 
+  fluent-search {
+    --neutral-fill-input-rest: #2d2d2d;
+    --neutral-fill-input-hover: #2d2d2d;
+    --neutral-fill-input-active: #2d2d2d;
+    --neutral-fill-input-focus: #2d2d2d;
+    background: #2d2d2d;
+    border: none;
+
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  fluent-search::part(root) {
+    border: none;
+    background: initial;
+  }
+
   @media(prefers-color-scheme: light) {
     fluent-card{
       --neutral-foreground-rest: black;

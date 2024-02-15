@@ -38,7 +38,7 @@ html::-webkit-scrollbar {
 
 @media (prefers-color-scheme: dark) {
   html[data-theme="fluent"], html[data-theme="fluent"] body {
-    --theme-color: #232734db;
+    --theme-color: #202020;
     color: white;
     background-color: var(--theme-color);
     --neutral-foreground-rest: white;

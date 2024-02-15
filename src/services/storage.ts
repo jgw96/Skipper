@@ -1,3 +1,5 @@
+import { FileWithHandle } from "browser-fs-access";
+
 const root = await navigator.storage.getDirectory();
 
 let currentName = '';
@@ -38,29 +40,30 @@ export async function exportAllConversations() {
 
 export async function getConversations() {
     const conversations: any[] = [];
+
     // @ts-ignore
-    for await (const file of root.values()) {
-        if (file.kind !== 'file') {
+    for await (const entry of root.values()) {
+        if (entry.kind !== 'file') {
             continue;
         }
-        const goodFile = await file.getFile();
-        console.log("goodFile", goodFile);
-        conversations.push({
-            name: file.name,
-            content: JSON.parse(await goodFile.text()),
-            date: goodFile.lastModified
-        });
+        conversations.push(entry.getFile().then((file: FileWithHandle) => {
+            return file.text().then((text: string) => {
+                return {
+                    name: file.name,
+                    content: JSON.parse(text),
+                    date: file.lastModified
+                }
+            })
+        }));
     }
-    console.log("conversations", conversations);
+    const readyToGo = await Promise.all(conversations);
 
     // sort by date, which is a timestamp
-    conversations.sort((a, b) => {
+    readyToGo.sort((a, b) => {
         return b.date - a.date;
     });
 
-    console.log("conversations sorted", conversations);
-
-    return conversations;
+    return readyToGo;
 }
 
 export async function deleteConversation(name: string) {

@@ -4,14 +4,15 @@ import { property, customElement, state } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 
-import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, provideFluentDesignSystem } from '@fluentui/web-components';
 
-provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard());
+provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch());
 
 import { styles } from '../styles/shared-styles';
 
 import "../components/app-dictate";
 import { chosenModelShipper, makeAIRequestStreaming } from '../services/ai';
+import { getConversations } from '../services/storage';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -427,13 +428,11 @@ export class AppHome extends LitElement {
         }
 
         #saved ul {
-
-
           padding: 0px;
-    height: 89vh;
-    overflow: hidden auto;
-    position: sticky;
-    top: 38px;
+          height: 83vh;
+          overflow: hidden auto;
+          position: sticky;
+          top: 38px;
         }
 
         #input-block {
@@ -1096,6 +1095,28 @@ export class AppHome extends LitElement {
     input.value = event.detail.messageData;
   }
 
+  async handleSearch(event: any) {
+    console.log(event.target.value);
+
+    const searchTerm = event.target.value;
+
+    const convos = await getConversations();
+
+    if (searchTerm && searchTerm.length > 0) {
+
+      if (convos && convos.length > 0) {
+        convos.forEach((convo) => {
+          if (convo.name.includes(searchTerm)) {
+            this.savedConvos = [convo, ...convos];
+          }
+        })
+      }
+    }
+    else {
+      this.savedConvos = convos;
+    }
+  }
+
   render() {
     return html`
       <!-- <app-header></app-header> -->
@@ -1105,21 +1126,21 @@ export class AppHome extends LitElement {
         ${this.savedConvos.length > 0 ? html`
           <ul id="mobileSaved">
             ${this.savedConvos.map((convo) => {
-      return html`<fluent-card @click="${() => this.startConvo(convo)}">
-      <div class="title-bar">
-        <span>${convo.name}</span>
+              return html`<fluent-card @click="${() => this.startConvo(convo)}">
+              <div class="title-bar">
+                <span>${convo.name}</span>
 
-        <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
-      </div>
+                <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
+              </div>
 
-      <div class="action-bar">
-        <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
-          <img src="/assets/trash-outline.svg" alt="delete" />
-        </sl-button>
-      </div>
-    </fluent-card>`
-    }
-    )}
+              <div class="action-bar">
+                <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
+                  <img src="/assets/trash-outline.svg" alt="delete" />
+                </sl-button>
+              </div>
+            </fluent-card>`
+          }
+          )}
           </ul>
           ` : html`
           <div id="no-messages">
@@ -1135,6 +1156,8 @@ export class AppHome extends LitElement {
       <main>
 
       <div id="saved">
+        <fluent-search @change="${this.handleSearch}"></fluent-search>
+
         ${this.savedConvos.length > 0 ? html`
           <ul>
             ${this.savedConvos.map((convo) => {
