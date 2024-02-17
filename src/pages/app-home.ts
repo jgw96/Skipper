@@ -4,13 +4,14 @@ import { property, customElement, state } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 
-import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, provideFluentDesignSystem } from '@fluentui/web-components';
 
-provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch());
+provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch(), fluentMenu(), fluentMenuItem());
 
 import { styles } from '../styles/shared-styles';
 
 import "../components/app-dictate";
+import "../components/right-click";
 import { chosenModelShipper, makeAIRequestStreaming } from '../services/ai';
 import { getConversations } from '../services/storage';
 
@@ -44,6 +45,21 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        fluent-menu {
+          background: #ffffff14;
+          backdrop-filter: blur(48px);
+          color: white;
+          z-index: 99;
+        }
+
+        fluent-menu-item {
+          color: white;
+        }
+
+        fluent-menu-item {
+          --neutral-fill-stealth-hover: #181818;
         }
 
         .mobile-saved {
@@ -550,6 +566,16 @@ export class AppHome extends LitElement {
         @media(prefers-color-scheme: light) {
           li.system {
             background: var(--theme-color);
+          }
+
+          fluent-menu-item {
+            color: black;
+            --neutral-fill-stealth-hover: white;
+          }
+
+          fluent-menu {
+            background: rgb(235 235 235);
+            backdrop-filter: none;
           }
 
           #convo-list code {
@@ -1188,6 +1214,19 @@ export class AppHome extends LitElement {
   render() {
     return html`
       <!-- <app-header></app-header> -->
+
+      <right-click>
+        <fluent-menu>
+          <fluent-menu-item @click="${() => this.newConvo()}">
+            <sl-icon slot="prefix" src="/assets/send-outline.svg"></sl-icon>
+            New Conversation
+          </fluent-menu-item>
+          <fluent-menu-item @click="${() => this.addImageToConvo()}">
+            <sl-icon slot="prefix" src="/assets/image-outline.svg"></sl-icon>
+            Add Image
+          </fluent-menu-item>
+        </fluent-menu>
+      </right-click>
 
       <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
         <div>
