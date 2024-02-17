@@ -10,7 +10,7 @@
   <!-- This meta viewport ensures the webpage's dimensions change according to the device it's on. This is called Responsive Web Design.-->
   <meta name="viewport"
     content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <meta name="description" content="A multi-modal AI client for GPT-4" />
+  <meta name="description" content="Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or Google's Gemini Pro. Charles can work with you how you want. Want to interact with your voice? You can. Need Charles to see something? Give it an image! Simply want text chat? That works too." />
 
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
   <!-- This tag is used by the gpt-client CLI to identify template projects. Don't remove if you are using the CLI. -->
-  <meta name="pwa-starter-template-identity" content="pwa-starter"/>
+  <meta name="pwa-starter-template-identity" content="pwa-starter" />
 
   <!-- Imports an icon to represent the document. -->
   <link rel="icon" href="/assets/icons/maskable_icon_x48.png" type="image/x-icon" />
@@ -61,11 +61,67 @@
   <!-- Our app-index web component. This component is defined in src/pages/app-index.ts-->
   <app-index></app-index>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register(
-        '/sw.js'
-      );
+  <script type="module">
+    import { Workbox } from 'workbox-window';
+
+    window.onload = async () => {
+
+      if (location.search.includes('share-target')) {
+        const keys = await caches.keys();
+        const mediaCache = await caches.open(
+          keys.filter((key) => key.startsWith('media'))[0],
+        );
+        const image = await mediaCache.match('shared-image');
+        if (image) {
+          const blob = await image.blob();
+          await mediaCache.delete('shared-image');
+          // Handle the shared file somehow.
+
+          console.log("shareTargetFile blob image", blob, image);
+
+          if (!blob.name) {
+            blob.name = "dropped file";
+          }
+
+          window.shareTargetFile = blob;
+        }
+      }
+
+      if ('serviceWorker' in navigator) {
+        const wb = new Workbox('/sw.js');
+        let registration;
+
+        const showSkipWaitingPrompt = async (event) => {
+          // Assuming the user accepted the update, set up a listener
+          // that will reload the page as soon as the previously waiting
+          // service worker has taken control.
+          wb.addEventListener('controlling', () => {
+            // At this point, reloading will ensure that the current
+            // tab is loaded under the control of the new service worker.
+            // Depending on your web app, you may want to auto-save or
+            // persist transient state before triggering the reload.
+            window.location.reload();
+          });
+
+          wb.messageSkipWaiting();
+        };
+
+        // Add an event listener to detect when the registered
+        // service worker has installed but is waiting to activate.
+        wb.addEventListener('waiting', (event) => {
+          showSkipWaitingPrompt(event);
+        });
+
+        wb.addEventListener('installed', event => {
+          if (event.isUpdate) {
+            if (confirm(`New content is available!. Click OK to refresh`)) {
+              window.location.reload();
+            }
+          }
+        });
+
+        wb.register();
+      }
     }
   </script>
 </body>

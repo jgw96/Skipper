@@ -1,12 +1,12 @@
 {
   "id": "/",
   "scope": "/",
-  "name": "Charles: A GPT-4 Client",
+  "name": "Charles",
   "display": "standalone",
   "start_url": "/",
   "short_name": "Charles",
   "theme_color": "#202020",
-  "description": "A multi-modal AI client for GPT-4",
+  "description": "Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or Google's Gemini Pro. Charles can work with you how you want. Want to interact with your voice? You can. Need Charles to see something? Give it an image! Simply want text chat? That works too.",
   "orientation": "any",
   "background_color": "#202020",
   "related_applications": [],
@@ -96,6 +96,34 @@
       "description": "Start Charles with voice",
       "url": "/voice",
       "icons": [{ "src": "assets/icons/maskable_icon_x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/receive-files/",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "image",
+          "accept": [
+            "image/*"
+          ]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "image/*": [
+          ".png",
+          ".jpeg",
+          ".jpg",
+          ".webm"
+        ]
+      }
     }
   ]
 }

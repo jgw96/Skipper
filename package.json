@@ -21,12 +21,18 @@
     "@thepassle/app-tools": "^0.9.12",
     "@vaadin/router": "^1.7.4",
     "browser-fs-access": "^0.35.0",
+    "idb-keyval": "^6.2.1",
     "lit": "^3.1.2",
     "microsoft-cognitiveservices-speech-sdk": "^1.33.1",
     "urlpattern-polyfill": "^10.0.0",
-    "workbox-build": "^6.5.2",
+    "workbox-build": "^6.5.4",
     "workbox-core": "^6.5.2",
-    "workbox-precaching": "^6.5.2"
+    "workbox-expiration": "^6.5.4",
+    "workbox-navigation-preload": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4",
+    "workbox-window": "^6.5.4"
   },
   "devDependencies": {
     "rollup-plugin-minify-html-literals": "^1.2.6",

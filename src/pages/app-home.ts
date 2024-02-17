@@ -750,6 +750,27 @@ export class AppHome extends LitElement {
   }
 
   async firstUpdated() {
+    setTimeout(async () => {
+      if ((window as any).shareTargetFile) {
+        const sharedFile = (window as any).shareTargetFile;
+
+        console.log("sharedFile blob image", (window as any).shareTargetFile);
+
+        if (sharedFile) {
+          // this.recorded = file;
+          console.log("file", sharedFile);
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64data = e.target?.result;
+            this.addImageToConvo(base64data as string);
+          }
+
+          reader.readAsDataURL(sharedFile);
+        }
+      }
+    }, 800);
+
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
     const { getConversations } = await import('../services/storage');
@@ -1174,7 +1195,7 @@ export class AppHome extends LitElement {
         ${this.savedConvos.length > 0 ? html`
           <ul id="mobileSaved">
             ${this.savedConvos.map((convo) => {
-              return html`<fluent-card @click="${() => this.startConvo(convo)}">
+      return html`<fluent-card @click="${() => this.startConvo(convo)}">
               <div class="title-bar">
                 <span>${convo.name}</span>
 
@@ -1187,8 +1208,8 @@ export class AppHome extends LitElement {
                 </sl-button>
               </div>
             </fluent-card>`
-          }
-          )}
+    }
+    )}
           </ul>
           ` : html`
           <div id="no-messages">

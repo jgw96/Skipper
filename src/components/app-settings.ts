@@ -176,10 +176,8 @@ export class AppSettings extends LitElement {
 
                 <p>
                     Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or
-                    Google's Gemini Pro. Charles can work with you how you want, want to interact with your voice? You can.
+                    Google's Gemini Pro. Charles can work with you how you want. Want to interact with your voice? You can.
                     Need Charles to see something? Give it an image! Simply want text chat? That works too.
-
-                    Charles works on any of your devices!
                 </p>
             </div>
 
