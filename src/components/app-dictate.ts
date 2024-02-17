@@ -38,8 +38,8 @@ export class AppDictate extends LitElement {
 
             fluent-button img {
                 margin-top: 6px;
-                width: 20px;
-                height: 20px;
+                width: 24px;
+                height: 24px;
             }
 
             fluent-progress-ring {

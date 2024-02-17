@@ -46,8 +46,25 @@ export class AppHome extends LitElement {
           --accent-stroke-control-hover: #8c6ee0;
         }
 
+        .mobile-saved {
+          --size: 40rem;
+        }
+
         .mobile-saved::part(panel) {
           backdrop-filter: blur(40px);
+          border-radius: 12px 12px 0px 0px;
+        }
+
+        fluent-search {
+          width: -webkit-fill-available;
+        }
+
+        .mobile-saved fluent-search {
+          width: 100%;
+        }
+
+        .mobile-saved fluent-search::part(root) {
+          height: 3em;
         }
 
         #inner-extra-actions {
@@ -135,7 +152,7 @@ export class AppHome extends LitElement {
         }
 
         #new-convo {
-          width: 18.5vw;
+          width: 100%;
         }
 
         #input-inner {
@@ -167,6 +184,7 @@ export class AppHome extends LitElement {
         #toolbar {
           height: 3em;
           margin-top: 0;
+          width: -webkit-fill-available;
 
           display: flex;
           align-items: center;
@@ -373,6 +391,10 @@ export class AppHome extends LitElement {
           height: 12px;
         }
 
+        fluent-text-area {
+          border-radius: 8px;
+        }
+
         fluent-text-area::part(root) {
           height: 2.8em;
         }
@@ -486,10 +508,21 @@ export class AppHome extends LitElement {
           border-radius: 50%;
 
           animation: fadein 0.8s ease;
+
+          display: none;
         }
 
-        #no-messages p {
+        #no-messages.main-content p {
           font-weight: bold;
+          font-size: 38px;
+          width: 420px;
+
+          color: #8c6ee0;
+          font-size: 54px;
+          margin-top: 0;
+          text-wrap: pretty;
+
+          text-shadow: #8c6ee082 2px 2px;
         }
 
         @media(prefers-color-scheme: dark) {
@@ -579,11 +612,25 @@ export class AppHome extends LitElement {
           li.user, li.system {
             max-width: 45vw;
           }
+
+          #saved ul {
+            height: 84vh;
+          }
+        }
+
+        @media(min-width: 1200px) {
+          #saved ul {
+            height: 85vh;
+          }
         }
 
         @media(max-width: 860px) {
           #saved {
             display: none;
+          }
+
+          #no-messages.main-content p {
+            width: 82%;
           }
 
           main {
@@ -613,10 +660,10 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            left: 0px;
-            right: 0px;
-            bottom: 0px;
-            border-radius: 0px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border-radius: 8px;
           }
 
           #mobileSaved li {
@@ -1123,6 +1170,7 @@ export class AppHome extends LitElement {
 
       <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
         <div>
+
         ${this.savedConvos.length > 0 ? html`
           <ul id="mobileSaved">
             ${this.savedConvos.map((convo) => {
@@ -1150,6 +1198,7 @@ export class AppHome extends LitElement {
       }
        </div>
 
+       <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search>
        <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
       </sl-drawer>
 
@@ -1228,9 +1277,9 @@ export class AppHome extends LitElement {
        </ul>
 
        ` : html`
-          <div id="no-messages">
+          <div id="no-messages" class="main-content">
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
-            <p>Start a new chat </p>
+            <p>Hello! How may I help you today?</p>
 
             <ul id="suggested">
               <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>

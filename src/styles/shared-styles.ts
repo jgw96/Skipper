@@ -50,6 +50,10 @@ export const styles = css`
       --neutral-foreground-rest: black;
     }
 
+    fluent-search {
+      background: white;
+    }
+
     fluent-text-area, fluent-text-area::part(control), fluent-select::part(control), fluent-select::part(listbox) {
       --neutral-fill-input-rest: var(--theme-color);
       --neutral-fill-input-hover: var(--theme-color);

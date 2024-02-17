@@ -84,6 +84,10 @@ export class AppSettings extends LitElement {
                 border: none;
               }
 
+              .setting h3 {
+                color: white;
+              }
+
               fluent-select::part(listbox) {
                 background: #9d9d9d;
                 color: white;
