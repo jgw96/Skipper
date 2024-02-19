@@ -61,67 +61,9 @@
   <!-- Our app-index web component. This component is defined in src/pages/app-index.ts-->
   <app-index></app-index>
 
-  <script type="module">
-    import { Workbox } from 'workbox-window';
-
-    window.onload = async () => {
-
-      if (location.search.includes('share-target')) {
-        const keys = await caches.keys();
-        const mediaCache = await caches.open(
-          keys.filter((key) => key.startsWith('media'))[0],
-        );
-        const image = await mediaCache.match('shared-image');
-        if (image) {
-          const blob = await image.blob();
-          await mediaCache.delete('shared-image');
-          // Handle the shared file somehow.
-
-          console.log("shareTargetFile blob image", blob, image);
-
-          if (!blob.name) {
-            blob.name = "dropped file";
-          }
-
-          window.shareTargetFile = blob;
-        }
-      }
-
-      if ('serviceWorker' in navigator) {
-        const wb = new Workbox('/sw.js');
-        let registration;
-
-        const showSkipWaitingPrompt = async (event) => {
-          // Assuming the user accepted the update, set up a listener
-          // that will reload the page as soon as the previously waiting
-          // service worker has taken control.
-          wb.addEventListener('controlling', () => {
-            // At this point, reloading will ensure that the current
-            // tab is loaded under the control of the new service worker.
-            // Depending on your web app, you may want to auto-save or
-            // persist transient state before triggering the reload.
-            window.location.reload();
-          });
-
-          wb.messageSkipWaiting();
-        };
-
-        // Add an event listener to detect when the registered
-        // service worker has installed but is waiting to activate.
-        wb.addEventListener('waiting', (event) => {
-          showSkipWaitingPrompt(event);
-        });
-
-        wb.addEventListener('installed', event => {
-          if (event.isUpdate) {
-            if (confirm(`New content is available!. Click OK to refresh`)) {
-              window.location.reload();
-            }
-          }
-        });
-
-        wb.register();
-      }
+  <script>
+    window.onload = () => {
+      navigator.serviceWorker.register('/sw.js');
     }
   </script>
 </body>

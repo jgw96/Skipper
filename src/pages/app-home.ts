@@ -1217,10 +1217,6 @@ export class AppHome extends LitElement {
   }
 
   async handleDictate(event: any) {
-    // const input: any = this.shadowRoot?.querySelector('fluent-text-area');
-    // input.value = event.detail.messageData;
-    console.log('event', event.detail.messageData)
-
     const text = event.detail.messageData.join(" ");
 
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
