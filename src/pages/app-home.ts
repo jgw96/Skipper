@@ -12,6 +12,7 @@ import { styles } from '../styles/shared-styles';
 
 import "../components/app-dictate";
 import "../components/right-click";
+import "../components/web-search";
 import { chosenModelShipper, makeAIRequestStreaming } from '../services/ai';
 import { getConversations } from '../services/storage';
 
@@ -45,6 +46,14 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        sl-drawer::part(panel) {
+          backdrop-filter: blur(40px);
+        }
+
+        sl-drawer::part(body) {
+          padding-top: 0;
         }
 
         fluent-menu {
@@ -148,11 +157,9 @@ export class AppHome extends LitElement {
         #extra-actions fluent-button::part(control) {
           background: transparent;
           border: none;
+          color: white;
         }
 
-        #input-block #extra-actions fluent-button {
-          height: unset;
-        }
 
         #input-block #extra-actions fluent-button img {
           width: 20px;
@@ -353,7 +360,7 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 74vh;
+          height: 73vh;
           padding-top: 53px;
           contain: strict;
         }
@@ -611,7 +618,7 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            background: #9d9d9d80;
+            background: #8c6ee073;
           }
 
           #saved li {
@@ -709,7 +716,7 @@ export class AppHome extends LitElement {
 
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
-            height: 76vh;
+            height: 74vh;
           }
         }
 
@@ -1121,7 +1128,11 @@ export class AppHome extends LitElement {
     }
 
     this.previousMessages = convo.content;
+    this.convoName = undefined;
+    await this.requestUpdate();
+
     this.convoName = convo.name;
+    await this.requestUpdate();
 
     await this.updated;
 
@@ -1211,6 +1222,11 @@ export class AppHome extends LitElement {
     }
   }
 
+  openWebResults() {
+    const drawer: any = this.shadowRoot?.querySelector('.web-results');
+    drawer.show();
+  }
+
   render() {
     return html`
       <!-- <app-header></app-header> -->
@@ -1227,6 +1243,11 @@ export class AppHome extends LitElement {
           </fluent-menu-item>
         </fluent-menu>
       </right-click>
+
+      ${this.convoName ? html`
+      <sl-drawer class="web-results" placement="start" has-header label="Results from the Web">
+        <web-search .searchTerm="${this.convoName}"></web-search>
+      </sl-drawer>` : null}
 
       <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
         <div>
@@ -1305,36 +1326,38 @@ export class AppHome extends LitElement {
        <div>
 
        ${this.previousMessages.length > 0 ? html`
-       <div id="convo-name">
-        <h2>${this.convoName}</h2>
 
-          <div class="action-bar">
-            <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
-              <img src="/assets/share-social-outline.svg" alt="share" />
-            </fluent-button>
-          </div>
-       </div>
-       <ul id="convo-list">
-        ${this.previousMessages.map((message) => {
-        return html`<li class="${message.role}">
-          <div class="item-toolbar">
-              <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
+        <div id="convo-name">
+          <h2>${this.convoName}</h2>
+
+            <div class="action-bar">
+              <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
-              </sl-button>
+              </fluent-button>
+            </div>
+        </div>
+        <ul id="convo-list">
+          ${this.previousMessages.map((message) => {
+          return html`<li class="${message.role}">
+            <div class="item-toolbar">
+                <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
+                  <img src="/assets/share-social-outline.svg" alt="share" />
+                </sl-button>
 
-              <sl-button @click="${() => this.copyButton(message.content)}" circle size="small" class="copy-button">
-                <img src="/assets/copy-outline.svg" alt="copy" />
-              </sl-button>
-          </div>
+                <sl-button @click="${() => this.copyButton(message.content)}" circle size="small" class="copy-button">
+                  <img src="/assets/copy-outline.svg" alt="copy" />
+                </sl-button>
+            </div>
 
-          <div class="content-bar">
-            ${message.image ? html`<img src="${message.image}" alt="photo" width="100" height="100" />` : html``}
-            <div .innerHTML="${message.content}"></div>
-          </div>
-        </li>`
-      })
-        }
-       </ul>
+            <div class="content-bar">
+              ${message.image ? html`<img src="${message.image}" alt="photo" width="100" height="100" />` : html``}
+              <div .innerHTML="${message.content}"></div>
+            </div>
+          </li>`
+        })
+          }
+        </ul>
+
 
        ` : html`
           <div id="no-messages" class="main-content">
@@ -1358,6 +1381,10 @@ export class AppHome extends LitElement {
           </fluent-button>` : null}
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
+
+          ${
+            this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
+          }
         </div>
 
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
