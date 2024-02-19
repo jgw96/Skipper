@@ -100,7 +100,7 @@ export class AppDictate extends LitElement {
         );
     }
 
-    async dictate() {
+    public async dictate() {
         if ("setAppBadge" in navigator) {
             await (navigator as any).setAppBadge();
         }
@@ -170,6 +170,8 @@ export class AppDictate extends LitElement {
                     this.dispatchEvent(event);
 
                     this.lines = [];
+
+                    this.stop();
                 }
             };
         }
