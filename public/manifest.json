@@ -1,12 +1,12 @@
 {
   "id": "/",
   "scope": "/",
-  "name": "Charles",
+  "name": "Skipper",
   "display": "standalone",
   "start_url": "/",
-  "short_name": "Charles",
+  "short_name": "Skipper",
   "theme_color": "#202020",
-  "description": "Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or Google's Gemini Pro. Charles can work with you how you want. Want to interact with your voice? You can. Need Charles to see something? Give it an image! Simply want text chat? That works too.",
+  "description": "Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.",
   "orientation": "any",
   "background_color": "#202020",
   "related_applications": [],
@@ -93,7 +93,7 @@
     {
       "name": "Start with Voice",
       "short_name": "Voice",
-      "description": "Start Charles with voice",
+      "description": "Start Skipper with voice",
       "url": "/voice",
       "icons": [{ "src": "assets/icons/maskable_icon_x192.png", "sizes": "192x192" }]
     }

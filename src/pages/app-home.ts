@@ -917,136 +917,182 @@ export class AppHome extends LitElement {
     reader.readAsDataURL(blobFromFile);
   }
 
-  async send() {
-    const input: any = this.shadowRoot?.querySelector('fluent-text-area');
-    const inputValue = input?.value;
-    const list = this.shadowRoot?.querySelector('ul');
+  async send(): Promise<void> {
+    return new Promise(async (resolve): Promise<void> => {
 
-    console.log("this.currentPhoto", this.currentPhoto)
+      const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+      const inputValue = input?.value;
+      const list = this.shadowRoot?.querySelector('ul');
 
-    const modelShipper = chosenModelShipper;
+      console.log("this.currentPhoto", this.currentPhoto)
 
-    if (this.previousMessages.length === 0) {
-      console.log("doign title request")
-      // first coupe of words of inputValue
-      const convoName = inputValue?.split(" ").slice(0, 8).join(" ");
-      console.log('convoName', convoName)
-      this.convoName = convoName;
-    }
+      const modelShipper = chosenModelShipper;
 
-    // remove newline character from inputValue
-    const prompt = inputValue?.replace(/\n/g, " ");
-
-    if (input && inputValue && prompt) {
-      let streamedContent = "";
-
-      this.loading = true;
-
-      input.value = "";
-
-      this.previousMessages = [
-        ...this.previousMessages,
-        {
-          role: "user",
-          content: prompt,
-          image: this.currentPhoto
-        }
-      ]
-
-      if (modelShipper === "google") {
-        const { makeAIRequestWithGemini } = await import('../services/ai');
-        const data = await makeAIRequestWithGemini(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
-
-        this.previousMessages = [
-          ...this.previousMessages,
-          {
-            role: "system",
-            content: data.choices[0].message.content,
-            // content: data
-          }
-        ];
-
-        if (this.previousMessages.length > 1) {
-          console.log("look here", this.convoName, this.previousMessages);
-
-          const goodMessages = this.previousMessages;
-
-          console.log("goodMessages", goodMessages)
-
-          const { saveConversation } = await import('../services/storage');
-          await saveConversation(this.convoName as string, goodMessages);
-
-          const { getConversations } = await import('../services/storage');
-          this.savedConvos = await getConversations();
-
-          console.log("this.savedConvos", this.savedConvos)
-        }
+      if (this.previousMessages.length === 0) {
+        console.log("doign title request")
+        // first coupe of words of inputValue
+        const convoName = inputValue?.split(" ").slice(0, 8).join(" ");
+        console.log('convoName', convoName)
+        this.convoName = convoName;
       }
-      else if (this.currentPhoto) {
-        const { makeAIRequest } = await import('../services/ai');
-        const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+      // remove newline character from inputValue
+      const prompt = inputValue?.replace(/\n/g, " ");
+
+      if (input && inputValue && prompt) {
+        let streamedContent = "";
+
+        this.loading = true;
+
+        input.value = "";
 
         this.previousMessages = [
           ...this.previousMessages,
           {
-            role: "system",
-            content: data.choices[0].message.content,
-            // content: data
-          }
-        ];
-
-        if (this.previousMessages.length > 1) {
-          console.log("look here", this.convoName, this.previousMessages);
-
-          const goodMessages = this.previousMessages;
-
-          console.log("goodMessages", goodMessages)
-
-          const { saveConversation } = await import('../services/storage');
-          await saveConversation(this.convoName as string, goodMessages);
-
-          const { getConversations } = await import('../services/storage');
-          this.savedConvos = await getConversations();
-
-          console.log("this.savedConvos", this.savedConvos)
-        }
-      }
-      else {
-        const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
-
-        this.previousMessages = [
-          ...this.previousMessages,
-          {
-            role: "system",
-            // content: data.choices[0].message.content,
-            content: ""
+            role: "user",
+            content: prompt,
+            image: this.currentPhoto
           }
         ]
 
-        evtSource.onmessage = async (event) => {
-          console.log('event', event);
+        if (modelShipper === "google") {
+          const { makeAIRequestWithGemini } = await import('../services/ai');
+          const data = await makeAIRequestWithGemini(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
-          const data = JSON.parse(event.data);
-          console.log('data', data);
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "system",
+              content: data.choices[0].message.content,
+              // content: data
+            }
+          ];
 
-          // close evtSource if the response is complete
-          if (data.choices[0].finish_reason !== null) {
-            evtSource.close();
+          if (this.previousMessages.length > 1) {
+            console.log("look here", this.convoName, this.previousMessages);
 
-            streamedContent = "";
+            const goodMessages = this.previousMessages;
+
+            console.log("goodMessages", goodMessages)
+
+            const { saveConversation } = await import('../services/storage');
+            await saveConversation(this.convoName as string, goodMessages);
+
+            const { getConversations } = await import('../services/storage');
+            this.savedConvos = await getConversations();
+
+            console.log("this.savedConvos", this.savedConvos)
+
+            resolve();
+          }
+        }
+        else if (this.currentPhoto) {
+          const { makeAIRequest } = await import('../services/ai');
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "system",
+              content: data.choices[0].message.content,
+              // content: data
+            }
+          ];
+
+          if (this.previousMessages.length > 1) {
+            console.log("look here", this.convoName, this.previousMessages);
+
+            const goodMessages = this.previousMessages;
+
+            console.log("goodMessages", goodMessages)
+
+            const { saveConversation } = await import('../services/storage');
+            await saveConversation(this.convoName as string, goodMessages);
+
+            const { getConversations } = await import('../services/storage');
+            this.savedConvos = await getConversations();
+
+            console.log("this.savedConvos", this.savedConvos)
+
+            resolve();
           }
 
-          // continuously add to the last message in this.previousMessages
-          // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+          resolve();
+        }
+        else if (modelShipper === "redpajama") {
+          const { loadChatModule } = await import('../services/local-ai');
 
-          if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
-            streamedContent += data.choices[0].delta.content;
+          await loadChatModule();
+
+          const { requestLocalAI } = await import('../services/local-ai');
+
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "system",
+              // content: data.choices[0].message.content,
+              content: ""
+            }
+          ]
+
+          /*const response = */await requestLocalAI(prompt as string, (event: any, string: string) => {
+            console.log('event', event, string);
+
+            streamedContent += string;
 
             if (streamedContent && streamedContent.length > 0) {
 
-              this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
+              this.previousMessages[this.previousMessages.length - 1].content = string;
 
               this.previousMessages = this.previousMessages;
+
+              this.requestUpdate();
+            }
+          });
+
+          if (this.previousMessages.length > 1) {
+            console.log("look here", this.convoName, this.previousMessages);
+
+            const goodMessages = this.previousMessages;
+
+            console.log("goodMessages", goodMessages)
+
+            const { saveConversation } = await import('../services/storage');
+            await saveConversation(this.convoName as string, goodMessages);
+
+            const { getConversations } = await import('../services/storage');
+            this.savedConvos = await getConversations();
+
+            console.log("this.savedConvos", this.savedConvos)
+
+            resolve();
+          }
+        }
+        else {
+          const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
+
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "system",
+              // content: data.choices[0].message.content,
+              content: ""
+            }
+          ]
+
+          evtSource.onmessage = async (event) => {
+            console.log('event', event);
+
+            const data = JSON.parse(event.data);
+            console.log('data', data);
+
+            // close evtSource if the response is complete
+            if (data.choices[0].finish_reason !== null) {
+              console.log("data stream closed");
+
+              evtSource.close();
+
+              streamedContent = "";
 
               window.requestIdleCallback(async () => {
                 if (this.previousMessages.length > 1) {
@@ -1064,49 +1110,34 @@ export class AppHome extends LitElement {
 
               }, { timeout: 1000 });
 
-              this.requestUpdate();
+              resolve();
+            }
+
+            // continuously add to the last message in this.previousMessages
+            // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+
+            if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
+              streamedContent += data.choices[0].delta.content;
+
+              if (streamedContent && streamedContent.length > 0) {
+
+                this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
+
+                this.previousMessages = this.previousMessages;
+
+                this.requestUpdate();
+              }
             }
           }
         }
+
+
+        this.loading = false;
+
+        this.handleScroll(list);
+
       }
-
-
-      // const data = await requestGPT(inputValue as string)
-      // console.log("home data", data)
-      // const { makeAIRequest } = await import('../services/ai');
-      // const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
-
-      // this.previousMessages = [
-      //   ...this.previousMessages,
-      //   {
-      //     role: "system",
-      //     content: data.choices[0].message.content,
-      //     // content: data
-      //   }
-      // ]
-
-      this.loading = false;
-
-      // if (this.previousMessages.length > 1) {
-      //   console.log("look here", this.convoName, this.previousMessages);
-
-      //   const goodMessages = this.previousMessages;
-
-      //   console.log("goodMessages", goodMessages)
-
-      //   const { saveConversation } = await import('../services/storage');
-      //   await saveConversation(this.convoName as string, goodMessages);
-
-      //   const { getConversations } = await import('../services/storage');
-      //   this.savedConvos = await getConversations();
-
-      //   console.log("this.savedConvos", this.savedConvos)
-      // }
-
-      // get last element of list
-      this.handleScroll(list);
-
-    }
+    });
   }
 
   private handleScroll(list: HTMLUListElement | null | undefined) {
@@ -1147,6 +1178,11 @@ export class AppHome extends LitElement {
     this.convoName = undefined;
     this.currentPhoto = "";
 
+    if(this.modelShipper === "redpajama") {
+      const { resetLocal } = await import('../services/local-ai');
+      await resetLocal();
+    }
+
     await this.updated;
 
     this.handleScroll(this.shadowRoot?.querySelector('#convo-list'))
@@ -1180,7 +1216,7 @@ export class AppHome extends LitElement {
     this.savedConvos = await getConversations();
   }
 
-  handleDictate(event: any) {
+  async handleDictate(event: any) {
     // const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     // input.value = event.detail.messageData;
     console.log('event', event.detail.messageData)
@@ -1190,7 +1226,10 @@ export class AppHome extends LitElement {
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = text;
 
-    this.send();
+    await this.send();
+
+    const dictate: any = this.shadowRoot?.querySelector('app-dictate');
+    dictate.dictate();
   }
 
   handleContinuiousDictate(event: any) {
@@ -1338,7 +1377,7 @@ export class AppHome extends LitElement {
         </div>
         <ul id="convo-list">
           ${this.previousMessages.map((message) => {
-          return html`<li class="${message.role}">
+        return html`<li class="${message.role}">
             <div class="item-toolbar">
                 <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/share-social-outline.svg" alt="share" />
@@ -1354,8 +1393,8 @@ export class AppHome extends LitElement {
               <div .innerHTML="${message.content}"></div>
             </div>
           </li>`
-        })
-          }
+      })
+        }
         </ul>
 
 
@@ -1376,15 +1415,14 @@ export class AppHome extends LitElement {
        <div id="input-block">
         <div id="extra-actions">
           <div id="inner-extra-actions">
-          ${this.modelShipper !== "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
+          ${this.modelShipper === "openai" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>` : null}
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
 
-          ${
-            this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
-          }
+          ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
+      }
         </div>
 
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">

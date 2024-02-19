@@ -38,6 +38,7 @@ export class AppSettings extends LitElement {
 
         .setting h3 {
             margin: 0;
+            font-size: 16px;
         }
 
         .setting p {
@@ -172,22 +173,30 @@ export class AppSettings extends LitElement {
     render() {
         return html`
             <div class="setting">
-                <h3>About Charles</h3>
+                <h3>About Skipper</h3>
 
                 <p>
-                    Charles is a multi-modal AI chatbot that is fully in your control. You can chat either with GPT-4, or
-                    Google's Gemini Pro. Charles can work with you how you want. Want to interact with your voice? You can.
-                    Need Charles to see something? Give it an image! Simply want text chat? That works too.
+                    Skipper is a multi-modal, multi-model AI assistant.
+                    Skipper can work with you how you want. Want to interact with your voice? You can.
+                    Need Skipper to see something? Give it an image! Simply want text chat? That works too.
+                    Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that
+                    runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.
                 </p>
             </div>
 
             <div class="setting">
                 <label for="model">Choose AI Model</label>
                 <fluent-select @change="${this.chooseModel}" id="model" title="Select an AI model">
-                    <fluent-option value="openai">GPT-4</fluent-option>
+                    <fluent-option value="openai">Cloud: OpenAI GPT-4</fluent-option>
                     <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
-                    <fluent-option value="google">Google Gemini Pro</fluent-option>
+                    <fluent-option value="google">Cloud: Google Gemini Pro</fluent-option>
+                    <fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
                 </fluent-select>
+
+                <p>
+                    Choose the AI model Skipper uses to chat to you. The cloud models are more powerful, faster and can work on any device.
+                    However, the local models ensure your chat never leaves the device. Be aware though that the local model may be slower, much slower depending on your device,
+                    and will use more battery. For the best local model performance, use a device with a dedicated GPU.
             </div>
 
             <div class="setting">
