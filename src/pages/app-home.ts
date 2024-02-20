@@ -465,7 +465,6 @@ export class AppHome extends LitElement {
         }
 
         #input-block fluent-button {
-          height: 2.8em;
           align-self: end;
           margin-bottom: 1px;
         }
@@ -796,6 +795,24 @@ export class AppHome extends LitElement {
           #no-messages img {
             width: 170px;
             height: 170px;
+          }
+        }
+
+        @media(max-height: 655px) {
+          #convo-list {
+            height: 64vh;
+          }
+        }
+
+        @media(max-height: 620px) {
+          #convo-list {
+            height: 60vh;
+          }
+        }
+
+        @media(max-height: 520px) {
+          #convo-list {
+            height: 56vh;
           }
         }
 

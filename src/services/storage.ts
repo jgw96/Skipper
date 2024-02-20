@@ -1,21 +1,50 @@
 // import { FileWithHandle } from "browser-fs-access";
 
 import { FileWithHandle } from "browser-fs-access";
+import { get, set } from "idb-keyval";
 
 const root = await navigator.storage.getDirectory();
 
 let saveWorker = new Worker(new URL('./storage-worker.ts', import.meta.url), { type: 'module' });
 
-export async function saveConversation(name: string, convo: any[]): Promise<void> {
-    return new Promise((resolve) => {
-        saveWorker.onmessage = (e) => {
-            if (e.data.type === 'saved') {
-                resolve();
-            }
-        }
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-        saveWorker.postMessage({ type: 'save', name, convo: JSON.stringify(convo) });
+export async function saveConversation(name: string, convo: any[]): Promise<void> {
+    return new Promise(async (resolve) => {
+        if (isSafari) {
+            await saveUsingIDB(name, convo);
+            resolve();
+        }
+        else {
+            saveWorker.onmessage = (e) => {
+                if (e.data.type === 'saved') {
+                    resolve();
+                }
+            }
+
+            saveWorker.postMessage({ type: 'save', name, convo: JSON.stringify(convo) });
+        }
     })
+}
+
+async function saveUsingIDB(name: string, convo: any[]) {
+    const currentConversations = await get('convos');
+    if (!currentConversations) {
+        const newConvo = {
+            name: name,
+            content: JSON.stringify(convo)
+        };
+
+        await set('convos', [newConvo]);
+    }
+    else {
+        const newConvo = {
+            name: name,
+            content: JSON.stringify(convo)
+        };
+
+        await set('convos', [...currentConversations, newConvo]);
+    }
 }
 
 export async function exportAllConversations() {
@@ -41,32 +70,64 @@ export async function exportAllConversations() {
     await writable.close()
 }
 
-export async function getConversations() {
-    const conversations: any[] = [];
-
-    // @ts-ignore
-    for await (const entry of root.values()) {
-        if (entry.kind !== 'file') {
-            continue;
-        }
-        conversations.push(entry.getFile().then((file: FileWithHandle) => {
-            return file.text().then((text: string) => {
-                return {
-                    name: file.name,
-                    content: JSON.parse(text),
-                    date: file.lastModified
-                }
-            })
-        }));
+export async function getConversations(): Promise<any> {
+    if (isSafari) {
+        return await getConversationsIDB();
     }
-    const readyToGo = await Promise.all(conversations);
+    else {
+        const conversations: any[] = [];
 
-    // sort by date, which is a timestamp
-    readyToGo.sort((a, b) => {
-        return b.date - a.date;
+        // @ts-ignore
+        for await (const entry of root.values()) {
+            if (entry.kind !== 'file') {
+                continue;
+            }
+            conversations.push(entry.getFile().then((file: FileWithHandle) => {
+                return file.text().then((text: string) => {
+                    return {
+                        name: file.name,
+                        content: JSON.parse(text),
+                        date: file.lastModified
+                    }
+                })
+            }));
+        }
+        const readyToGo = await Promise.all(conversations);
+
+        // sort by date, which is a timestamp
+        readyToGo.sort((a, b) => {
+            return b.date - a.date;
+        });
+
+        return readyToGo;
+    }
+}
+
+export async function getConversationsIDB() {
+    return new Promise(async (resolve) => {
+        const formattedConversations: any[] = [];
+
+        const conversations = await get('convos');
+        if (!conversations) {
+            resolve([]);
+        }
+
+        conversations.forEach((convo: any) => {
+            formattedConversations.push({
+                name: convo.name,
+                content: JSON.parse(convo.content),
+                date: new Date().getTime()
+            });
+        });
+
+        console.log("formattedConversations", formattedConversations)
+
+        formattedConversations.sort((a, b) => {
+            return b.date - a.date;
+        });
+
+        resolve(formattedConversations);
     });
-
-    return readyToGo;
 }
 
 export async function deleteConversation(name: string) {
