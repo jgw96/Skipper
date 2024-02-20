@@ -7,10 +7,10 @@ const extraPrompt = "You are a helpful chat assistant with a calming tone. You a
 
 const apiKey = "AIzaSyCdVnZtDMnmKPo8fhw-4MWybfAA1zcEbDs";
 let potentialGemeniModel: GenerativeModel | null = null;
-export let chosenModelShipper: "openai" | "google" | "redpajama" = "openai";
+export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" = "openai";
 let genAI: GoogleGenerativeAI | null = null;
 
-export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama") {
+export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama" | "llama") {
     chosenModelShipper = shipper;
 }
 

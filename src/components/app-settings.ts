@@ -191,6 +191,7 @@ export class AppSettings extends LitElement {
                     <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
                     <fluent-option value="google">Cloud: Google Gemini Pro</fluent-option>
                     <fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
+                    <fluent-option value="llama">Local: Llama-2-7b-chat-hf-q4f32_1</fluent-option>
                 </fluent-select>
 
                 <p>

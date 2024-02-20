@@ -3,11 +3,14 @@ import { GenerateProgressCallback } from "@mlc-ai/web-llm/lib/types";
 
 let chatModule: webllm.ChatModule | null = null;
 
+const redpajama = "RedPajama-INCITE-Chat-3B-v1-q4f32_1";
+const llama = "Llama-2-7b-chat-hf-q4f32_1";
+
 export async function resetLocal() {
     chatModule?.resetChat();
 }
 
-export async function loadChatModule() {
+export async function loadChatModule(model: "redpajama" | "llama" = "redpajama") {
     return new Promise<void>(async (resolve) => {
         if (!chatModule) {
             chatModule = new webllm.ChatModule();
@@ -20,7 +23,7 @@ export async function loadChatModule() {
                 }
             });
             // You can also try out "RedPajama-INCITE-Chat-3B-v1-q4f32_1"
-            await chatModule.reload("RedPajama-INCITE-Chat-3B-v1-q4f32_1");
+            await chatModule.reload(model === "redpajama" ? redpajama : llama);
         }
         else {
             resolve();

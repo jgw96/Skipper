@@ -864,7 +864,14 @@ export class AppHome extends LitElement {
       const { loadChatModule } = await import('../services/local-ai');
 
       this.modelLoading = true;
-      await loadChatModule();
+      await loadChatModule("redpajama");
+      this.modelLoading = false;
+    }
+    else if (chosenModelShipper === "llama") {
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule("llama");
       this.modelLoading = false;
     }
   }
@@ -1064,11 +1071,11 @@ export class AppHome extends LitElement {
 
           resolve();
         }
-        else if (modelShipper === "redpajama") {
+        else if (modelShipper === "redpajama" || modelShipper === "llama") {
           const { loadChatModule } = await import('../services/local-ai');
 
           this.modelLoading = true;
-          await loadChatModule();
+          await loadChatModule(modelShipper);
           this.modelLoading = false;
 
           const { requestLocalAI } = await import('../services/local-ai');
