@@ -17,6 +17,7 @@ export class AppIndex extends LitElement {
 
       sl-drawer::part(panel) {
         backdrop-filter: blur(40px);
+        padding-top: env(titlebar-area-height, initial);
       }
     `;
   }

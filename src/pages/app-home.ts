@@ -473,14 +473,14 @@ export class AppHome extends LitElement {
         li {
           padding: 8px;
           border-radius: 6px;
-
-          animation: quickup 0.3s ease;
         }
 
         li.user {
           align-self: flex-end;
           background: #8c6ee0;
           margin-left: 10vw;
+
+          animation: quickup 0.3s ease;
         }
 
         li.user sl-button {
@@ -491,6 +491,8 @@ export class AppHome extends LitElement {
           align-self: flex-start;
           background: rgba(255, 255, 255, 0.06);
           margin-right: 10vw;
+
+          animation: quickup 0.3s ease;
         }
 
         #saved li {
@@ -604,6 +606,10 @@ export class AppHome extends LitElement {
 
           fluent-card fluent-button {
             margin-top: 8px;
+          }
+
+          #saved {
+            box-shadow: #00000040 3px 0px 9px 0px;
           }
         }
 
