@@ -32,6 +32,8 @@ export class AppHome extends LitElement {
 
   @state() currentPhoto: string | undefined;
 
+  @state() modelLoading = false;
+
   captureStream: any;
   modelShipper: string = "";
 
@@ -50,6 +52,26 @@ export class AppHome extends LitElement {
 
         sl-drawer::part(panel) {
           backdrop-filter: blur(40px);
+        }
+
+        #model-loading {
+          backdrop-filter: blur(40px);
+          position: fixed;
+          top: 10px;
+          right: 40vw;
+          left: 40vw;
+          z-index: 9999999;
+          background: #2d2d2d;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding-left: 10px;
+          padding-right: 10px;
+          border-radius: 8px;
+          font-size: 14px;
+
+          animation: quickDown 0.5s ease;
         }
 
         sl-drawer::part(body) {
@@ -241,6 +263,19 @@ export class AppHome extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
+
+          animation: quickDown 0.3s ease;
+        }
+
+        @keyframes quickDown {
+          from {
+            transform: translateY(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
 
         #convo-name fluent-button::part(control) {
@@ -523,6 +558,8 @@ export class AppHome extends LitElement {
           gap: 10px;
           font-size: 18px;
           margin-top: 10vh;
+
+          animation: fadein 0.5s ease;
         }
 
         #no-messages img {
@@ -822,6 +859,14 @@ export class AppHome extends LitElement {
     });
 
     this.addImageWithDragDrop();
+
+    if (chosenModelShipper === "redpajama") {
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule();
+      this.modelLoading = false;
+    }
   }
 
   addImageWithDragDrop() {
@@ -1022,7 +1067,9 @@ export class AppHome extends LitElement {
         else if (modelShipper === "redpajama") {
           const { loadChatModule } = await import('../services/local-ai');
 
+          this.modelLoading = true;
           await loadChatModule();
+          this.modelLoading = false;
 
           const { requestLocalAI } = await import('../services/local-ai');
 
@@ -1178,7 +1225,7 @@ export class AppHome extends LitElement {
     this.convoName = undefined;
     this.currentPhoto = "";
 
-    if(this.modelShipper === "redpajama") {
+    if (this.modelShipper === "redpajama") {
       const { resetLocal } = await import('../services/local-ai');
       await resetLocal();
     }
@@ -1265,6 +1312,11 @@ export class AppHome extends LitElement {
   render() {
     return html`
       <!-- <app-header></app-header> -->
+
+      ${this.modelLoading ? html`<div id="model-loading">
+        <p>Loading local model...</p>
+        <sl-spinner></sl-spinner>
+      </div>` : null}
 
       <right-click>
         <fluent-menu>
