@@ -1299,7 +1299,7 @@ export class AppHome extends LitElement {
     if (searchTerm && searchTerm.length > 0) {
 
       if (convos && convos.length > 0) {
-        convos.forEach((convo) => {
+        convos.forEach((convo: any) => {
           if (convo.name.includes(searchTerm)) {
             this.savedConvos = [convo, ...convos];
           }

@@ -37,7 +37,7 @@ export async function exportAllConversations() {
     await writable.close()
 }
 
-export async function getConversations() {
+export async function getConversations(): Promise<any> {
     return new Promise((resolve) => {
         saveWorker.onmessage = (e) => {
             if (e.data.type === 'all') {
