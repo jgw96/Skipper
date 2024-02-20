@@ -48,6 +48,34 @@ export class AppDictate extends LitElement {
                 --progress-ring-foreground: #0078d4;
             }
 
+            @media(max-width: 600px) {
+                :host {
+                    position: fixed;
+                    left: 8px;
+                    right: 8px;
+                    bottom: 122px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                #dictate::part(control), #stop::part(control) {
+                    height: 64px;
+                    width: 64px;
+                    background: #8c6ee0;
+                    border-radius: 50%;
+                }
+
+                #dictate img {
+                    width: 32px;
+                    height: 32px;
+                }
+
+                #stop fluent-progress-ring::part(indeterminate-indicator-1) {
+                    stroke: white;
+                }
+            }
+
             @media(prefers-color-scheme: light) {
                 #stop::part(control) {
                     color: black;
@@ -203,9 +231,7 @@ export class AppDictate extends LitElement {
           </fluent-button>`
                 : html`
             <fluent-button id="stop" @click="${() => this.stop()}">
-              <fluent-progress-ring slot="start"></fluent-progress-ring>
-
-              Stop Dictating
+              <fluent-progress-ring></fluent-progress-ring>
             </fluent-button>
           `}
     `;

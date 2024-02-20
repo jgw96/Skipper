@@ -229,12 +229,16 @@ export class AppHome extends LitElement {
         #toolbar {
           height: 3em;
           margin-top: 0;
-          width: 100%;
+          width: -webkit-fill-available;
 
           display: flex;
           align-items: center;
           justify-content: flex-end;
           padding-right: 8px;
+
+          bottom: 0;
+          top: initial;
+          position: fixed;
 
           animation: quickup 0.3s ease;
         }
