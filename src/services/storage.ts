@@ -1,3 +1,7 @@
+// import { FileWithHandle } from "browser-fs-access";
+
+import { FileWithHandle } from "browser-fs-access";
+
 const root = await navigator.storage.getDirectory();
 
 let saveWorker = new Worker(new URL('./storage-worker.ts', import.meta.url), { type: 'module' });
@@ -37,16 +41,32 @@ export async function exportAllConversations() {
     await writable.close()
 }
 
-export async function getConversations(): Promise<any> {
-    return new Promise((resolve) => {
-        saveWorker.onmessage = (e) => {
-            if (e.data.type === 'all') {
-                resolve(e.data.conversations);
-            }
-        }
+export async function getConversations() {
+    const conversations: any[] = [];
 
-        saveWorker.postMessage({ type: 'getall' });
-    })
+    // @ts-ignore
+    for await (const entry of root.values()) {
+        if (entry.kind !== 'file') {
+            continue;
+        }
+        conversations.push(entry.getFile().then((file: FileWithHandle) => {
+            return file.text().then((text: string) => {
+                return {
+                    name: file.name,
+                    content: JSON.parse(text),
+                    date: file.lastModified
+                }
+            })
+        }));
+    }
+    const readyToGo = await Promise.all(conversations);
+
+    // sort by date, which is a timestamp
+    readyToGo.sort((a, b) => {
+        return b.date - a.date;
+    });
+
+    return readyToGo;
 }
 
 export async function deleteConversation(name: string) {
