@@ -1,18 +1,17 @@
-import { FileWithHandle } from "browser-fs-access";
-
 const root = await navigator.storage.getDirectory();
 
-let currentName = '';
+let saveWorker = new Worker(new URL('./storage-worker.ts', import.meta.url), { type: 'module' });
 
-export async function saveConversation(name: string, convo: any[]) {
-    console.log("name", name, "currentName", currentName)
+export async function saveConversation(name: string, convo: any[]): Promise<void> {
+    return new Promise((resolve) => {
+        saveWorker.onmessage = (e) => {
+            if (e.data.type === 'saved') {
+                resolve();
+            }
+        }
 
-    const file = await root.getFileHandle(name, { create: true });
-    // @ts-ignore
-    const writer = await file.createWritable();
-
-    await writer.write(JSON.stringify(convo));
-    await writer.close();
+        saveWorker.postMessage({ type: 'save', name, convo: JSON.stringify(convo) });
+    })
 }
 
 export async function exportAllConversations() {
@@ -39,31 +38,15 @@ export async function exportAllConversations() {
 }
 
 export async function getConversations() {
-    const conversations: any[] = [];
-
-    // @ts-ignore
-    for await (const entry of root.values()) {
-        if (entry.kind !== 'file') {
-            continue;
+    return new Promise((resolve) => {
+        saveWorker.onmessage = (e) => {
+            if (e.data.type === 'all') {
+                resolve(e.data.conversations);
+            }
         }
-        conversations.push(entry.getFile().then((file: FileWithHandle) => {
-            return file.text().then((text: string) => {
-                return {
-                    name: file.name,
-                    content: JSON.parse(text),
-                    date: file.lastModified
-                }
-            })
-        }));
-    }
-    const readyToGo = await Promise.all(conversations);
 
-    // sort by date, which is a timestamp
-    readyToGo.sort((a, b) => {
-        return b.date - a.date;
-    });
-
-    return readyToGo;
+        saveWorker.postMessage({ type: 'getall' });
+    })
 }
 
 export async function deleteConversation(name: string) {
