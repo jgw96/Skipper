@@ -15,14 +15,16 @@ export async function setChosenModelShipper(shipper: "openai" | "google" | "redp
 }
 
 // @ts-ignore
-export async function makeAIRequestWithGemini(base64data: string, prompt: string, previousMessages: any[]) {
+export async function makeAIRequestWithGemini(base64data: string, prompt: string, previousMessages: any[]): Promise<any> {
     if (!genAI) {
         const newGenAI = new GoogleGenerativeAI(apiKey);
         genAI = newGenAI;
-
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        potentialGemeniModel = model;
     }
+
+    const model = genAI.getGenerativeModel({
+        model: base64data && base64data.length > 0 ? "gemini-pro-vision" : "gemini-pro",
+    });
+    potentialGemeniModel = model;
 
     // fix previousMessages to google history format
     const history = previousMessages.map((message) => {
@@ -33,35 +35,32 @@ export async function makeAIRequestWithGemini(base64data: string, prompt: string
     });
 
     const modelMessageIndex = history.findIndex((message) => message.parts.trim() === prompt.trim());
-    console.log("modelMessageIndex", modelMessageIndex, prompt, history)
     if (modelMessageIndex !== -1) {
         history.splice(modelMessageIndex, 1);
     }
 
-    console.log("history", history)
+    if (base64data) {
+        // remove first part of base64 data
+        const base64dataParts = base64data.split(",")[1];
 
-    const chat = potentialGemeniModel!.startChat({
-        history,
-        generationConfig: {
-            maxOutputTokens: 2000,
-        },
-    });
 
-    const result = await chat.sendMessage(prompt);
-    const response = await result.response;
-    const text = response.text();
+        const result = await potentialGemeniModel?.generateContentStream([prompt, {
+            inlineData: { data: base64dataParts, mimeType: "image/jpeg" }
+        }]);
+        return result?.stream;
+    }
+    else {
+        const chat = potentialGemeniModel!.startChat({
+            history,
+            generationConfig: {
+                maxOutputTokens: 2000,
+            },
+        });
 
-    const dataResponse = {
-        choices: [
-            {
-                message: {
-                    content: text
-                }
-            }
-        ]
-    };
-
-    return dataResponse;
+        // const result = await chat.sendMessage(prompt);
+        const result = await chat.sendMessageStream(prompt);
+        return result.stream;
+    }
 }
 
 export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {

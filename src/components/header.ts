@@ -111,6 +111,7 @@ export class AppHeader extends LitElement {
       @media(prefers-color-scheme: light) {
         header {
           color: black;
+          background: white;
         }
 
         nav a {

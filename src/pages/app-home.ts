@@ -366,6 +366,7 @@ export class AppHome extends LitElement {
 
         .content-bar img {
           border-radius: 8px;
+          width: 100px;
         }
 
 
@@ -446,7 +447,7 @@ export class AppHome extends LitElement {
         }
 
         .copy-button img {
-          height: 12px;
+          height: 16px;
         }
 
         fluent-text-area {
@@ -897,6 +898,16 @@ export class AppHome extends LitElement {
       await loadChatModule("llama");
       this.modelLoading = false;
     }
+
+    const queryParams = new URLSearchParams(window.location.search);
+    const title = queryParams.get('title');
+    const convo = JSON.parse(queryParams.get('convo')!);
+
+    if (title && convo) {
+      this.convoName = title;
+      this.previousMessages = convo;
+    }
+
   }
 
   addImageWithDragDrop() {
@@ -942,16 +953,17 @@ export class AppHome extends LitElement {
   }
 
   async shareConvo(name: string, convo: Array<any>) {
-    console.log("sharing convo", name, convo)
-    const text = convo.map((message) => message.content).join(" ");
-
-    const shareURL = `/convo?title=${name}&text=${text}`;
-
+    const shareUrl = `${location.href}?title=${name}&convo=${JSON.stringify(convo)}`;
     await navigator.share({
       title: name,
-      text: text,
-      url: shareURL
+      text: name,
+      url: shareUrl
     });
+  }
+
+  openInNewWindow() {
+    const windowURL = `${location.href}?title=${this.convoName}&convo=${JSON.stringify(this.previousMessages)}`;
+    window.open(windowURL, "new-window");
   }
 
   preDefinedChat(chat: string) {
@@ -1038,17 +1050,29 @@ export class AppHome extends LitElement {
             ...this.previousMessages,
             {
               role: "system",
-              content: data.choices[0].message.content,
+              content: "",
               // content: data
             }
           ];
 
+          let text = '';
+          for await (const chunk of data) {
+            const chunkText = chunk.text();
+            console.log(chunkText);
+            text += chunkText;
+
+            if (text && text.length > 0) {
+
+              this.previousMessages[this.previousMessages.length - 1].content = text;
+
+              this.previousMessages = this.previousMessages;
+
+              this.requestUpdate();
+            }
+          }
+
           if (this.previousMessages.length > 1) {
-            console.log("look here", this.convoName, this.previousMessages);
-
             const goodMessages = this.previousMessages;
-
-            console.log("goodMessages", goodMessages)
 
             const { saveConversation } = await import('../services/storage');
             await saveConversation(this.convoName as string, goodMessages);
@@ -1056,7 +1080,7 @@ export class AppHome extends LitElement {
             const { getConversations } = await import('../services/storage');
             this.savedConvos = await getConversations();
 
-            console.log("this.savedConvos", this.savedConvos)
+            console.log("this.savedConvos", this.savedConvos);
 
             resolve();
           }
@@ -1253,7 +1277,7 @@ export class AppHome extends LitElement {
   async newConvo() {
     this.previousMessages = [];
     this.convoName = undefined;
-    this.currentPhoto = "";
+    this.currentPhoto = undefined;
 
     if (this.modelShipper === "redpajama") {
       const { resetLocal } = await import('../services/local-ai');
@@ -1448,6 +1472,10 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
+              <fluent-button class="copy-button" @click="${this.openInNewWindow}">
+                <img src="/assets/open-outline.svg" alt="open" />
+              </fluent-button>
+
               <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
               </fluent-button>
@@ -1467,7 +1495,7 @@ export class AppHome extends LitElement {
             </div>
 
             <div class="content-bar">
-              ${message.image ? html`<img src="${message.image}" alt="photo" width="100" height="100" />` : html``}
+              ${message.image ? html`<img src="${message.image}" alt="photo" />` : html``}
               <div .innerHTML="${message.content}"></div>
             </div>
           </li>`
@@ -1493,7 +1521,7 @@ export class AppHome extends LitElement {
        <div id="input-block">
         <div id="extra-actions">
           <div id="inner-extra-actions">
-          ${this.modelShipper === "openai" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
+          ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>` : null}
 

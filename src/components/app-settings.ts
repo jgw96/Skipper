@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit";
 
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 
 import {
     provideFluentDesignSystem,
@@ -8,6 +8,7 @@ import {
     fluentOption
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
+import { checkGPUSupport } from "../services/utils";
 
 provideFluentDesignSystem()
     .register(
@@ -17,6 +18,8 @@ provideFluentDesignSystem()
 
 @customElement("app-settings")
 export class AppSettings extends LitElement {
+
+    @state() gpuCheck: boolean = false;
 
     static get styles() {
         return css`
@@ -123,6 +126,9 @@ export class AppSettings extends LitElement {
             document.documentElement.setAttribute('data-theme', 'fluent');
         }
 
+        const gpuCheck = await checkGPUSupport();
+        this.gpuCheck = gpuCheck;
+
         (this.shadowRoot?.querySelector('#theme') as any).addEventListener('change', (e: any) => {
             localStorage.setItem('theme', e.target.value);
             document.documentElement.setAttribute('data-theme', e.target.value);
@@ -190,14 +196,15 @@ export class AppSettings extends LitElement {
                     <fluent-option value="openai">Cloud: OpenAI GPT-4</fluent-option>
                     <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
                     <fluent-option value="google">Cloud: Google Gemini Pro</fluent-option>
-                    <fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
-                    <fluent-option value="llama">Local: Llama-2-7b-chat-hf-q4f32_1</fluent-option>
+                    ${this.gpuCheck ? html`<fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
+                    <fluent-option value="llama">Local: Llama-2-7b-chat-hf-q4f32_1</fluent-option>` : null}
                 </fluent-select>
 
                 <p>
                     Choose the AI model Skipper uses to chat to you. The cloud models are more powerful, faster and can work on any device.
                     However, the local models ensure your chat never leaves the device. Be aware though that the local model may be slower, much slower depending on your device,
                     and will use more battery. For the best local model performance, use a device with a dedicated GPU.
+                </p>
             </div>
 
             <div class="setting">
