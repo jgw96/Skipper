@@ -3,6 +3,7 @@ import { property, customElement, state } from 'lit/decorators.js';
 
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
+import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
 
 import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, provideFluentDesignSystem } from '@fluentui/web-components';
 
@@ -48,6 +49,17 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        sl-dialog::part(footer) {
+          gap: 6px;
+          display: flex;
+          justify-content: end;
+          align-items: center;
+        }
+
+        #do-delete-button::part(control) {
+          background: #c33b3b;
         }
 
         .mobile-saved::part(footer) {
@@ -622,6 +634,10 @@ export class AppHome extends LitElement {
         @media(prefers-color-scheme: light) {
           li.system {
             background: var(--theme-color);
+          }
+
+          sl-dialog::part(panel) {
+            background: white;
           }
 
           fluent-menu-item {
@@ -1358,12 +1374,27 @@ export class AppHome extends LitElement {
     });
   }
 
-  async deleteConvo(convo: any) {
+  async deleteConvo() {
+    const deleteDialog: any = this.shadowRoot?.querySelector('.delete-dialog');
+    deleteDialog?.show();
+  }
+
+  async doDelete() {
     const { deleteConversation } = await import('../services/storage');
-    await deleteConversation(convo.name);
+    await deleteConversation(this.convoName as string);
 
     const { getConversations } = await import('../services/storage');
     this.savedConvos = await getConversations();
+
+    const deleteDialog: any = this.shadowRoot?.querySelector('.delete-dialog');
+    await deleteDialog?.hide();
+
+    this.newConvo();
+  }
+
+  closeDeleteDialog() {
+    const deleteDialog: any = this.shadowRoot?.querySelector('.delete-dialog');
+    deleteDialog?.hide();
   }
 
   async handleDictate(event: any) {
@@ -1421,6 +1452,12 @@ export class AppHome extends LitElement {
         <sl-spinner></sl-spinner>
       </div>` : null}
 
+      <sl-dialog label="Delete Conversation?" class="delete-dialog">
+        Are you sure you would like to delete this conversation?
+        <fluent-button @click="${this.closeDeleteDialog}" slot="footer" appearance="accent">Cancel</fluent-button>
+        <fluent-button @click="${this.doDelete}" slot="footer" id="do-delete-button" appearance="danger">Delete</fluent-button>
+      </sl-dialog>
+
       <right-click>
         <fluent-menu>
           <fluent-menu-item @click="${() => this.newConvo()}">
@@ -1453,7 +1490,7 @@ export class AppHome extends LitElement {
               </div>
 
               <div class="action-bar">
-                <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
+                <sl-button circle size="small" @click="${() => this.deleteConvo()}" class="delete-button">
                   <img src="/assets/trash-outline.svg" alt="delete" />
                 </sl-button>
               </div>
@@ -1489,7 +1526,7 @@ export class AppHome extends LitElement {
           </div>
 
           <div class="action-bar">
-            <sl-button circle size="small" @click="${() => this.deleteConvo(convo)}" class="delete-button">
+            <sl-button circle size="small" @click="${() => this.deleteConvo()}" class="delete-button">
               <img src="/assets/trash-outline.svg" alt="delete" />
             </sl-button>
           </div>
