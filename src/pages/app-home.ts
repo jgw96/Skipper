@@ -705,6 +705,16 @@ export class AppHome extends LitElement {
             display: none;
           }
 
+          #model-loading {
+            left: 10vw;
+            right: 10vw;
+            top: 40px;
+          }
+
+          .new-window-button {
+            display: none;
+          }
+
           #no-messages.main-content p {
             width: 82%;
           }
@@ -898,6 +908,14 @@ export class AppHome extends LitElement {
       await loadChatModule("llama");
       this.modelLoading = false;
     }
+    else if (chosenModelShipper === "gemma") {
+      console.log("loading gemma")
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule("gemma");
+      this.modelLoading = false;
+    }
 
     const queryParams = new URLSearchParams(window.location.search);
     const title = queryParams.get('title');
@@ -908,6 +926,33 @@ export class AppHome extends LitElement {
       this.previousMessages = convo;
     }
 
+  }
+
+  public async handleModelChange(model: string) {
+    this.modelShipper = model;
+
+    if (chosenModelShipper === "redpajama") {
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule("redpajama");
+      this.modelLoading = false;
+    }
+    else if (chosenModelShipper === "llama") {
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule("llama");
+      this.modelLoading = false;
+    }
+    else if (chosenModelShipper === "gemma") {
+      console.log("loading gemma")
+      const { loadChatModule } = await import('../services/local-ai');
+
+      this.modelLoading = true;
+      await loadChatModule("gemma");
+      this.modelLoading = false;
+    }
   }
 
   addImageWithDragDrop() {
@@ -1472,7 +1517,7 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
-              <fluent-button class="copy-button" @click="${this.openInNewWindow}">
+              <fluent-button class="copy-button new-window-button" @click="${this.openInNewWindow}">
                 <img src="/assets/open-outline.svg" alt="open" />
               </fluent-button>
 
@@ -1538,7 +1583,7 @@ export class AppHome extends LitElement {
         <div id="input-inner">
           ${this.currentPhoto ? html`<img src="${this.currentPhoto}" alt="photo" width="40" height="40" />` : html``}
 
-          <fluent-text-area placeholder="Enter your message"></fluent-text-area>
+          <fluent-text-area ?disabled="${this.modelLoading}" placeholder="Enter your message"></fluent-text-area>
 
           <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.send}>
             <img src="/assets/send-outline.svg" alt="send" />

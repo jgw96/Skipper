@@ -8,7 +8,6 @@ import {
     fluentOption
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
-import { checkGPUSupport } from "../services/utils";
 
 provideFluentDesignSystem()
     .register(
@@ -20,6 +19,7 @@ provideFluentDesignSystem()
 export class AppSettings extends LitElement {
 
     @state() gpuCheck: boolean = false;
+    @state() selectedModel: string = "openai";
 
     static get styles() {
         return css`
@@ -113,33 +113,16 @@ export class AppSettings extends LitElement {
     }
 
     async firstUpdated() {
-        const theme = localStorage.getItem('theme');
-        const themeInput = this.shadowRoot?.querySelector('#theme') as any;
-        if (theme) {
-            console.log("theme loaded", theme, themeInput);
-            themeInput.currentValue = theme;
-            console.log("theme loaded", themeInput.currentValue);
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-        else {
-            themeInput.currentValue = 'fluent';
-            document.documentElement.setAttribute('data-theme', 'fluent');
-        }
-
-        const gpuCheck = await checkGPUSupport();
-        this.gpuCheck = gpuCheck;
-
-        (this.shadowRoot?.querySelector('#theme') as any).addEventListener('change', (e: any) => {
-            localStorage.setItem('theme', e.target.value);
-            document.documentElement.setAttribute('data-theme', e.target.value);
-        });
+        document.documentElement.setAttribute('data-theme', 'fluent');
 
         const model = localStorage.getItem('model');
         const modelInput = this.shadowRoot?.querySelector('#model') as any;
         if (model) {
-            modelInput.currentValue = model;
+            this.selectedModel = model;
 
-            setChosenModelShipper((model as "openai" | "google"));
+            this.requestUpdate(this.selectedModel);
+
+            setChosenModelShipper((model as "openai" | "google" | 'redpajama' | 'llama' | 'gemma'));
         }
         else {
             modelInput.currentValue = 'openai';
@@ -147,28 +130,16 @@ export class AppSettings extends LitElement {
         }
     }
 
-    chooseTheme($event: any) {
-        localStorage.setItem('theme', $event.target.value);
-        document.documentElement.setAttribute('data-theme', $event.target.value);
-
-        const event = new CustomEvent('theme-changed', {
-            detail: {
-                theme: $event.target.value
-            }
-        });
-        this.dispatchEvent(event);
-    }
-
     chooseModel($event: any) {
         setChosenModelShipper($event.target.value);
 
         localStorage.setItem('model', $event.target.value);
-        const event = new CustomEvent('model-changed', {
+
+        this.dispatchEvent(new CustomEvent('theme-changed', {
             detail: {
                 model: $event.target.value
             }
-        });
-        this.dispatchEvent(event);
+        }));
     }
 
     async exportData() {
@@ -192,12 +163,12 @@ export class AppSettings extends LitElement {
 
             <div class="setting">
                 <label for="model">Choose AI Model</label>
-                <fluent-select @change="${this.chooseModel}" id="model" title="Select an AI model">
+                <fluent-select @change="${this.chooseModel}" .currentValue="${this.selectedModel}" id="model" title="Select an AI model">
                     <fluent-option value="openai">Cloud: OpenAI GPT-4</fluent-option>
-                    <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
                     <fluent-option value="google">Cloud: Google Gemini Pro</fluent-option>
-                    ${this.gpuCheck ? html`<fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
-                    <fluent-option value="llama">Local: Llama-2-7b-chat-hf-q4f32_1</fluent-option>` : null}
+                    <fluent-option value="redpajama">Local: RedPajama-INCITE-Chat-3B-v1-q4f32_1</fluent-option>
+                    <fluent-option value="llama">Local: Llama-2-7b-chat-hf-q4f32_1</fluent-option>
+                    <fluent-option value="gemma">Local: Gemma-2b-it-q4f32_1</fluent-option>
                 </fluent-select>
 
                 <p>
@@ -205,15 +176,6 @@ export class AppSettings extends LitElement {
                     However, the local models ensure your chat never leaves the device. Be aware though that the local model may be slower, much slower depending on your device,
                     and will use more battery. For the best local model performance, use a device with a dedicated GPU.
                 </p>
-            </div>
-
-            <div class="setting">
-                <label for="theme">Choose Theme</label>
-                <fluent-select @change="${this.chooseTheme}" id="theme" title="Select a theme">
-                    <fluent-option value="fluent">Fluent</fluent-option>
-                    <!-- <fluent-option value="fluent-darker">Fluent with darker dark mode</fluent-option> -->
-                    <fluent-option value="pastel">Pastel</fluent-option>
-                </fluent-select>
             </div>
 
             <div class="setting">

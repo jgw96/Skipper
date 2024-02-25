@@ -45,11 +45,19 @@ export class AppIndex extends LitElement {
     }
   }
 
+  modelChanged($event: CustomEvent) {
+    console.log("model changed", $event.detail.model);
+    const appHome: any = this.shadowRoot?.querySelector('app-home');
+    if (appHome) {
+      appHome.handleModelChange($event.detail.model);
+    }
+  }
+
   render() {
     return html`
     <app-header @open-settings="${this.doOpenSettings}"></app-header>
     <sl-drawer label="Settings" class="settings-drawer">
-      <app-settings></app-settings>
+      <app-settings @mode-changed="${() => this.modelChanged}" @theme-changed="${this.modelChanged}"></app-settings>
     </sl-drawer>
 
       <div>
