@@ -50,6 +50,10 @@ export class AppHome extends LitElement {
           --accent-stroke-control-hover: #8c6ee0;
         }
 
+        .mobile-saved::part(footer) {
+          padding: 12px;
+        }
+
         sl-drawer::part(panel) {
           backdrop-filter: blur(40px);
         }
@@ -168,6 +172,8 @@ export class AppHome extends LitElement {
         fluent-card {
           animation: quickup 0.3s ease;
           border: none;
+          content-visibility: auto;
+
         }
 
         #extra-actions {
@@ -1061,10 +1067,8 @@ export class AppHome extends LitElement {
       const modelShipper = chosenModelShipper;
 
       if (this.previousMessages.length === 0) {
-        console.log("doign title request")
         // first coupe of words of inputValue
         const convoName = inputValue?.split(" ").slice(0, 8).join(" ");
-        console.log('convoName', convoName)
         this.convoName = convoName;
       }
 

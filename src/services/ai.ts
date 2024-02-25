@@ -93,22 +93,6 @@ export async function makeAIRequestStreaming(base64data: string, prompt: string,
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
 
-    // const response = await fetch(`http://localhost:3000/sendchatstreaming?prompt=${prompt}`, {
-    //     method: 'POST',
-    //     headers: new Headers({
-    //         "Content-Type": "application/json",
-    //     }),
-    //     body: JSON.stringify({
-    //         image: base64data,
-    //         previousMessages: previousMessages
-    //     })
-    // });
-
-    // const data = await response.json();
-    // console.log(data.choices[0]);
-
-    // return data;
-
     // previousMessages is an array, but I need to send it as a query param
     // so I'm going to convert it to a string
     const stringifiedPreviousMessages = JSON.stringify(previousMessages);

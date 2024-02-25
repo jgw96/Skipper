@@ -1,7 +1,7 @@
 import * as webllm from "@mlc-ai/web-llm";
 import { GenerateProgressCallback } from "@mlc-ai/web-llm/lib/types";
 
-let chatModule: webllm.ChatModule | null = null;
+let chatModule: webllm.ChatModule | webllm.ChatWorkerClient | null = null;
 
 const redpajama = "RedPajama-INCITE-Chat-3B-v1-q4f32_1";
 const llama = "Llama-2-7b-chat-hf-q4f32_1";
@@ -14,7 +14,12 @@ export async function resetLocal() {
 export async function loadChatModule(model: "redpajama" | "llama" | "gemma" = "redpajama") {
     return new Promise<void>(async (resolve) => {
         if (!chatModule) {
-            chatModule = new webllm.ChatModule();
+            // chatModule = new webllm.ChatModule();
+            chatModule = new webllm.ChatWorkerClient(new Worker(
+                new URL('./local-ai-worker.ts', import.meta.url),
+                { type: 'module' }
+            ));
+
             chatModule.setInitProgressCallback(async (report: webllm.InitProgressReport) => {
                 console.log("progress", report);
                 if (report.progress === 1) {
