@@ -211,6 +211,14 @@ export class AppImage extends LitElement {
         textArea.value = `${textArea.value} In a ${style} style.`;
     }
 
+    downloadImage() {
+        console.log("download image");
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        window.open(url, '_blank')
+    }
+
     render() {
         return html`
           <main>
@@ -219,7 +227,7 @@ export class AppImage extends LitElement {
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
             </div>
 
-            ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent">Download</fluent-button>` : null}
+            ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}
 
             <div id="image-input-block">
 
