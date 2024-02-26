@@ -183,9 +183,9 @@ export class AppHeader extends LitElement {
         </div>
 
         <div id="header-actions">
-          <fluent-anchor href="/voice">
-            <img src="/assets/headset-outline.svg">
-          </fluent-anchor>
+          ${this.enableBack === false ? html`<fluent-anchor href="/photo">
+            <img src="/assets/scan-outline.svg">
+          </fluent-anchor>` : null}
           <fluent-button @click="${this.openSettings}">
             <img src="/assets/settings-outline.svg">
           </fluent-button>

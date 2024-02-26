@@ -42,6 +42,14 @@ export const router = new Router({
         render: () => html`<app-convo></app-convo>`
       },
       {
+        path: resolveRouterPath('photo'),
+        title: 'Photo',
+        plugins: [
+          lazy(() => import('./pages/app-image.js')),
+        ],
+        render: () => html`<app-image></app-image>`
+      },
+      {
         path: resolveRouterPath('about'),
         title: 'About',
         plugins: [

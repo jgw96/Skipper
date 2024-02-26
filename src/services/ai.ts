@@ -147,6 +147,21 @@ export const makeTitleRequest = async (prompt: string) => {
     return data.choices[0].message.content;
 }
 
+export async function generateImage(prompt: string) {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/generateimage?prompt=${prompt}`, {
+        method: "GET",
+        headers: new Headers({
+            "Content-Type": "application/json",
+        })
+    });
+    const data = await response.json();
+
+    console.log("blob", data);
+
+    return data.data[0].url;
+}
+
+
 export async function doTextToSpeech(script: string) {
     return new Promise(async (resolve) => {
         const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}`, {
