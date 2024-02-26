@@ -111,6 +111,11 @@ export class AppImage extends LitElement {
                 gap: 8px;
               }
 
+              #style-buttons {
+                display: flex;
+                gap: 4px;
+              }
+
               #image-block img {
                 width: 48vw;
                 border-radius: 8px;
@@ -234,7 +239,7 @@ export class AppImage extends LitElement {
                 <div id="quick-styles">
                     <p>Style Modifiers</p>
 
-                    <div>
+                    <div id="style-buttons">
                       <fluent-button @click="${() => this.quickStyle("cartoon")}">Cartoon</fluent-button>
                       <fluent-button @click="${() => this.quickStyle("sketch")}">Sketch</fluent-button>
                       <fluent-button @click="${() => this.quickStyle("oil painting")}">Oil Painting</fluent-button>
