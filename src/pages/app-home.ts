@@ -746,7 +746,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 74vh;
+            height: 72vh;
             width: unset;
             padding-top: 97px;
           }
@@ -791,7 +791,7 @@ export class AppHome extends LitElement {
 
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
-            height: 74vh;
+            height: 72vh;
           }
         }
 

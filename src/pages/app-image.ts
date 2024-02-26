@@ -9,6 +9,7 @@ provideFluentDesignSystem().register(fluentTextArea());
 export class AppImage extends LitElement {
     @state() loading = false;
     @state() generated: boolean = false;
+    @state() currentPrompt: string = '';
 
     static styles = [
         css`
@@ -29,13 +30,40 @@ export class AppImage extends LitElement {
                 margin-top: 30px;
               }
 
+              #regen-button::part(control) {
+                background: #ffffff0f;
+                backdrop-filter: blur(40px);
+              }
+
+            #image-input-outer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+            }
+
+            #generated-buttons {
+                position: fixed;
+                left: 0;
+                right: 18px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
+                top: 55px;
+
+                animation: quickup 0.3s ease-in-out;
+            }
+
               #image-input-block {
                 display: flex;
                 flex-direction: column;
 
-                position: fixed;
                 bottom: 8px;
-                width: 36vw;
+                width: 46vw;
                 right: 8px;
                 padding: 8px;
                 background: #ffffff0f;
@@ -75,15 +103,6 @@ export class AppImage extends LitElement {
                 background: #202020;
               }
 
-              #download-button {
-                z-index: 2;
-                position: fixed;
-                bottom: 8px;
-                left: 8px;
-
-                animation: quickup 0.3s ease-in-out;
-              }
-
               #quick-styles p {
                 font-size: 14px;
                 color: white;
@@ -110,6 +129,17 @@ export class AppImage extends LitElement {
                 flex-direction: column;
                 gap: 8px;
               }
+
+              #image-block h2 {
+                font-weight: bold;
+                font-size: 38px;
+                width: 472px;
+                color: #8c6ee0;
+                font-size: 54px;
+                margin-top: 28px;
+                text-wrap: pretty;
+                text-shadow: #8c6ee082 2px 2px;
+            }
 
               #style-buttons {
                 display: flex;
@@ -156,18 +186,22 @@ export class AppImage extends LitElement {
 
               @media(max-width: 800px) {
                 #image-input-block {
+                    position: fixed;
                     width: initial;
                     left: 8px;
+                }
+
+                #image-block h2 {
+                    width: 82%;
                 }
 
                 #image-block img {
                     width: 90vw;
                 }
 
-                #download-button {
-                    bottom: 19vh;
-                    right: 8px;
-                    left: initial;
+                #generated-buttons {
+                    justify-content: center;
+                    top: 36px;
                 }
               }
 
@@ -196,16 +230,20 @@ export class AppImage extends LitElement {
         const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
         console.log("textArea", textArea?.value)
         if (textArea?.value) {
+            this.currentPrompt = textArea.value;
+
             const { generateImage } = await import('../services/ai');
             this.loading = true;
             const url = await generateImage(textArea.value);
             console.log('url', url);
             this.loading = false;
 
+            this.generated = true;
+
+            await this.updateComplete;
+
             const displayImage: any = this.shadowRoot?.querySelector('#display-image');
             displayImage.src = url;
-
-            this.generated = true;
 
             textArea.value = '';
         }
@@ -224,34 +262,51 @@ export class AppImage extends LitElement {
         window.open(url, '_blank')
     }
 
+    regen() {
+        const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
+        textArea.value = this.currentPrompt;
+
+        this.doGenerate();
+    }
+
     render() {
         return html`
           <main>
 
+          <div id="generated-buttons">
+                  ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}
+                  ${this.generated ? html`<fluent-button id="regen-button" size="small" @click="${this.regen}">Regenerate</fluent-button>` : null}
+    </div>
+
             <div id="image-block">
+                ${this.generated ? html`
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
+              ` : html`
+                <h2>Generate an image of anything using AI</h2>
+              `}
             </div>
 
-            ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}
 
-            <div id="image-input-block">
+            <div id="image-input-outer">
+                <div id="image-input-block">
 
-                <div id="quick-styles">
-                    <p>Style Modifiers</p>
+                    <div id="quick-styles">
+                        <p>Style Modifiers</p>
 
-                    <div id="style-buttons">
-                      <fluent-button @click="${() => this.quickStyle("cartoon")}">Cartoon</fluent-button>
-                      <fluent-button @click="${() => this.quickStyle("sketch")}">Sketch</fluent-button>
-                      <fluent-button @click="${() => this.quickStyle("oil painting")}">Oil Painting</fluent-button>
-                      <fluent-button @click="${() => this.quickStyle("realistic")}">Realistic</fluent-button>
+                        <div id="style-buttons">
+                        <fluent-button @click="${() => this.quickStyle("cartoon")}">Cartoon</fluent-button>
+                        <fluent-button @click="${() => this.quickStyle("sketch")}">Sketch</fluent-button>
+                        <fluent-button @click="${() => this.quickStyle("oil painting")}">Oil Painting</fluent-button>
+                        <fluent-button @click="${() => this.quickStyle("realistic")}">Realistic</fluent-button>
+                        </div>
                     </div>
-                </div>
 
-                <div id="image-input-inner">
-                  <fluent-text-area placeholder="Generate an image..."></fluent-text-area>
-                  <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.doGenerate}>
-                    <img src="/assets/send-outline.svg" alt="send" />
-                  </fluent-button>
+                        <div id="image-input-inner">
+                            <fluent-text-area placeholder="Generate an image..."></fluent-text-area>
+                            <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.doGenerate}>
+                                <img src="/assets/send-outline.svg" alt="send" />
+                            </fluent-button>
+                        </div>
                 </div>
             </div>
           </main>
