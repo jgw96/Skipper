@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import { fluentTextArea, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentTextArea, fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
 
-provideFluentDesignSystem().register(fluentTextArea());
+provideFluentDesignSystem().register(fluentTextArea(), fluentProgressRing());
 
 @customElement('app-image')
 export class AppImage extends LitElement {
@@ -17,7 +17,7 @@ export class AppImage extends LitElement {
                 display: block;
             }
 
-            fluent-button, fluent-text-area, fluent-listbox, fluent-card {
+            fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-progress-ring {
                 --accent-fill-rest: #8c6ee0;
                 --accent-stroke-control-rest: #8c6ee0;
                 --accent-fill-active: #8c6ee0;
@@ -124,7 +124,7 @@ export class AppImage extends LitElement {
                 justify-content: center;
                 width: 100%;
                 height: 100%;
-                margin-top: 60px;
+                margin-top: 10vh;
 
                 flex-direction: column;
                 gap: 8px;
@@ -136,9 +136,27 @@ export class AppImage extends LitElement {
                 width: 472px;
                 color: #8c6ee0;
                 font-size: 54px;
-                margin-top: 28px;
+                margin-top: 0;
                 text-wrap: pretty;
                 text-shadow: #8c6ee082 2px 2px;
+            }
+
+            #generating-spinner {
+              display: flex;
+              align-items: center;
+              gap: 31px;
+              font-weight: bold;
+              font-size: 14px;
+              position: fixed;
+              bottom: 204px;
+              left: 38vw;
+              right: 38vw;
+              background: #ffffff0f;
+              backdrop-filter: blur(46px);
+              justify-content: center;
+              border-radius: 40px;
+              padding: 8px;
+              animation: quickup 0.3s ease-in-out;
             }
 
               #style-buttons {
@@ -166,8 +184,12 @@ export class AppImage extends LitElement {
               }
 
               @media(prefers-color-scheme: light) {
-                #image-input-block {
+                #image-input-block, #generating-spinner {
                   background: #8c6ee073;
+                }
+
+                #generating-spinner {
+                  color: white;
                 }
 
                 #quick-styles fluent-button::part(control) {
@@ -203,14 +225,21 @@ export class AppImage extends LitElement {
                     justify-content: center;
                     top: 36px;
                 }
+
+                #generating-spinner {
+                  left: 20vw;
+                  right: 20vw;
+                }
               }
 
               @keyframes quickup {
                 from {
                   transform: translateY(30%);
+                  opacity: 0;
                 }
                 to {
                   transform: translateY(0%);
+                  opacity: 1;
                 }
               }
 
@@ -247,6 +276,7 @@ export class AppImage extends LitElement {
 
             textArea.value = '';
         }
+
     }
 
     quickStyle(style: string) {
@@ -272,6 +302,15 @@ export class AppImage extends LitElement {
     render() {
         return html`
           <main>
+
+          ${
+            this.loading === true ? html`
+              <div id="generating-spinner">
+                <p>Generating Image...</p>
+                <fluent-progress-ring></fluent-progress-ring>
+          </div>
+            ` : null
+          }
 
           <div id="generated-buttons">
                   ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}

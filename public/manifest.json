@@ -91,10 +91,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Start with Voice",
-      "short_name": "Voice",
-      "description": "Start Skipper with voice",
-      "url": "/voice",
+      "name": "Generate an image",
+      "short_name": "Generate an image",
+      "description": "Start generating an image",
+      "url": "/photo",
       "icons": [{ "src": "assets/icons/maskable_icon_x192.png", "sizes": "192x192" }]
     }
   ],

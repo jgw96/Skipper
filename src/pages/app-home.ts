@@ -64,6 +64,7 @@ export class AppHome extends LitElement {
 
         .mobile-saved::part(footer) {
           padding: 12px;
+          padding-bottom: 16px;
         }
 
         sl-drawer::part(panel) {
@@ -727,6 +728,10 @@ export class AppHome extends LitElement {
             display: none;
           }
 
+          #new-convo::part(control) {
+            height: 3em;
+          }
+
           #model-loading {
             left: 10vw;
             right: 10vw;
@@ -846,6 +851,48 @@ export class AppHome extends LitElement {
         @media(max-height: 520px) {
           #convo-list {
             height: 56vh;
+          }
+        }
+
+        @media(max-width: 300px) {
+          #no-messages.main-content p {
+            font-size: 38px;
+          }
+        }
+
+        @media(min-width: 700px) and (max-width: 730px) {
+          main {
+            display: grid;
+            grid-template-columns: 24vw 76vw;
+          }
+
+          #saved {
+            display: initial;
+          }
+
+          #input-block {
+            left: 31vw;
+          }
+
+          #new-convo::part(control) {
+            height: initial;
+          }
+
+          #no-messages {
+            margin-top: 6vh;
+          }
+
+          #no-messages.main-content p {
+            margin-bottom: 8px;
+          }
+
+          #convo-name {
+            margin-top: 0;
+            left: 24vw;
+          }
+
+          #convo-list {
+            height: 50vh;
           }
         }
 

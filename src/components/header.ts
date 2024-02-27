@@ -134,6 +134,10 @@ export class AppHeader extends LitElement {
           background: transparent;
           color: white;
         }
+
+        #back-button-block fluent-anchor {
+          background: #2d2d2d;
+        }
       }
 
     `;
