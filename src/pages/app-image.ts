@@ -124,7 +124,7 @@ export class AppImage extends LitElement {
                 justify-content: center;
                 width: 100%;
                 height: 100%;
-                margin-top: 10vh;
+                margin-top: 8vh;
 
                 flex-direction: column;
                 gap: 8px;
@@ -142,21 +142,23 @@ export class AppImage extends LitElement {
             }
 
             #generating-spinner {
+              backdrop-filter: blur(40px);
+              position: fixed;
+              top: 10px;
+              right: 40vw;
+              left: 40vw;
+              z-index: 9999999;
+              background: #2d2d2d;
               display: flex;
               align-items: center;
-              gap: 31px;
-              font-weight: bold;
+              justify-content: space-between;
+              gap: 12px;
+              padding-left: 10px;
+              padding-right: 10px;
+              border-radius: 8px;
               font-size: 14px;
-              position: fixed;
-              bottom: 204px;
-              left: 38vw;
-              right: 38vw;
-              background: #ffffff0f;
-              backdrop-filter: blur(46px);
-              justify-content: center;
-              border-radius: 40px;
-              padding: 8px;
-              animation: quickup 0.3s ease-in-out;
+
+              animation: quickDown 0.5s ease;
             }
 
               #style-buttons {
@@ -213,6 +215,10 @@ export class AppImage extends LitElement {
                     left: 8px;
                 }
 
+                #image-block {
+                  top: 10vh;
+                }
+
                 #image-block h2 {
                     width: 82%;
                 }
@@ -227,8 +233,9 @@ export class AppImage extends LitElement {
                 }
 
                 #generating-spinner {
-                  left: 20vw;
-                  right: 20vw;
+                  left: 10vw;
+                  right: 10vw;
+                  top: 40px;
                 }
               }
 
@@ -248,6 +255,17 @@ export class AppImage extends LitElement {
                   opacity: 0;
                 }
                 to {
+                  opacity: 1;
+                }
+              }
+
+              @keyframes quickDown {
+                from {
+                  transform: translateY(-100%);
+                  opacity: 0;
+                }
+                to {
+                  transform: translateY(0);
                   opacity: 1;
                 }
               }

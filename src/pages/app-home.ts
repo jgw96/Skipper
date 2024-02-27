@@ -942,7 +942,7 @@ export class AppHome extends LitElement {
           reader.readAsDataURL(sharedFile);
         }
       }
-    }, 800);
+    }, 2000);
 
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
@@ -1077,7 +1077,7 @@ export class AppHome extends LitElement {
 
   openInNewWindow() {
     const windowURL = `${location.href}?title=${this.convoName}&convo=${JSON.stringify(this.previousMessages)}`;
-    window.open(windowURL, "new-window");
+    window.open(windowURL, "new-window", "width=600,height=600");
   }
 
   preDefinedChat(chat: string) {

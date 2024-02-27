@@ -10,7 +10,8 @@
   <!-- This meta viewport ensures the webpage's dimensions change according to the device it's on. This is called Responsive Web Design.-->
   <meta name="viewport"
     content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <meta name="description" content="Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you." />
+  <meta name="description"
+    content="Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you." />
 
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
@@ -62,10 +63,33 @@
   <app-index></app-index>
 
   <script>
-    window.onload = () => {
+    window.onload = async () => {
       navigator.serviceWorker.register('/sw.js');
+
+      if (location.search.includes('share-target')) {
+        const keys = await caches.keys();
+        const mediaCache = await caches.open(
+          keys.filter((key) => key.startsWith('media'))[0],
+        );
+        const image = await mediaCache.match('shared-image');
+        if (image) {
+          const blob = await image.blob();
+          await mediaCache.delete('shared-image');
+          // Handle the shared file somehow.
+
+          console.log("shareTargetFile blob image", blob, image);
+
+          if (!blob.name) {
+            blob.name = "dropped file";
+          }
+
+          window.shareTargetFile = blob;
+        }
+      }
     }
   </script>
+
+
 </body>
 
 </html>
