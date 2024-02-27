@@ -14,8 +14,6 @@ import { styles } from '../styles/shared-styles';
 import "../components/app-dictate";
 import "../components/right-click";
 import "../components/web-search";
-import { chosenModelShipper, makeAIRequestStreaming } from '../services/ai';
-import { getConversations } from '../services/storage';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -950,6 +948,8 @@ export class AppHome extends LitElement {
 
     this.savedConvos = await getConversations();
 
+    const { chosenModelShipper } = await import('../services/ai');
+
     this.modelShipper = chosenModelShipper;
 
     // set up enter key to send message
@@ -999,6 +999,8 @@ export class AppHome extends LitElement {
 
   public async handleModelChange(model: string) {
     this.modelShipper = model;
+
+    const { chosenModelShipper } = await import('../services/ai');
 
     if (chosenModelShipper === "redpajama") {
       const { loadChatModule } = await import('../services/local-ai');
@@ -1127,6 +1129,8 @@ export class AppHome extends LitElement {
 
       console.log("this.currentPhoto", this.currentPhoto)
 
+      const { chosenModelShipper } = await import('../services/ai');
+
       const modelShipper = chosenModelShipper;
 
       if (this.previousMessages.length === 0) {
@@ -1184,6 +1188,9 @@ export class AppHome extends LitElement {
           }
 
           if (this.previousMessages.length > 1) {
+            const { marked } = await import('marked');
+            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+
             const goodMessages = this.previousMessages;
 
             const { saveConversation } = await import('../services/storage');
@@ -1212,6 +1219,10 @@ export class AppHome extends LitElement {
 
           if (this.previousMessages.length > 1) {
             console.log("look here", this.convoName, this.previousMessages);
+
+            const { marked } = await import('marked');
+
+            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
             const goodMessages = this.previousMessages;
 
@@ -1264,6 +1275,9 @@ export class AppHome extends LitElement {
           });
 
           if (this.previousMessages.length > 1) {
+            const { marked } = await import('marked');
+            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+
             console.log("look here", this.convoName, this.previousMessages);
 
             const goodMessages = this.previousMessages;
@@ -1282,6 +1296,7 @@ export class AppHome extends LitElement {
           }
         }
         else {
+          const { makeAIRequestStreaming } = await import('../services/ai');
           const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
 
           this.previousMessages = [
@@ -1306,6 +1321,11 @@ export class AppHome extends LitElement {
               evtSource.close();
 
               streamedContent = "";
+
+              const { marked } = await import('marked');
+
+              // convert to html
+              this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
               window.requestIdleCallback(async () => {
                 if (this.previousMessages.length > 1) {

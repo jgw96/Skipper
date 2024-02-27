@@ -3,7 +3,7 @@ import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
-const extraPrompt = "You are a helpful chat assistant with a calming tone. You are formal, but not too formal. Format your response to the former message as HTML, but dont mention that it has been formatted to HTML and just return the HTML. ";
+const extraPrompt = "You are a helpful chat assistant with a calming tone";
 
 const apiKey = "AIzaSyCdVnZtDMnmKPo8fhw-4MWybfAA1zcEbDs";
 let potentialGemeniModel: GenerativeModel | null = null;
@@ -90,7 +90,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 export async function makeAIRequestStreaming(base64data: string, prompt: string, previousMessages: any[]) {
     currentBase64Data = base64data;
 
-    // add instruction to format response as HTML
+    // add instruction
     prompt = prompt + ". " + extraPrompt;
 
     // previousMessages is an array, but I need to send it as a query param

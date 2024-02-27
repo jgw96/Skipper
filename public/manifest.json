@@ -11,7 +11,9 @@
   "background_color": "#202020",
   "related_applications": [],
   "prefer_related_applications": false,
-  "display_override": ["window-controls-overlay"],
+  "display_override": [
+    "window-controls-overlay"
+  ],
   "icons": [
     {
       "src": "assets/icons/maskable_icon_x512.png",
@@ -95,7 +97,12 @@
       "short_name": "Generate an image",
       "description": "Start generating an image",
       "url": "/photo",
-      "icons": [{ "src": "assets/icons/maskable_icon_x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "assets/icons/maskable_icon_x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "share_target": {
@@ -124,6 +131,12 @@
           ".webm"
         ]
       }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+pwa",
+      "url": "/?title=%s"
     }
   ]
 }

@@ -24,6 +24,7 @@
     "browser-fs-access": "^0.35.0",
     "idb-keyval": "^6.2.1",
     "lit": "^3.1.2",
+    "marked": "^12.0.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.33.1",
     "urlpattern-polyfill": "^10.0.0",
     "workbox-build": "^6.5.4",
