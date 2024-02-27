@@ -792,6 +792,10 @@ export class AppHome extends LitElement {
           }
         }
 
+        .mobile-saved #no-messages img {
+          display: initial;
+        }
+
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
             height: 72vh;
@@ -1567,6 +1571,7 @@ export class AppHome extends LitElement {
           </ul>
           ` : html`
           <div id="no-messages">
+            <img src="/assets/robot-shrugs.webp">
             <p>No saved conversations</p>
           </div>
           `
