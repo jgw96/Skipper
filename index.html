@@ -86,6 +86,27 @@
           window.shareTargetFile = blob;
         }
       }
+
+      if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
+        launchQueue.setConsumer(async (launchParams) => {
+          // Nothing to do when the queue is empty.
+          if (!launchParams.files.length) {
+            return;
+          }
+          for (const fileHandle of launchParams.files) {
+            // Handle the file.
+
+            const fileHandle = launchParams.files[0];
+            const blob = await fileHandle.getFile();
+
+            if (!blob.name) {
+              blob.name = "dropped file";
+            }
+
+            window.shareTargetFile = blob;
+          }
+        });
+      }
     }
   </script>
 
