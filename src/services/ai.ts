@@ -3,7 +3,7 @@ import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
-const extraPrompt = "You are a helpful chat assistant with a calming tone";
+const extraPrompt = "";
 
 const apiKey = "AIzaSyCdVnZtDMnmKPo8fhw-4MWybfAA1zcEbDs";
 let potentialGemeniModel: GenerativeModel | null = null;

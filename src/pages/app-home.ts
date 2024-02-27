@@ -1193,7 +1193,7 @@ export class AppHome extends LitElement {
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
-            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
             const goodMessages = this.previousMessages;
 
@@ -1226,7 +1226,7 @@ export class AppHome extends LitElement {
 
             const { marked } = await import('marked');
 
-            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
             const goodMessages = this.previousMessages;
 
@@ -1280,7 +1280,7 @@ export class AppHome extends LitElement {
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
-            this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
             console.log("look here", this.convoName, this.previousMessages);
 
@@ -1326,10 +1326,10 @@ export class AppHome extends LitElement {
 
               streamedContent = "";
 
-              const { marked } = await import('marked');
+              // const { marked } = await import('marked');
 
-              // convert to html
-              this.previousMessages[this.previousMessages.length - 1].content = marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+              // // convert to html
+              // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
               window.requestIdleCallback(async () => {
                 if (this.previousMessages.length > 1) {
