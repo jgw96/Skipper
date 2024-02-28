@@ -429,9 +429,14 @@ export class AppHome extends LitElement {
         #convo-list code {
           display: block;
           padding: 8px;
-          background: #272b38;
+          background: #202020;
           border-radius: 8px;
           margin: 10px;
+          overflow-x: auto;
+        }
+
+        #convo-list code::-webkit-scrollbar {
+          display: none;
         }
 
         #mainBlock > div {
@@ -666,7 +671,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list code {
-            background: #eaeaea;
+            background: white;
           }
 
           #saved fluent-card .title-bar .date-display, #mobileSaved fluent-card .title-bar {
