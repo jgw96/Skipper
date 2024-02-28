@@ -97,7 +97,7 @@ export async function makeAIRequestStreaming(base64data: string, prompt: string,
     // so I'm going to convert it to a string
     const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
-    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&image=${base64data}&previousMessages=${stringifiedPreviousMessages}`);
+    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
     return evtSource;
 }
 

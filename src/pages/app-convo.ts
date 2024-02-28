@@ -23,6 +23,7 @@ export class AppConvo extends LitElement {
             padding-left: 8px;
             border-radius: 8px;
             backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             font-size: 14px;
             /* position: fixed; */
             /* left: 0px; */

@@ -45,6 +45,8 @@ export class AppHeader extends LitElement {
         display: flex;
         align-items: center;
         gap: 4px;
+
+        animation: quickSlideFromRight 0.3s;
       }
 
       fluent-button img, fluent-anchor img {
@@ -101,6 +103,12 @@ export class AppHeader extends LitElement {
         height: 20px;
         border-radius: 50%;
         width: 20px;
+
+        animation: quickSlideFromleft 0.3s;
+      }
+
+      #back-button-block fluent-anchor {
+        animation: quickSlideFromleft 0.3s;
       }
 
       fluent-anchor::part(control) {
@@ -128,6 +136,7 @@ export class AppHeader extends LitElement {
           /* color: white; */
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
@@ -137,6 +146,24 @@ export class AppHeader extends LitElement {
 
         #back-button-block fluent-anchor {
           background: #2d2d2d;
+        }
+      }
+
+      @keyframes quickSlideFromleft {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes quickSlideFromRight {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
         }
       }
 

@@ -54,12 +54,18 @@ export const styles = css`
       background: white;
     }
 
-    fluent-text-area, fluent-text-area::part(control), fluent-select::part(control), fluent-select::part(listbox) {
+   fluent-select::part(control), fluent-select::part(listbox) {
       --neutral-fill-input-rest: var(--theme-color);
       --neutral-fill-input-hover: var(--theme-color);
       --neutral-fill-input-active: var(--theme-color);
       --neutral-fill-input-focus: var(--theme-color);
       background: var(--theme-color);
+      color: black;
+      border: none;
+    }
+
+    fluent-text-area, fluent-text-area::part(control) {
+      background: white;
       color: black;
       border: none;
     }

@@ -33,6 +33,7 @@ export class AppImage extends LitElement {
               #regen-button::part(control) {
                 background: #ffffff0f;
                 backdrop-filter: blur(40px);
+                -webkit-backdrop-filter: blur(40px);
               }
 
             #image-input-outer {
@@ -73,6 +74,7 @@ export class AppImage extends LitElement {
                 gap: 8px;
 
                 backdrop-filter: blur(40px);
+                -webkit-backdrop-filter: blur(40px);
                 border-radius: 6px;
 
                 animation: quickup 0.3s ease;
@@ -143,6 +145,7 @@ export class AppImage extends LitElement {
 
             #generating-spinner {
               backdrop-filter: blur(40px);
+              -webkit-backdrop-filter: blur(40px);
               position: fixed;
               top: 10px;
               right: 40vw;
@@ -182,6 +185,7 @@ export class AppImage extends LitElement {
                     background: var(--theme-color);
                     color: white;
                     backdrop-filter: blur(40px);
+                    -webkit-backdrop-filter: blur(40px);
                   }
               }
 

@@ -34,6 +34,7 @@ export class RightClick extends LitElement {
                 opacity: 0;
 
                 backdrop-filter: blur(48px);
+                -webkit-backdrop-filter: blur(48px);
 
                 animation-name: fadeIn;
                 animation-duration: 0.12s;

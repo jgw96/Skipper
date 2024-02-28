@@ -67,10 +67,12 @@ export class AppHome extends LitElement {
 
         sl-drawer::part(panel) {
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
         }
 
         #model-loading {
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           position: fixed;
           top: 10px;
           right: 40vw;
@@ -96,6 +98,7 @@ export class AppHome extends LitElement {
         fluent-menu {
           background: #ffffff14;
           backdrop-filter: blur(48px);
+          -webkit-backdrop-filter: blur(48px);
           color: white;
           z-index: 99;
         }
@@ -114,6 +117,7 @@ export class AppHome extends LitElement {
 
         .mobile-saved::part(panel) {
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           border-radius: 12px 12px 0px 0px;
         }
 
@@ -266,6 +270,7 @@ export class AppHome extends LitElement {
           padding: 8px;
           border-radius: 8px;
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           font-size: 14px;
 
           position: fixed;
@@ -318,6 +323,7 @@ export class AppHome extends LitElement {
           display: flex;
           justify-content: flex-end;
           gap: 8px;
+          margin-right: 3px;
         }
 
         .delete-button {
@@ -379,6 +385,7 @@ export class AppHome extends LitElement {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          font-size: 14px;
         }
 
         .content-bar img {
@@ -397,6 +404,7 @@ export class AppHome extends LitElement {
           background-color: var(--theme-color);
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           padding: 8px;
           animation: slideStart 0.3s ease;
           contain: strict;
@@ -547,6 +555,7 @@ export class AppHome extends LitElement {
           gap: 8px;
 
           backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
           border-radius: 6px;
         }
 
@@ -609,6 +618,7 @@ export class AppHome extends LitElement {
             background: var(--theme-color);
             color: white;
             backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
           }
 
           fluent-card {
@@ -633,6 +643,12 @@ export class AppHome extends LitElement {
         @media(prefers-color-scheme: light) {
           li.system {
             background: var(--theme-color);
+          }
+
+          .copy-button::part(label) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
 
           sl-dialog::part(panel) {
@@ -955,6 +971,7 @@ export class AppHome extends LitElement {
     const { chosenModelShipper } = await import('../services/ai');
 
     this.modelShipper = chosenModelShipper;
+    this.requestUpdate();
 
     // set up enter key to send message
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
@@ -1129,7 +1146,7 @@ export class AppHome extends LitElement {
 
       const input: any = this.shadowRoot?.querySelector('fluent-text-area');
       const inputValue = input?.value;
-      const list = this.shadowRoot?.querySelector('ul');
+      const list: any = this.shadowRoot?.querySelector('#convo-list');
 
       console.log("this.currentPhoto", this.currentPhoto)
 
@@ -1160,7 +1177,9 @@ export class AppHome extends LitElement {
             content: prompt,
             image: this.currentPhoto
           }
-        ]
+        ];
+
+        this.handleScroll(list);
 
         if (modelShipper === "google") {
           const { makeAIRequestWithGemini } = await import('../services/ai');
@@ -1174,6 +1193,8 @@ export class AppHome extends LitElement {
               // content: data
             }
           ];
+
+          this.handleScroll(list);
 
           let text = '';
           for await (const chunk of data) {
@@ -1205,8 +1226,18 @@ export class AppHome extends LitElement {
 
             console.log("this.savedConvos", this.savedConvos);
 
+            this.loading = false;
+
+            this.handleScroll(list);
+
             resolve();
           }
+
+          this.loading = false;
+
+          this.handleScroll(list);
+
+          resolve();
         }
         else if (this.currentPhoto) {
           const { makeAIRequest } = await import('../services/ai');
@@ -1220,6 +1251,8 @@ export class AppHome extends LitElement {
               // content: data
             }
           ];
+
+          this.handleScroll(list);
 
           if (this.previousMessages.length > 1) {
             console.log("look here", this.convoName, this.previousMessages);
@@ -1240,8 +1273,16 @@ export class AppHome extends LitElement {
 
             console.log("this.savedConvos", this.savedConvos)
 
+            this.loading = false;
+
+            this.handleScroll(list);
+
             resolve();
           }
+
+          this.loading = false;
+
+          this.handleScroll(list);
 
           resolve();
         }
@@ -1262,6 +1303,8 @@ export class AppHome extends LitElement {
               content: ""
             }
           ]
+
+          this.handleScroll(list);
 
           /*const response = */await requestLocalAI(prompt as string, (event: any, string: string) => {
             console.log('event', event, string);
@@ -1294,10 +1337,16 @@ export class AppHome extends LitElement {
             const { getConversations } = await import('../services/storage');
             this.savedConvos = await getConversations();
 
-            console.log("this.savedConvos", this.savedConvos)
+            console.log("this.savedConvos", this.savedConvos);
+
+            this.loading = false;
+
+            this.handleScroll(list);
 
             resolve();
           }
+
+          resolve();
         }
         else {
           const { makeAIRequestStreaming } = await import('../services/ai');
@@ -1314,6 +1363,7 @@ export class AppHome extends LitElement {
 
           evtSource.onmessage = async (event) => {
             console.log('event', event);
+            this.handleScroll(list);
 
             const data = JSON.parse(event.data);
             console.log('data', data);
@@ -1326,10 +1376,9 @@ export class AppHome extends LitElement {
 
               streamedContent = "";
 
-              // const { marked } = await import('marked');
-
-              // // convert to html
-              // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+              const { marked } = await import('marked');
+              const markedContent = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+              this.previousMessages[this.previousMessages.length - 1].content = markedContent;
 
               window.requestIdleCallback(async () => {
                 if (this.previousMessages.length > 1) {
@@ -1347,6 +1396,10 @@ export class AppHome extends LitElement {
 
               }, { timeout: 1000 });
 
+              this.loading = false;
+
+              this.handleScroll(list);
+
               resolve();
             }
 
@@ -1358,6 +1411,9 @@ export class AppHome extends LitElement {
 
               if (streamedContent && streamedContent.length > 0) {
 
+                // turn "" into '' so that marked can parse it
+                streamedContent = streamedContent.replace(/"/g, "'");
+
                 this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
 
                 this.previousMessages = this.previousMessages;
@@ -1367,11 +1423,6 @@ export class AppHome extends LitElement {
             }
           }
         }
-
-
-        this.loading = false;
-
-        this.handleScroll(list);
 
       }
     });

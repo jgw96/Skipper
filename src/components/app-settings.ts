@@ -88,7 +88,7 @@ export class AppSettings extends LitElement {
                 border: none;
               }
 
-              .setting h3 {
+              .setting {
                 color: white;
               }
 

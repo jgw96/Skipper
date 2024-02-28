@@ -11,13 +11,17 @@ import { router } from './router';
 export class AppIndex extends LitElement {
   static get styles() {
     return css`
-      main {
-
-      }
-
       sl-drawer::part(panel) {
         backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
         padding-top: env(titlebar-area-height, initial);
+        background: #20202040;
+      }
+
+      @media(prefers-color-scheme: light) {
+        sl-drawer::part(panel) {
+          background: #ffffff57;
+        }
       }
     `;
   }
