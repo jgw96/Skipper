@@ -14,6 +14,7 @@ import { styles } from '../styles/shared-styles';
 import "../components/app-dictate";
 import "../components/right-click";
 import "../components/web-search";
+import { marked } from 'marked';
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -32,6 +33,7 @@ export class AppHome extends LitElement {
   @state() currentPhoto: string | undefined;
 
   @state() modelLoading = false;
+  @state() sayIT: boolean = false;
 
   captureStream: any;
   modelShipper: string = "";
@@ -574,6 +576,10 @@ export class AppHome extends LitElement {
           margin-top: 6px;
         }
 
+        #dont-speak {
+          background: #8c6ee0;
+        }
+
         #input-block fluent-button::part(label) {
           align-items: center;
           justify-content: center;
@@ -728,6 +734,7 @@ export class AppHome extends LitElement {
           }
 
           li.user, li.system {
+            min-width: 30vw;
             max-width: 45vw;
           }
 
@@ -1148,7 +1155,6 @@ export class AppHome extends LitElement {
 
   async send(): Promise<void> {
     return new Promise(async (resolve): Promise<void> => {
-
       const input: any = this.shadowRoot?.querySelector('fluent-text-area');
       const inputValue = input?.value;
       const list: any = this.shadowRoot?.querySelector('#convo-list');
@@ -1209,13 +1215,15 @@ export class AppHome extends LitElement {
 
             if (text && text.length > 0) {
 
-              this.previousMessages[this.previousMessages.length - 1].content = text;
+              this.previousMessages[this.previousMessages.length - 1].content = marked.parse(text);
 
               this.previousMessages = this.previousMessages;
 
               this.requestUpdate();
             }
           }
+
+          await this.doSayIt(list, text);
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
@@ -1247,6 +1255,8 @@ export class AppHome extends LitElement {
         else if (this.currentPhoto) {
           const { makeAIRequest } = await import('../services/ai');
           const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          await this.doSayIt(list, data.choices[0].message.content);
 
           this.previousMessages = [
             ...this.previousMessages,
@@ -1318,13 +1328,15 @@ export class AppHome extends LitElement {
 
             if (streamedContent && streamedContent.length > 0) {
 
-              this.previousMessages[this.previousMessages.length - 1].content = string;
+              this.previousMessages[this.previousMessages.length - 1].content = marked.parse(string);
 
               this.previousMessages = this.previousMessages;
 
               this.requestUpdate();
             }
           });
+
+          await this.doSayIt(list, streamedContent);
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
@@ -1354,76 +1366,86 @@ export class AppHome extends LitElement {
           resolve();
         }
         else {
-          const { makeAIRequestStreaming } = await import('../services/ai');
-          const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
+          if (this.sayIT) {
+            const { makeAIRequest } = await import('../services/ai');
+            const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "system",
-              // content: data.choices[0].message.content,
-              content: ""
-            }
-          ]
+            await this.doSayIt(list, data.choices[0].message.content);
+          }
+          else {
+            const { makeAIRequestStreaming } = await import('../services/ai');
+            const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
 
-          evtSource.onmessage = async (event) => {
-            console.log('event', event);
-            this.handleScroll(list);
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "system",
+                // content: data.choices[0].message.content,
+                content: ""
+              }
+            ]
 
-            const data = JSON.parse(event.data);
-            console.log('data', data);
-
-            // close evtSource if the response is complete
-            if (data.choices[0].finish_reason !== null) {
-              console.log("data stream closed");
-
-              evtSource.close();
-
-              streamedContent = "";
-
-              const { marked } = await import('marked');
-              const markedContent = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
-              this.previousMessages[this.previousMessages.length - 1].content = markedContent;
-
-              window.requestIdleCallback(async () => {
-                if (this.previousMessages.length > 1) {
-                  const goodMessages = this.previousMessages;
-
-                  const { saveConversation } = await import('../services/storage');
-                  await saveConversation(this.convoName as string, goodMessages);
-
-                  const { getConversations } = await import('../services/storage');
-                  this.savedConvos = await getConversations();
-
-                  console.log("this.savedConvos", this.savedConvos)
-                }
-
-
-              }, { timeout: 1000 });
-
-              this.loading = false;
-
+            evtSource.onmessage = async (event) => {
+              console.log('event', event);
               this.handleScroll(list);
 
-              resolve();
-            }
+              const data = JSON.parse(event.data);
+              console.log('data', data);
 
-            // continuously add to the last message in this.previousMessages
-            // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+              // close evtSource if the response is complete
+              if (data.choices[0].finish_reason !== null) {
+                console.log("data stream closed");
 
-            if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
-              streamedContent += data.choices[0].delta.content;
+                evtSource.close();
 
-              if (streamedContent && streamedContent.length > 0) {
+                streamedContent = "";
 
-                // turn "" into '' so that marked can parse it
-                streamedContent = streamedContent.replace(/"/g, "'");
+                const markedContent = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+                this.previousMessages[this.previousMessages.length - 1].content = markedContent;
 
-                this.previousMessages[this.previousMessages.length - 1].content = streamedContent;
+                window.requestIdleCallback(async () => {
+                  if (this.previousMessages.length > 1) {
+                    const goodMessages = this.previousMessages;
 
-                this.previousMessages = this.previousMessages;
+                    const { saveConversation } = await import('../services/storage');
+                    await saveConversation(this.convoName as string, goodMessages);
 
-                this.requestUpdate();
+                    const { getConversations } = await import('../services/storage');
+                    this.savedConvos = await getConversations();
+
+                    console.log("this.savedConvos", this.savedConvos)
+                  }
+
+
+                }, { timeout: 1000 });
+
+                this.loading = false;
+
+                this.handleScroll(list);
+
+                resolve();
+              }
+
+              // continuously add to the last message in this.previousMessages
+              // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+
+              if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
+                streamedContent += data.choices[0].delta.content;
+
+                if (streamedContent && streamedContent.length > 0) {
+
+                  // turn "" into '' so that marked can parse it
+                  streamedContent = streamedContent.replace(/"/g, "'");
+
+                  const markdown = await marked.parse(streamedContent);
+                  console.log("markdown", markdown)
+
+                  this.previousMessages[this.previousMessages.length - 1].content = markdown;
+
+                  this.previousMessages = this.previousMessages;
+
+                  this.requestUpdate();
+                }
               }
             }
           }
@@ -1431,6 +1453,58 @@ export class AppHome extends LitElement {
 
       }
     });
+  }
+
+  async doSayIt(list: any, text: string): Promise<void> {
+    return new Promise(async (resolve) => {
+      if (this.sayIT) {
+        const { doTextToSpeech } = await import("../services/ai");
+        doTextToSpeech(text);
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "system",
+            content: text,
+            // content: data
+          }
+        ];
+
+        this.handleScroll(list);
+
+        if (this.previousMessages.length > 1) {
+          console.log("look here", this.convoName, this.previousMessages);
+
+          const { marked } = await import('marked');
+
+          this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+
+          const goodMessages = this.previousMessages;
+
+          console.log("goodMessages", goodMessages)
+
+          const { saveConversation } = await import('../services/storage');
+          await saveConversation(this.convoName as string, goodMessages);
+
+          const { getConversations } = await import('../services/storage');
+          this.savedConvos = await getConversations();
+
+          console.log("this.savedConvos", this.savedConvos)
+
+          this.loading = false;
+
+          this.handleScroll(list);
+
+          resolve();
+        }
+
+        this.loading = false;
+
+        this.handleScroll(list);
+
+        resolve();
+      }
+    })
   }
 
   private handleScroll(list: HTMLUListElement | null | undefined) {
@@ -1568,6 +1642,10 @@ export class AppHome extends LitElement {
   openWebResults() {
     const drawer: any = this.shadowRoot?.querySelector('.web-results');
     drawer.show();
+  }
+
+  doSpeech() {
+    this.sayIT = !this.sayIT;
   }
 
   render() {
@@ -1740,6 +1818,14 @@ export class AppHome extends LitElement {
           </fluent-button>` : null}
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
+
+          ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" size="small">
+            <img src="/assets/volume-high-outline.svg" alt="mic icon">
+          </fluent-button>` : html`
+            <fluent-button id="dont-speak" @click="${this.doSpeech}" appearance="accent" size="small">
+              <img src="/assets/volume-mute-outline.svg" alt="mic icon">
+            </fluent-button>
+          `}
 
           ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
       }
