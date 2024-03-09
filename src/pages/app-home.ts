@@ -5,9 +5,9 @@ import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
 
-import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, fluentTooltip, provideFluentDesignSystem } from '@fluentui/web-components';
 
-provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch(), fluentMenu(), fluentMenuItem());
+provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch(), fluentMenu(), fluentMenuItem(), fluentTooltip());
 
 import { styles } from '../styles/shared-styles';
 
@@ -42,13 +42,27 @@ export class AppHome extends LitElement {
     return [
       styles,
       css`
-        fluent-button, fluent-text-area, fluent-listbox, fluent-card {
+        fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
           --accent-fill-rest: #8c6ee0;
           --accent-stroke-control-rest: #8c6ee0;
           --accent-fill-active: #8c6ee0;
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        fluent-tooltip {
+          --neutral-layer-card-container: #8c6ee0;
+          --fill-color: var(--theme-color);
+          color: white;
+          border: none;
+          display: block;
+
+          animation: quickup 0.3s ease;
+        }
+
+        fluent-tooltip span {
+          color: white;
         }
 
         sl-dialog::part(footer) {
@@ -719,6 +733,15 @@ export class AppHome extends LitElement {
           li.system .copy-button::part(base) {
             background: #c4c4c4;
           }
+
+          fluent-tooltip {
+            background: white;
+            --fill-color: white;
+        }
+
+        fluent-tooltip span {
+            color: black;
+        }
         }
 
         #mobile-menu {
@@ -1813,15 +1836,19 @@ export class AppHome extends LitElement {
        <div id="input-block">
         <div id="extra-actions">
           <div id="inner-extra-actions">
-          ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" size="small">
+          ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" id="add-image-to-convo" size="small">
             <img src="/assets/image-outline.svg" alt="image icon">
-          </fluent-button>` : null}
+          </fluent-button>
+          <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
+          ` : null}
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
 
-          ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" size="small">
+          ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">
-          </fluent-button>` : html`
+          </fluent-button>
+          <fluent-tooltip anchor="do-speech"><span>Read Aloud</span></fluent-tooltip>
+          ` : html`
             <fluent-button id="dont-speak" @click="${this.doSpeech}" appearance="accent" size="small">
               <img src="/assets/volume-mute-outline.svg" alt="mic icon">
             </fluent-button>

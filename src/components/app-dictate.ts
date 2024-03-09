@@ -20,6 +20,20 @@ export class AppDictate extends LitElement {
                 background: var(--app-color-primary);
             }
 
+            fluent-tooltip {
+                --neutral-layer-card-container: #8c6ee0;
+                --fill-color: var(--theme-color);
+                color: white;
+                border: none;
+                display: block;
+
+                animation: quickup 0.3s ease;
+              }
+
+              fluent-tooltip span {
+                color: white;
+              }
+
             #stop::part(control) {
               color: white;
             }
@@ -78,6 +92,15 @@ export class AppDictate extends LitElement {
 
             @media(prefers-color-scheme: light) {
                 #stop::part(control) {
+                    color: black;
+                }
+
+                fluent-tooltip {
+                    background: white;
+                    --fill-color: white;
+                }
+
+                fluent-tooltip span {
                     color: black;
                 }
             }
@@ -228,7 +251,9 @@ export class AppDictate extends LitElement {
       ${this.started === false
                 ? html`<fluent-button id="dictate" @click="${() => this.dictate()}">
                 <img src="/assets/mic-outline.svg" />
-          </fluent-button>`
+          </fluent-button>
+          <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
+          `
                 : html`
             <fluent-button id="stop" @click="${() => this.stop()}">
               <fluent-progress-ring></fluent-progress-ring>
