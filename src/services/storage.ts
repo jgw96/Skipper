@@ -87,12 +87,16 @@ export async function getConversations(): Promise<any> {
                     return {
                         name: file.name,
                         content: JSON.parse(text),
-                        date: file.lastModified
+                        date: file.lastModified,
+                        id: generateRandoID()
                     }
                 })
             }));
         }
         const readyToGo = await Promise.all(conversations);
+
+        const { addDocsToSearch } = await import("./local-search")
+        addDocsToSearch(readyToGo);
 
         // sort by date, which is a timestamp
         readyToGo.sort((a, b) => {
@@ -116,7 +120,8 @@ export async function getConversationsIDB() {
             formattedConversations.push({
                 name: convo.name,
                 content: JSON.parse(convo.content),
-                date: new Date().getTime()
+                date: new Date().getTime(),
+                id: generateRandoID()
             });
         });
 
@@ -146,4 +151,15 @@ export async function editConvoName(oldName: string, newName: string) {
     const file = await root.getFileHandle(oldName);
     // @ts-ignore
     await file.rename(newName);
+}
+
+function generateRandoID() {
+    // generate random id using web crypto
+    const array = new Uint32Array(8);
+    window.crypto.getRandomValues(array);
+    let str = '';
+    for (let i = 0; i < array.length; i++) {
+        str += (i < 2 || i > 5 ? '' : '-') + array[i].toString(16).slice(-4);
+    }
+    return str;
 }

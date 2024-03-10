@@ -28,7 +28,7 @@ export class AppSettings extends LitElement {
         :host {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
         }
 
         .setting {

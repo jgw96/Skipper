@@ -43,7 +43,7 @@ export class AppHome extends LitElement {
     return [
       styles,
       css`
-        fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
+        fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip, fluent-search {
           --accent-fill-rest: #8c6ee0;
           --accent-stroke-control-rest: #8c6ee0;
           --accent-fill-active: #8c6ee0;
@@ -1615,21 +1615,35 @@ export class AppHome extends LitElement {
 
     const searchTerm = event.target.value;
 
-    const convos = await getConversations();
-
     if (searchTerm && searchTerm.length > 0) {
+      const { doSearch } = await import("../services/local-search");
+      const results = await doSearch(searchTerm);
 
-      if (convos && convos.length > 0) {
-        convos.forEach((convo: any) => {
-          if (convo.name.includes(searchTerm)) {
-            this.savedConvos = [convo, ...convos];
-          }
-        })
-      }
+      console.log("results", results);
+
+      this.savedConvos = [...results];
     }
     else {
+      const { getConversations } = await import('../services/storage');
+      const convos = await getConversations();
       this.savedConvos = convos;
     }
+
+    // const convos = await getConversations();
+
+    // if (searchTerm && searchTerm.length > 0) {
+
+    //   if (convos && convos.length > 0) {
+    //     convos.forEach((convo: any) => {
+    //       if (convo.name.includes(searchTerm)) {
+    //         this.savedConvos = [convo, ...convos];
+    //       }
+    //     })
+    //   }
+    // }
+    // else {
+    //   this.savedConvos = convos;
+    // }
   }
 
   openWebResults() {
