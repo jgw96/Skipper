@@ -2,6 +2,8 @@ import { LitElement, css, html } from "lit";
 
 import { customElement, state } from "lit/decorators.js";
 
+import "./key-manager";
+
 import {
     provideFluentDesignSystem,
     fluentSelect,
@@ -159,6 +161,10 @@ export class AppSettings extends LitElement {
                     Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that
                     runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.
                 </p>
+            </div>
+
+            <div class="setting">
+                <key-manager></key-manager>
             </div>
 
             <div class="setting">

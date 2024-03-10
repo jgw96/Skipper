@@ -1,14 +1,17 @@
 import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
+import { getGoogleKey, getOpenAIKey } from "./keys";
 
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
 const extraPrompt = "";
 
-const apiKey = "AIzaSyCdVnZtDMnmKPo8fhw-4MWybfAA1zcEbDs";
+const apiKey = await getGoogleKey();
 let potentialGemeniModel: GenerativeModel | null = null;
 export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" = "openai";
 let genAI: GoogleGenerativeAI | null = null;
+
+const GPTKey = await getOpenAIKey();
 
 export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama" | "llama" | "gemma") {
     chosenModelShipper = shipper;
@@ -77,7 +80,8 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         }),
         body: JSON.stringify({
             image: currentBase64Data || base64data,
-            previousMessages: previousMessages
+            previousMessages: previousMessages,
+            key: GPTKey
         })
     });
 
@@ -97,7 +101,7 @@ export async function makeAIRequestStreaming(base64data: string, prompt: string,
     // so I'm going to convert it to a string
     const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
-    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
+    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
     return evtSource;
 }
 
@@ -117,7 +121,8 @@ export const requestGPT = async (prompt: string) => {
             "Content-Type": "application/json",
         }),
         body: JSON.stringify({
-            previousMessages
+            previousMessages,
+            key: GPTKey
         })
     });
     const data = await response.json();
@@ -148,7 +153,7 @@ export const makeTitleRequest = async (prompt: string) => {
 }
 
 export async function generateImage(prompt: string) {
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/generateimage?prompt=${prompt}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/generateimage?prompt=${prompt}&key=${GPTKey}`, {
         method: "GET",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -170,7 +175,8 @@ export async function doTextToSpeech(script: string) {
                 "Content-Type": "application/json",
             }),
             body: JSON.stringify({
-                previousMessages
+                previousMessages,
+                key: GPTKey
             })
         });
         const data = await response.blob();
