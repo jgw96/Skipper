@@ -22,6 +22,11 @@
   --accent-stroke-control-rest: #5e11fd;
 
   --sl-panel-background-color: var(--theme-color);
+
+}
+
+p {
+  font-size: 14px;
 }
 
 html, body {
