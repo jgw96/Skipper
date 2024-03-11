@@ -1335,7 +1335,7 @@ export class AppHome extends LitElement {
 
           resolve();
         }
-        else if (modelShipper === "redpajama" || modelShipper === "llama") {
+        else if (modelShipper === "redpajama" || modelShipper === "llama" || modelShipper === "gemma") {
           const { loadChatModule } = await import('../services/local-ai');
 
           this.modelLoading = true;

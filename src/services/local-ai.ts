@@ -5,7 +5,7 @@ let chatModule: webllm.ChatModule | webllm.ChatWorkerClient | null = null;
 
 const redpajama = "RedPajama-INCITE-Chat-3B-v1-q4f32_1";
 const llama = "Llama-2-7b-chat-hf-q4f32_1";
-const gemma = "gemma-2b-it-q4f32_1";
+const gemma = "gemma-2b-it-q4f16_1";
 
 export async function resetLocal() {
     chatModule?.resetChat();
@@ -42,9 +42,9 @@ export async function loadChatModule(model: "redpajama" | "llama" | "gemma" = "r
                         "local_id": "Llama-2-7b-chat-hf-q4f32_1"
                     },
                     {
-                        "model_url": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f32_1-MLC/resolve/main/",
-                        "local_id": "gemma-2b-it-q4f32_1",
-                        "model_lib_url": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/gemma-2b-it/gemma-2b-it-q4f32_1-ctx1k_cs1k-webgpu.wasm"
+                        "model_url": "https://huggingface.co/mlc-ai/gemma-2b-it-q4f16_1-MLC/resolve/main/",
+                        "local_id": "gemma-2b-it-q4f16_1",
+                        "model_lib_url": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/gemma-2b-it/gemma-2b-it-q4f16_1-ctx1k_cs1k-webgpu.wasm"
                     },
                 ]
             }
