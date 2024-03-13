@@ -4,6 +4,8 @@ import { customElement, state } from "lit/decorators.js";
 
 import { fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
 
+import 'speech-to-text-toolkit';
+
 provideFluentDesignSystem().register(fluentProgressRing());
 
 @customElement("app-dictate")
@@ -124,31 +126,43 @@ export class AppDictate extends LitElement {
 
     async firstUpdated() {
         // speech to text
-        (window as any).requestIdleCallback(
-            async () => {
-                const sdk = await import("microsoft-cognitiveservices-speech-sdk");
+        // (window as any).requestIdleCallback(
+        //     async () => {
+        //         const sdk = await import("microsoft-cognitiveservices-speech-sdk");
 
-                const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-                const speechConfig = sdk.SpeechConfig.fromSubscription(
-                    "b5b594f480a64837a37d7c3f24da9c38",
-                    "westus"
-                );
+        //         const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        //         const speechConfig = sdk.SpeechConfig.fromSubscription(
+        //             "b5b594f480a64837a37d7c3f24da9c38",
+        //             "westus"
+        //         );
 
-                speechConfig.speechRecognitionLanguage = "en-us";
+        //         speechConfig.speechRecognitionLanguage = "en-us";
 
-                this.recog = new sdk.SpeechRecognizer(
-                    speechConfig,
-                    audioConfig
-                );
+        //         this.recog = new sdk.SpeechRecognizer(
+        //             speechConfig,
+        //             audioConfig
+        //         );
 
-                console.log(this.recog);
+        //         console.log(this.recog);
 
-                this.setUpListeners();
-            },
-            {
-                timeout: 2000,
-            }
-        );
+        //         this.setUpListeners();
+        //     },
+        //     {
+        //         timeout: 2000,
+        //     }
+        // );
+
+        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
+        speechToText.addEventListener('recognized', (e: any) => {
+            console.log('recognized', e.detail.message);
+
+            let event = new CustomEvent("got-text", {
+                detail: {
+                    messageData: e.detail.message,
+                },
+            });
+            this.dispatchEvent(event);
+        });
     }
 
     public async dictate() {
@@ -156,11 +170,12 @@ export class AppDictate extends LitElement {
             await (navigator as any).setAppBadge();
         }
 
-        this.recog.startContinuousRecognitionAsync();
+        this.wakeLock = await this.requestWakeLock();
+
+        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
+        speechToText?.startSpeechToText();
 
         this.started = true;
-
-        this.wakeLock = await this.requestWakeLock();
 
         let event = new CustomEvent("start-text", {
             detail: {
@@ -171,7 +186,8 @@ export class AppDictate extends LitElement {
     }
 
     async stop() {
-        this.recog.stopContinuousRecognitionAsync();
+        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
+        speechToText?.stopSpeechToText();
 
         this.started = false;
 
@@ -185,47 +201,47 @@ export class AppDictate extends LitElement {
     }
 
     setUpListeners() {
-        this.lines = [];
+        // this.lines = [];
 
-        if (this.recog) {
-            this.recog.recognizing = (s?: any, e?: any) => {
-                console.log(s);
-                console.log(e.result);
+        // if (this.recog) {
+        //     this.recog.recognizing = (s?: any, e?: any) => {
+        //         console.log(s);
+        //         console.log(e.result);
 
-                if (e.result.text && e.result.text.length > 0) {
-                    this.thinkingLines.push(e.result.text);
-                }
+        //         if (e.result.text && e.result.text.length > 0) {
+        //             this.thinkingLines.push(e.result.text);
+        //         }
 
-                let event = new CustomEvent("thinking-text", {
-                    detail: {
-                        messageData: this.thinkingLines.join(" "),
-                    },
-                });
-                this.dispatchEvent(event);
+        //         let event = new CustomEvent("thinking-text", {
+        //             detail: {
+        //                 messageData: this.thinkingLines.join(" "),
+        //             },
+        //         });
+        //         this.dispatchEvent(event);
 
-                this.thinkingLines = [];
-            };
+        //         this.thinkingLines = [];
+        //     };
 
-            this.recog.recognized = (s?: any, e?: any) => {
-                console.log(s);
-                console.log("recognized", e.result.text);
+        //     this.recog.recognized = (s?: any, e?: any) => {
+        //         console.log(s);
+        //         console.log("recognized", e.result.text);
 
-                if (e.result.text && e.result.text.length > 0) {
-                    this.lines.push(e.result.text);
+        //         if (e.result.text && e.result.text.length > 0) {
+        //             this.lines.push(e.result.text);
 
-                    let event = new CustomEvent("got-text", {
-                        detail: {
-                            messageData: this.lines,
-                        },
-                    });
-                    this.dispatchEvent(event);
+        //             let event = new CustomEvent("got-text", {
+        //                 detail: {
+        //                     messageData: this.lines,
+        //                 },
+        //             });
+        //             this.dispatchEvent(event);
 
-                    this.lines = [];
+        //             this.lines = [];
 
-                    this.stop();
-                }
-            };
-        }
+        //             this.stop();
+        //         }
+        //     };
+        // }
     }
 
     requestWakeLock = async () => {
@@ -248,17 +264,19 @@ export class AppDictate extends LitElement {
 
     render() {
         return html`
-      ${this.started === false
+         <speech-to-text localOrCloud="cloud" apiKey="a3484733425e4929ae1da1f90a5f0a16">
+            ${this.started === false
                 ? html`<fluent-button id="dictate" @click="${() => this.dictate()}">
-                <img src="/assets/mic-outline.svg" />
-          </fluent-button>
-          <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
-          `
-                : html`
-            <fluent-button id="stop" @click="${() => this.stop()}">
-              <fluent-progress-ring></fluent-progress-ring>
+                    <img src="/assets/mic-outline.svg" />
             </fluent-button>
-          `}
+            <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
+            `
+                : html`
+                <fluent-button id="stop" @click="${() => this.stop()}">
+                <fluent-progress-ring></fluent-progress-ring>
+                </fluent-button>
+            `}
+          </speech-to-text>
     `;
     }
 }
