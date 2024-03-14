@@ -294,9 +294,7 @@ export class AppHome extends LitElement {
           left: 0px;
           right: 0px;
           z-index: 9;
-          margin-top: 38px;
           margin: 0;
-          margin-top: 38px;
           border-radius: 0px;
 
           display: flex;
@@ -438,9 +436,10 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 73vh;
           padding-top: 53px;
           contain: strict;
+
+          height: -webkit-fill-available;
         }
 
         #convo-list code {
@@ -458,6 +457,9 @@ export class AppHome extends LitElement {
 
         #mainBlock > div {
           height: 96vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
 
         #saved fluent-card span, #mobileSaved fluent-card span {
@@ -565,14 +567,15 @@ export class AppHome extends LitElement {
         }
 
         #input-block {
-          position: fixed;
-          bottom: 8px;
-          left: 25vw;
-          right: 8px;
           padding: 8px;
           background: #ffffff0f;
           display: flex;
           justify-content: space-between;
+
+          position: unset;
+          margin-left: 10px;
+          margin-right: 10px;
+          margin-bottom: 8px;
 
           gap: 8px;
 
@@ -801,13 +804,8 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 72vh;
             width: unset;
             padding-top: 97px;
-          }
-
-          #convo-name {
-            margin-top: 30px;
           }
 
           #mobile-menu {
@@ -850,19 +848,19 @@ export class AppHome extends LitElement {
 
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
-            height: 72vh;
+
           }
         }
 
         @media(min-height: 1000px) {
           #convo-list {
-            height: 79vh;
+
           }
         }
 
         @media (max-height: 420px) and (orientation: landscape){
           #convo-list {
-            height: 50vh;
+
           }
 
           #saved ul {
@@ -892,19 +890,19 @@ export class AppHome extends LitElement {
 
         @media(max-height: 655px) {
           #convo-list {
-            height: 64vh;
+
           }
         }
 
         @media(max-height: 620px) {
           #convo-list {
-            height: 60vh;
+
           }
         }
 
         @media(max-height: 520px) {
           #convo-list {
-            height: 56vh;
+
           }
         }
 
@@ -946,7 +944,7 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 50vh;
+
           }
         }
 
