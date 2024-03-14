@@ -456,7 +456,6 @@ export class AppHome extends LitElement {
         }
 
         #mainBlock > div {
-          height: 96vh;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -560,7 +559,7 @@ export class AppHome extends LitElement {
 
         #saved ul {
           padding: 0px;
-          height: 83vh;
+          max-height: 83vh;
           overflow: hidden auto;
           position: sticky;
           top: 38px;
@@ -755,7 +754,6 @@ export class AppHome extends LitElement {
         @media(min-width: 860px) {
           #convo-name {
             left: 20vw;
-            top: 29px;
             right: 0px;
             margin-top: 0;
           }
@@ -766,13 +764,13 @@ export class AppHome extends LitElement {
           }
 
           #saved ul {
-            height: 84vh;
+            max-height: 84vh;
           }
         }
 
         @media(min-width: 1200px) {
           #saved ul {
-            height: 85vh;
+            max-height: 85vh;
           }
         }
 
@@ -800,12 +798,12 @@ export class AppHome extends LitElement {
           }
 
           main {
-            display: unset;
+            display: flex;
           }
 
           #convo-list {
             width: unset;
-            padding-top: 97px;
+
           }
 
           #mobile-menu {
@@ -813,7 +811,7 @@ export class AppHome extends LitElement {
           }
 
           #mainBlock {
-            grid-template-columns: 1fr;
+            width: 100%;
           }
 
           ul {
@@ -864,7 +862,7 @@ export class AppHome extends LitElement {
           }
 
           #saved ul {
-            height: 79vh;
+            max-height: 79vh;
           }
 
           #no-messages {
