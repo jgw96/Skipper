@@ -201,47 +201,7 @@ export class AppDictate extends LitElement {
     }
 
     setUpListeners() {
-        // this.lines = [];
 
-        // if (this.recog) {
-        //     this.recog.recognizing = (s?: any, e?: any) => {
-        //         console.log(s);
-        //         console.log(e.result);
-
-        //         if (e.result.text && e.result.text.length > 0) {
-        //             this.thinkingLines.push(e.result.text);
-        //         }
-
-        //         let event = new CustomEvent("thinking-text", {
-        //             detail: {
-        //                 messageData: this.thinkingLines.join(" "),
-        //             },
-        //         });
-        //         this.dispatchEvent(event);
-
-        //         this.thinkingLines = [];
-        //     };
-
-        //     this.recog.recognized = (s?: any, e?: any) => {
-        //         console.log(s);
-        //         console.log("recognized", e.result.text);
-
-        //         if (e.result.text && e.result.text.length > 0) {
-        //             this.lines.push(e.result.text);
-
-        //             let event = new CustomEvent("got-text", {
-        //                 detail: {
-        //                     messageData: this.lines,
-        //                 },
-        //             });
-        //             this.dispatchEvent(event);
-
-        //             this.lines = [];
-
-        //             this.stop();
-        //         }
-        //     };
-        // }
     }
 
     requestWakeLock = async () => {
@@ -264,7 +224,7 @@ export class AppDictate extends LitElement {
 
     render() {
         return html`
-         <speech-to-text localOrCloud="cloud" apiKey="a3484733425e4929ae1da1f90a5f0a16">
+         <speech-to-text localOrCloud="local">
             ${this.started === false
                 ? html`<fluent-button id="dictate" @click="${() => this.dictate()}">
                     <img src="/assets/mic-outline.svg" />
