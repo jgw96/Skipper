@@ -290,9 +290,6 @@ export class AppHome extends LitElement {
           -webkit-backdrop-filter: blur(40px);
           font-size: 14px;
 
-          position: fixed;
-          left: 0px;
-          right: 0px;
           z-index: 9;
           margin: 0;
           border-radius: 0px;
@@ -436,7 +433,7 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          padding-top: 53px;
+
           contain: strict;
 
           height: -webkit-fill-available;
@@ -639,6 +636,8 @@ export class AppHome extends LitElement {
           text-wrap: pretty;
 
           text-shadow: #8c6ee082 2px 2px;
+
+          view-transition-name: greeting-caption;
         }
 
         @media(prefers-color-scheme: dark) {
@@ -1802,7 +1801,7 @@ export class AppHome extends LitElement {
        ` : html`
           <div id="no-messages" class="main-content">
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
-            <p>Hello! How may I help you today?</p>
+            <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
               <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
@@ -1834,13 +1833,18 @@ export class AppHome extends LitElement {
             </fluent-button>
           `}
 
-          ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
-      }
         </div>
+
+        <div id="inner-extra-actions">
+        ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">
+            <img src="/assets/globe-outline.svg" alt="web results icon">
+          </fluent-button>` : null
+      }
 
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
           </fluent-button>
+      </div>
         </div>
         <div id="input-inner">
           ${this.currentPhoto ? html`<img src="${this.currentPhoto}" alt="photo" width="40" height="40" />` : html``}
