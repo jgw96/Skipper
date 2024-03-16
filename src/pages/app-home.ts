@@ -320,7 +320,6 @@ export class AppHome extends LitElement {
           overflow: hidden;
         }
 
-
         #convo-name h2 {
           margin: 0;
           white-space: nowrap;
@@ -763,6 +762,14 @@ export class AppHome extends LitElement {
           #saved ul {
             max-height: 84vh;
           }
+
+          #open-camera-button {
+            display: none;
+          }
+
+          #add-image-to-convo {
+            display: initial;
+          }
         }
 
         @media(min-width: 1200px) {
@@ -774,6 +781,10 @@ export class AppHome extends LitElement {
         @media(max-width: 860px) {
           #saved {
             display: none;
+          }
+
+          #convo-name h2 {
+            max-width: 60vw;
           }
 
           #new-convo::part(control) {
@@ -834,6 +845,14 @@ export class AppHome extends LitElement {
 
           #suggested {
             width: 82%;
+          }
+
+          #open-camera-button {
+            display: initial;
+          }
+
+          #add-image-to-convo {
+            display: none;
           }
         }
 
@@ -1187,6 +1206,29 @@ export class AppHome extends LitElement {
     }
 
     reader.readAsDataURL(blobFromFile);
+  }
+
+  openCamera() {
+    const input = document.createElement('input');
+    input.type = "file";
+    input.name = "image";
+    input.accept = "image/*";
+    input.capture = "environment";
+
+    input.click();
+
+    // add iamge from input
+    input.addEventListener("change", async (event: any) => {
+      const file = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        this.addImageToConvo(base64data as string);
+      }
+
+      reader.readAsDataURL(file);
+    });
   }
 
   async send(): Promise<void> {
@@ -1694,7 +1736,7 @@ export class AppHome extends LitElement {
       </right-click>
 
       ${this.convoName ? html`
-      <sl-drawer class="web-results" placement="start" has-header label="Results from the Web">
+      <sl-drawer class="web-results" placement="end" has-header label="Results from the Web">
         <web-search .searchTerm="${this.convoName}"></web-search>
       </sl-drawer>` : null}
 
@@ -1781,6 +1823,11 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
+            ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
+            <img src="/assets/globe-outline.svg" alt="web results icon">
+          </fluent-button>` : null
+        }
+
               <fluent-button class="copy-button new-window-button" @click="${this.openInNewWindow}">
                 <img src="/assets/open-outline.svg" alt="open" />
               </fluent-button>
@@ -1792,7 +1839,7 @@ export class AppHome extends LitElement {
         </div>
         <ul id="convo-list">
           ${this.previousMessages.map((message) => {
-        return html`<li class="${message.role}">
+          return html`<li class="${message.role}">
             <div class="item-toolbar">
                 <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/share-social-outline.svg" alt="share" />
@@ -1808,7 +1855,7 @@ export class AppHome extends LitElement {
               <div .innerHTML="${message.content}"></div>
             </div>
           </li>`
-      })
+        })
         }
         </ul>
 
@@ -1834,7 +1881,12 @@ export class AppHome extends LitElement {
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>
           <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
+
+          <fluent-button id="open-camera-button" @click="${() => this.openCamera()}" apperance="accent" size="small">
+            <img src="/assets/camera-outline.svg" alt="camera icon">
+          </fluent-button>
           ` : null}
+
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
 
@@ -1851,11 +1903,6 @@ export class AppHome extends LitElement {
         </div>
 
         <div id="inner-extra-actions">
-        ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">
-            <img src="/assets/globe-outline.svg" alt="web results icon">
-          </fluent-button>` : null
-      }
-
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
           </fluent-button>
