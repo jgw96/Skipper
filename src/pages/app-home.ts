@@ -281,8 +281,6 @@ export class AppHome extends LitElement {
           animation: quickup 0.3s ease;
         }
 
-
-
         #convo-name {
           padding: 8px;
           border-radius: 8px;
@@ -944,6 +942,23 @@ export class AppHome extends LitElement {
 
           }
         }
+
+        @media (horizontal-viewport-segments: 2) {
+          main {
+            grid-template-columns: 49vw 49vw;
+            gap: 23px;
+          }
+
+          #saved {
+            padding-right: 12px;
+          }
+
+
+            sl-drawer::part(panel) {
+              width: 49vw;
+            }
+
+       }
 
         @keyframes quickup {
           from {
