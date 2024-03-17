@@ -5,12 +5,12 @@ import { searchBing } from '../services/web-search';
 @customElement('web-search')
 export class WebSearch extends LitElement {
 
-    @property({ type: String }) searchTerm: string | undefined;
+  @property({ type: String }) searchTerm: string | undefined;
 
-    @state() webPages: any[] = [];
+  @state() webPages: any[] = [];
 
-    static styles = [
-        css`
+  static styles = [
+    css`
             :host {
                 display: block;
             }
@@ -59,44 +59,43 @@ export class WebSearch extends LitElement {
                 }
             }
         `
-    ];
+  ];
 
-    async firstUpdated() {
-        console.log("searchTerm", this.searchTerm)
-        if (this.searchTerm) {
-            const data = await searchBing(this.searchTerm);
-            console.log(data);
+  async firstUpdated() {
+    console.log("searchTerm", this.searchTerm)
+    if (this.searchTerm) {
+      const data = await searchBing(this.searchTerm);
+      console.log("web-search", data);
 
-            this.webPages = data.webPages.value;
-        }
+      this.webPages = data.webPages.value;
     }
+  }
 
-    async attributeChangedCallback(name: string, _old: string | null, value: string | null) {
-        console.log("name", name, "value", value)
-        super.attributeChangedCallback(name, _old, value);
-        if (name === 'search-term') {
-            const data = await searchBing(this.searchTerm!);
-            console.log(data);
+  async attributeChangedCallback(name: string, _old: string | null, value: string | null) {
+    console.log("name", name, "value", value)
+    super.attributeChangedCallback(name, _old, value);
+    if (name === 'search-term') {
+      const data = await searchBing(this.searchTerm!);
+      console.log(data);
 
-            this.webPages = data.webPages.value;
-        }
+      this.webPages = data.webPages.value;
     }
+  }
 
-    render() {
-        return html`
+  render() {
+    return html`
         <ul>
-          ${
-            this.webPages.map((page) => {
-                return html`
+          ${this.webPages.map((page) => {
+      return html`
                     <fluent-card>
                         <h3>${page.name}</h3>
                         <a href="${page.url}">${page.url}</a>
                         <p>${page.snippet}</p>
             </fluent-card>
                 `;
-            })
-          }
+    })
+      }
           </ul>
         `;
-    }
+  }
 }

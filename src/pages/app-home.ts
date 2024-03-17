@@ -281,8 +281,6 @@ export class AppHome extends LitElement {
           animation: quickup 0.3s ease;
         }
 
-
-
         #convo-name {
           padding: 8px;
           border-radius: 8px;
@@ -290,13 +288,8 @@ export class AppHome extends LitElement {
           -webkit-backdrop-filter: blur(40px);
           font-size: 14px;
 
-          position: fixed;
-          left: 0px;
-          right: 0px;
           z-index: 9;
-          margin-top: 38px;
           margin: 0;
-          margin-top: 38px;
           border-radius: 0px;
 
           display: flex;
@@ -326,7 +319,6 @@ export class AppHome extends LitElement {
           display: grid;
           overflow: hidden;
         }
-
 
         #convo-name h2 {
           margin: 0;
@@ -438,9 +430,10 @@ export class AppHome extends LitElement {
 
         #convo-list {
           width: 97%;
-          height: 73vh;
-          padding-top: 53px;
+
           contain: strict;
+
+          height: -webkit-fill-available;
         }
 
         #convo-list code {
@@ -457,7 +450,9 @@ export class AppHome extends LitElement {
         }
 
         #mainBlock > div {
-          height: 96vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
 
         #saved fluent-card span, #mobileSaved fluent-card span {
@@ -558,21 +553,22 @@ export class AppHome extends LitElement {
 
         #saved ul {
           padding: 0px;
-          height: 83vh;
+          max-height: 83vh;
           overflow: hidden auto;
           position: sticky;
           top: 38px;
         }
 
         #input-block {
-          position: fixed;
-          bottom: 8px;
-          left: 25vw;
-          right: 8px;
           padding: 8px;
           background: #ffffff0f;
           display: flex;
           justify-content: space-between;
+
+          position: unset;
+          margin-left: 10px;
+          margin-right: 10px;
+          margin-bottom: 8px;
 
           gap: 8px;
 
@@ -637,6 +633,8 @@ export class AppHome extends LitElement {
           text-wrap: pretty;
 
           text-shadow: #8c6ee082 2px 2px;
+
+          view-transition-name: greeting-caption;
         }
 
         @media(prefers-color-scheme: dark) {
@@ -752,7 +750,6 @@ export class AppHome extends LitElement {
         @media(min-width: 860px) {
           #convo-name {
             left: 20vw;
-            top: 29px;
             right: 0px;
             margin-top: 0;
           }
@@ -763,19 +760,31 @@ export class AppHome extends LitElement {
           }
 
           #saved ul {
-            height: 84vh;
+            max-height: 84vh;
+          }
+
+          #open-camera-button {
+            display: none;
+          }
+
+          #add-image-to-convo {
+            display: initial;
           }
         }
 
         @media(min-width: 1200px) {
           #saved ul {
-            height: 85vh;
+            max-height: 85vh;
           }
         }
 
         @media(max-width: 860px) {
           #saved {
             display: none;
+          }
+
+          #convo-name h2 {
+            max-width: 60vw;
           }
 
           #new-convo::part(control) {
@@ -797,17 +806,12 @@ export class AppHome extends LitElement {
           }
 
           main {
-            display: unset;
+            display: flex;
           }
 
           #convo-list {
-            height: 72vh;
             width: unset;
-            padding-top: 97px;
-          }
 
-          #convo-name {
-            margin-top: 30px;
           }
 
           #mobile-menu {
@@ -815,7 +819,7 @@ export class AppHome extends LitElement {
           }
 
           #mainBlock {
-            grid-template-columns: 1fr;
+            width: 100%;
           }
 
           ul {
@@ -842,6 +846,14 @@ export class AppHome extends LitElement {
           #suggested {
             width: 82%;
           }
+
+          #open-camera-button {
+            display: initial;
+          }
+
+          #add-image-to-convo {
+            display: none;
+          }
         }
 
         .mobile-saved #no-messages img {
@@ -850,23 +862,23 @@ export class AppHome extends LitElement {
 
         @media(max-width: 860px) and (min-height: 910px) {
           #convo-list {
-            height: 72vh;
+
           }
         }
 
         @media(min-height: 1000px) {
           #convo-list {
-            height: 79vh;
+
           }
         }
 
         @media (max-height: 420px) and (orientation: landscape){
           #convo-list {
-            height: 50vh;
+
           }
 
           #saved ul {
-            height: 79vh;
+            max-height: 79vh;
           }
 
           #no-messages {
@@ -892,19 +904,19 @@ export class AppHome extends LitElement {
 
         @media(max-height: 655px) {
           #convo-list {
-            height: 64vh;
+
           }
         }
 
         @media(max-height: 620px) {
           #convo-list {
-            height: 60vh;
+
           }
         }
 
         @media(max-height: 520px) {
           #convo-list {
-            height: 56vh;
+
           }
         }
 
@@ -946,9 +958,26 @@ export class AppHome extends LitElement {
           }
 
           #convo-list {
-            height: 50vh;
+
           }
         }
+
+        @media (horizontal-viewport-segments: 2) {
+          main {
+            grid-template-columns: 49vw 49vw;
+            gap: 23px;
+          }
+
+          #saved {
+            padding-right: 12px;
+          }
+
+
+            sl-drawer::part(panel) {
+              width: 49vw;
+            }
+
+       }
 
         @keyframes quickup {
           from {
@@ -1177,6 +1206,29 @@ export class AppHome extends LitElement {
     }
 
     reader.readAsDataURL(blobFromFile);
+  }
+
+  openCamera() {
+    const input = document.createElement('input');
+    input.type = "file";
+    input.name = "image";
+    input.accept = "image/*";
+    input.capture = "environment";
+
+    input.click();
+
+    // add iamge from input
+    input.addEventListener("change", async (event: any) => {
+      const file = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        this.addImageToConvo(base64data as string);
+      }
+
+      reader.readAsDataURL(file);
+    });
   }
 
   async send(): Promise<void> {
@@ -1684,7 +1736,7 @@ export class AppHome extends LitElement {
       </right-click>
 
       ${this.convoName ? html`
-      <sl-drawer class="web-results" placement="start" has-header label="Results from the Web">
+      <sl-drawer class="web-results" placement="end" has-header label="Results from the Web">
         <web-search .searchTerm="${this.convoName}"></web-search>
       </sl-drawer>` : null}
 
@@ -1771,6 +1823,11 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
+            ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
+            <img src="/assets/globe-outline.svg" alt="web results icon">
+          </fluent-button>` : null
+        }
+
               <fluent-button class="copy-button new-window-button" @click="${this.openInNewWindow}">
                 <img src="/assets/open-outline.svg" alt="open" />
               </fluent-button>
@@ -1782,7 +1839,7 @@ export class AppHome extends LitElement {
         </div>
         <ul id="convo-list">
           ${this.previousMessages.map((message) => {
-        return html`<li class="${message.role}">
+          return html`<li class="${message.role}">
             <div class="item-toolbar">
                 <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/share-social-outline.svg" alt="share" />
@@ -1798,7 +1855,7 @@ export class AppHome extends LitElement {
               <div .innerHTML="${message.content}"></div>
             </div>
           </li>`
-      })
+        })
         }
         </ul>
 
@@ -1806,7 +1863,7 @@ export class AppHome extends LitElement {
        ` : html`
           <div id="no-messages" class="main-content">
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
-            <p>Hello! How may I help you today?</p>
+            <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
               <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
@@ -1824,7 +1881,12 @@ export class AppHome extends LitElement {
             <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>
           <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
+
+          <fluent-button id="open-camera-button" @click="${() => this.openCamera()}" apperance="accent" size="small">
+            <img src="/assets/camera-outline.svg" alt="camera icon">
+          </fluent-button>
           ` : null}
+
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
 
@@ -1838,13 +1900,13 @@ export class AppHome extends LitElement {
             </fluent-button>
           `}
 
-          ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small">Web Results</fluent-button>` : null
-      }
         </div>
 
+        <div id="inner-extra-actions">
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
           </fluent-button>
+      </div>
         </div>
         <div id="input-inner">
           ${this.currentPhoto ? html`<img src="${this.currentPhoto}" alt="photo" width="40" height="40" />` : html``}

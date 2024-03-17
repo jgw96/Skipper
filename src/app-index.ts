@@ -28,7 +28,21 @@ export class AppIndex extends LitElement {
         --accent-stroke-control-hover: #8c6ee0;
       }
 
+      #intro-image-block {
+        height: 32em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #8c6ee0;
+        padding: 18px;
+        border-radius: 8px 0px 0px 8px;
+      }
 
+      #intro-content-block {
+        padding-right: 12px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
 
       key-manager {
         background: #ffffff0f;
@@ -49,6 +63,8 @@ export class AppIndex extends LitElement {
       .dialog-overview img {
         border-radius: 50%;
         width: 300px;
+
+        box-shadow: 0px 2px 20px #0000004a;
       }
 
       .dialog-overview::part(overlay) {
@@ -68,6 +84,10 @@ export class AppIndex extends LitElement {
         font-size: 14px;
       }
 
+      .dialog-overview::part(body) {
+        padding: 0;
+      }
+
       @media(prefers-color-scheme: light) {
         sl-drawer::part(panel) {
           background: #ffffff57;
@@ -83,7 +103,7 @@ export class AppIndex extends LitElement {
           --width: 100%;
         }
 
-        .dialog-overview img {
+        .dialog-overview img, #intro-image-block {
           display: none;
         }
 
@@ -91,7 +111,17 @@ export class AppIndex extends LitElement {
           flex-direction: column;
           display: block;
         }
+
+        #intro-content-block {
+          padding: 12px;
+        }
       }
+
+      @media (horizontal-viewport-segments: 2) {
+        sl-drawer::part(panel) {
+          width: 49vw;
+        }
+     }
     `;
   }
 
@@ -159,19 +189,19 @@ export class AppIndex extends LitElement {
       <app-settings @mode-changed="${() => this.modelChanged}" @theme-changed="${this.modelChanged}"></app-settings>
     </sl-drawer>
 
-    <sl-dialog no-header label="Get Started" class="dialog-overview">
-      <div>
+    <sl-dialog no-header label="Hello" class="dialog-overview">
+      <div id="intro-image-block">
         <img src="/assets/icons/maskable_icon_x512.png" alt="app icon" />
       </div>
-      <div>
-        <h1>Get Started</h1>
+      <div id="intro-content-block">
+        <h1>Hello!</h1>
         <p>
           Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.
         </p>
 
         <p>
-          To get started, you need to set up your API keys for the cloud based models you want to use.
-          Check <a href="">here</a> for how to get your keys.
+          To get started, you need to set up your API keys for the cloud models we support, OpenAI GPT4-Turbo and Google Gemini Pro.
+          Check <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">here to learn how to get an OpenAI Key</a> and <a href="https://aistudio.google.com/app/apikey">here to get a Google Gemini Pro key</a>.
           Once you have your keys, enter them below, and then click Save.
           Note, you must supply a key for atleast one cloud based model to use Skipper.
         </p>

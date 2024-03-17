@@ -10,7 +10,6 @@ export const styles = css`
   }
 
   main {
-    margin-top: 30px;
     height: calc(100vh - 30px);
   }
 

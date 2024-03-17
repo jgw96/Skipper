@@ -77,6 +77,7 @@ export class AppImage extends LitElement {
                 -webkit-backdrop-filter: blur(40px);
                 border-radius: 6px;
 
+
                 animation: quickup 0.3s ease;
               }
 
@@ -138,9 +139,11 @@ export class AppImage extends LitElement {
                 width: 472px;
                 color: #8c6ee0;
                 font-size: 54px;
-                margin-top: 0;
+                margin-top: 18px;
                 text-wrap: pretty;
                 text-shadow: #8c6ee082 2px 2px;
+
+                view-transition-name: greeting-caption;
             }
 
             #generating-spinner {
