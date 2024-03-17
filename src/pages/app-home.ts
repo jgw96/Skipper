@@ -4,6 +4,9 @@ import { property, customElement, state } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
+import '@shoelace-style/shoelace/dist/components/menu/menu.js';
+import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
+import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
 
 import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, fluentTooltip, provideFluentDesignSystem } from '@fluentui/web-components';
 
@@ -1823,14 +1826,36 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
+
+            <sl-dropdown hoist>
+              <fluent-button class="copy-button" slot="trigger" caret>
+                <img src="/assets/ellipsis-horizontal-outline.svg" alt="menu" />
+              </fluent-button>
+              <sl-menu>
+                <sl-menu-item class="copy-button new-window-button" @click="${this.openInNewWindow}">
+                  <img slot="prefix" src="/assets/open-outline.svg" alt="open" />
+                  Open in New Window
+                </sl-menu-item>
+                <sl-menu-item class="copy-button">
+                  <img slot="prefix" src="/assets/copy-outline.svg" alt="share" />
+                  Copy to Clipboard
+                </sl-menu-item>
+                <sl-menu-item class="copy-button">
+                <img slot="prefix" src="/assets/settings-outline.svg" alt="share" />
+                  Rename Conversation
+                </sl-menu-item>
+                <sl-menu-item class="copy-button">
+                  <img slot="prefix" src="/assets/trash-outline.svg" alt="trash" />
+                  Delete Conversation
+                </sl-menu-item>
+              </sl-menu>
+            </sl-dropdown>
+
+
             ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
             <img src="/assets/globe-outline.svg" alt="web results icon">
           </fluent-button>` : null
         }
-
-              <fluent-button class="copy-button new-window-button" @click="${this.openInNewWindow}">
-                <img src="/assets/open-outline.svg" alt="open" />
-              </fluent-button>
 
               <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
