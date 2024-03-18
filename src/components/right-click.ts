@@ -27,14 +27,10 @@ export class RightClick extends LitElement {
                 z-index: 10000;
                 width: fit-content;
                 overflow-x: hidden;
-                background: #1blala;
                 border-radius: 5px;
                 display: none;
                 pointer-events: none;
                 opacity: 0;
-
-                backdrop-filter: blur(48px);
-                -webkit-backdrop-filter: blur(48px);
 
                 animation-name: fadeIn;
                 animation-duration: 0.12s;
@@ -98,9 +94,9 @@ export class RightClick extends LitElement {
 
     render() {
         return html`
-        <div id="context-menu">
+        <sl-menu id="context-menu">
             <slot></slot>
-        </div>
+    </sl-menu>
         `;
     }
 }

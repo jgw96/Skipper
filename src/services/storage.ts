@@ -47,6 +47,13 @@ async function saveUsingIDB(name: string, convo: any[]) {
     }
 }
 
+export async function renameConvo(oldName: string, newName: string) {
+    const convo: any = await root.getFileHandle(oldName);
+    console.log("convo", convo)
+    await convo.move(newName);
+    return;
+}
+
 export async function exportAllConversations() {
     const conversations = await getConversations();
     const blob = new Blob([JSON.stringify(conversations)], { type: 'application/json' });

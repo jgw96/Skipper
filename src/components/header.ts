@@ -119,7 +119,7 @@ export class AppHeader extends LitElement {
       @media(prefers-color-scheme: light) {
         header {
           color: black;
-          background: white;
+          background: var(--theme-color);
         }
 
         nav a {

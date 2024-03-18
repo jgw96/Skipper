@@ -4,6 +4,9 @@ import { property, customElement, state } from 'lit/decorators.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
+import '@shoelace-style/shoelace/dist/components/menu/menu.js';
+import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
+import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
 
 import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, fluentTooltip, provideFluentDesignSystem } from '@fluentui/web-components';
 
@@ -50,6 +53,11 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8c6ee0;
           --accent-fill-hover: #8c6ee0;
           --accent-stroke-control-hover: #8c6ee0;
+        }
+
+        sl-dropdown sl-menu {
+          color: white;
+          border-radius: 8px;
         }
 
         fluent-tooltip {
@@ -112,6 +120,30 @@ export class AppHome extends LitElement {
           padding-top: 0;
         }
 
+
+        fluent-text-field {
+          --theme-color: #424242;
+          --neutral-fill-input-rest: var(--theme-color);
+          --neutral-fill-input-hover: var(--theme-color);
+          --neutral-fill-input-active: var(--theme-color);
+          --neutral-fill-input-focus: var(--theme-color);
+          background: var(--theme-color);
+          color: white;
+          border: none;
+
+          border-radius: 8px;
+      }
+
+      fluent-text-field::part(root) {
+          border: none;
+          background: initial;
+          border-radius: 8px;
+      }
+
+      #rename-input {
+        width: 100%;
+      }
+
         fluent-menu {
           background: #ffffff14;
           backdrop-filter: blur(48px);
@@ -169,6 +201,7 @@ export class AppHome extends LitElement {
 
         #saved fluent-card .title-bar .date-display, .mobile-saved #mobileSaved fluent-card .title-bar span.date-display {
           font-size: 10px;
+          color: #888888;
         }
 
         #suggested {
@@ -667,6 +700,19 @@ export class AppHome extends LitElement {
         @media(prefers-color-scheme: light) {
           li.system {
             background: var(--theme-color);
+          }
+
+          sl-dropdown sl-menu {
+            background: #cabcf0;
+            color: white;
+            border-radius: 8px;
+          }
+
+          #convo-name .action-bar {
+            background: #cbbdf1;
+            border-radius: 22px;
+            padding-left: 8px;
+            padding-right: 8px;
           }
 
           .copy-button::part(label) {
@@ -1231,6 +1277,39 @@ export class AppHome extends LitElement {
     });
   }
 
+  async copyConvoToClipboard() {
+    let convo = "";
+    this.previousMessages.forEach((message: any) => {
+      if (message.role === "user") {
+        convo += `You: ${message.content}\n`;
+      }
+      else {
+        convo += `Bot: ${message.content}\n`;
+      }
+    });
+
+    await navigator.clipboard.writeText(convo);
+  }
+
+  async renameConversation() {
+    const { renameConvo } = await import("../services/storage");
+
+    const renameInput = this.shadowRoot!.querySelector("#rename-input") as HTMLInputElement;
+
+    console.log("renameInput", renameInput.value, this.convoName)
+
+    await renameConvo(this.convoName as string, renameInput.value);
+
+    const dialog = this.shadowRoot!.querySelector(".rename-dialog") as any;
+    await dialog.hide();
+
+    this.convoName = renameInput.value;
+
+    const { getConversations } = await import('../services/storage');
+
+    this.savedConvos = await getConversations();
+  }
+
   async send(): Promise<void> {
     return new Promise(async (resolve): Promise<void> => {
       const input: any = this.shadowRoot?.querySelector('fluent-text-area');
@@ -1643,6 +1722,16 @@ export class AppHome extends LitElement {
     deleteDialog?.hide();
   }
 
+  closeRenameDialog() {
+    const renameDialog: any = this.shadowRoot?.querySelector('.rename-dialog');
+    renameDialog?.hide();
+  }
+
+  openRenameDialog() {
+    const renameDialog: any = this.shadowRoot?.querySelector('.rename-dialog');
+    renameDialog?.show();
+  }
+
   async handleDictate(event: any) {
     const text = event.detail.messageData;
 
@@ -1722,17 +1811,21 @@ export class AppHome extends LitElement {
         <fluent-button @click="${this.doDelete}" slot="footer" id="do-delete-button" appearance="danger">Delete</fluent-button>
       </sl-dialog>
 
+      <sl-dialog label="Rename Conversation" class="rename-dialog">
+        <fluent-text-field id="rename-input"></fluent-text-field>
+        <fluent-button @click="${this.closeRenameDialog}" slot="footer" appearance="danger">Cancel</fluent-button>
+        <fluent-button @click="${() => this.renameConversation()}" slot="footer" appearance="accent">Confirm</fluent-button>
+      </sl-dialog>
+
       <right-click>
-        <fluent-menu>
-          <fluent-menu-item @click="${() => this.newConvo()}">
+          <sl-menu-item @click="${() => this.newConvo()}">
             <sl-icon slot="prefix" src="/assets/send-outline.svg"></sl-icon>
             New Conversation
-          </fluent-menu-item>
-          <fluent-menu-item @click="${() => this.addImageToConvo()}">
+          </sl-menu-item>
+          <sl-menu-item @click="${() => this.addImageToConvo()}">
             <sl-icon slot="prefix" src="/assets/image-outline.svg"></sl-icon>
             Add Image
-          </fluent-menu-item>
-        </fluent-menu>
+          </sl-menu-item>
       </right-click>
 
       ${this.convoName ? html`
@@ -1823,14 +1916,36 @@ export class AppHome extends LitElement {
           <h2>${this.convoName}</h2>
 
             <div class="action-bar">
+
+            <sl-dropdown hoist>
+              <fluent-button class="copy-button" slot="trigger" caret>
+                <img src="/assets/ellipsis-horizontal-outline.svg" alt="menu" />
+              </fluent-button>
+              <sl-menu>
+                <sl-menu-item class="copy-button new-window-button" @click="${this.openInNewWindow}">
+                  <img slot="prefix" src="/assets/open-outline.svg" alt="open" />
+                  Open in New Window
+                </sl-menu-item>
+                <sl-menu-item @click="${() => this.copyConvoToClipboard()}" class="copy-button">
+                  <img slot="prefix" src="/assets/copy-outline.svg" alt="share" />
+                  Copy to Clipboard
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.openRenameDialog()}">
+                <img slot="prefix" src="/assets/settings-outline.svg" alt="share" />
+                  Rename Conversation
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.deleteConvo()}">
+                  <img slot="prefix" src="/assets/trash-outline.svg" alt="trash" />
+                  Delete Conversation
+                </sl-menu-item>
+              </sl-menu>
+            </sl-dropdown>
+
+
             ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
             <img src="/assets/globe-outline.svg" alt="web results icon">
           </fluent-button>` : null
         }
-
-              <fluent-button class="copy-button new-window-button" @click="${this.openInNewWindow}">
-                <img src="/assets/open-outline.svg" alt="open" />
-              </fluent-button>
 
               <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
