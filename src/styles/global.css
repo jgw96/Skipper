@@ -90,4 +90,12 @@ html::-webkit-scrollbar {
     background-color: var(--theme-color);
     --neutral-foreground-rest: white;
   }
+
+  html[data-theme="fluent"] {
+    background: linear-gradient(117deg, rgba(32,32,32,1) 0%, rgba(94,17,253,1) 71%, rgba(32,32,32,1) 89%);
+  }
+
+  html[data-theme="fluent"] body {
+    background-color: #ffffffdb;
+  }
 }

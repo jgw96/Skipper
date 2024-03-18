@@ -22,10 +22,6 @@ export class AppDictate extends LitElement {
                 background: var(--app-color-primary);
             }
 
-            #dictate::part(control) {
-                box-shadow: 0px 2px 20px #00000070;
-            }
-
             fluent-tooltip {
                 --neutral-layer-card-container: #8c6ee0;
                 --fill-color: var(--theme-color);
@@ -93,6 +89,10 @@ export class AppDictate extends LitElement {
 
                 #stop fluent-progress-ring::part(indeterminate-indicator-1) {
                     stroke: white;
+                }
+
+                #dictate::part(control) {
+                    box-shadow: 0px 2px 20px #00000070;
                 }
             }
 

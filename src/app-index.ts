@@ -90,11 +90,15 @@ export class AppIndex extends LitElement {
 
       @media(prefers-color-scheme: light) {
         sl-drawer::part(panel) {
-          background: #ffffff57;
+          background: var(--theme-color);
         }
 
         .dialog-overview {
           --sl-panel-background-color: #ffffff40;
+        }
+
+        sl-drawer::part(title) {
+          color: white;
         }
       }
 
