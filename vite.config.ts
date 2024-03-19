@@ -15,7 +15,7 @@ export default defineConfig({
     assetsDir: "code",
     minify: "terser",
     cssMinify: true,
-    target: ["edge118", "firefox116", "chrome118", "safari16" ],
+    target: ["esnext"],
     lib: false,
     rollupOptions: {
       output: {

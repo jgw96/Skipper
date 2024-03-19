@@ -22,7 +22,7 @@ export async function loadChatModule(model: "redpajama" | "llama" | "gemma" = "r
 
             chatModule.setInitProgressCallback(async (report: webllm.InitProgressReport) => {
                 console.log("progress", report);
-                if (report.progress === 1) {
+                if (report.progress === 1 && report.text.includes("Finish loading on WebGPU")) {
 
                     console.log("chat module loaded", await chatModule?.getGPUVendor());
                     resolve();

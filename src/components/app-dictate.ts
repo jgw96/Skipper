@@ -129,33 +129,6 @@ export class AppDictate extends LitElement {
     }
 
     async firstUpdated() {
-        // speech to text
-        // (window as any).requestIdleCallback(
-        //     async () => {
-        //         const sdk = await import("microsoft-cognitiveservices-speech-sdk");
-
-        //         const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-        //         const speechConfig = sdk.SpeechConfig.fromSubscription(
-        //             "b5b594f480a64837a37d7c3f24da9c38",
-        //             "westus"
-        //         );
-
-        //         speechConfig.speechRecognitionLanguage = "en-us";
-
-        //         this.recog = new sdk.SpeechRecognizer(
-        //             speechConfig,
-        //             audioConfig
-        //         );
-
-        //         console.log(this.recog);
-
-        //         this.setUpListeners();
-        //     },
-        //     {
-        //         timeout: 2000,
-        //     }
-        // );
-
         const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
         speechToText.addEventListener('recognized', (e: any) => {
             console.log('recognized', e.detail.message);
