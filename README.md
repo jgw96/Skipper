@@ -45,7 +45,7 @@ Local:
 
 - RedPajama - 3b
 - Llama 2 - 7b
-- Gemma - 2b (currently broken)
+- Gemma - 2b (only works on mobile at the moment)
 
 ## Supported Devices
 
