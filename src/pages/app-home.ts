@@ -1201,7 +1201,7 @@ export class AppHome extends LitElement {
   }
 
   async shareConvo(name: string, convo: Array<any>) {
-    const shareUrl = `${location.href}?title=${name}&convo=${JSON.stringify(convo)}`;
+    const shareUrl = `${location.href}?title=${this.convoName}&convo=${encodeURIComponent(JSON.stringify(convo))}`
     await navigator.share({
       title: name,
       text: name,
@@ -1210,7 +1210,8 @@ export class AppHome extends LitElement {
   }
 
   openInNewWindow() {
-    const windowURL = `${location.href}?title=${this.convoName}&convo=${JSON.stringify(this.previousMessages)}`;
+    // const windowURL = `${location.href}?title=${this.convoName}&convo=${JSON.stringify(this.previousMessages)}`;
+    const windowURL = `${location.href}?title=${this.convoName}&convo=${encodeURIComponent(JSON.stringify(this.previousMessages))}`
     window.open(windowURL, "new-window", "width=600,height=600");
   }
 
@@ -1315,8 +1316,6 @@ export class AppHome extends LitElement {
       const input: any = this.shadowRoot?.querySelector('fluent-text-area');
       const inputValue = input?.value;
       const list: any = this.shadowRoot?.querySelector('#convo-list');
-
-      console.log("this.currentPhoto", this.currentPhoto)
 
       const { chosenModelShipper } = await import('../services/ai');
 
