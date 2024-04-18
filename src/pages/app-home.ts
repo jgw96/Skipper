@@ -212,13 +212,13 @@ export class AppHome extends LitElement {
           margin: 0;
         }
 
-        .system ul {
+        .system ul, .assistant ul {
           padding: 0;
           margin: 0;
           list-style: initial;
         }
 
-        .system p {
+        .system p, .assistant p {
           padding: 0;
           margin: 0;
         }
@@ -427,7 +427,7 @@ export class AppHome extends LitElement {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          font-size: 14px;
+          font-size: 16px;
         }
 
         .content-bar img {
@@ -562,7 +562,7 @@ export class AppHome extends LitElement {
           border-color: white;
         }
 
-        li.system {
+        li.system, li.assistant {
           align-self: flex-start;
           background: rgba(255, 255, 255, 0.06);
           margin-right: 10vw;
@@ -698,7 +698,7 @@ export class AppHome extends LitElement {
         }
 
         @media(prefers-color-scheme: light) {
-          li.system {
+          li.system, li.assistant {
             background: var(--theme-color);
           }
 
@@ -775,7 +775,7 @@ export class AppHome extends LitElement {
             background: var(--theme-color);
           }
 
-          li.system .copy-button::part(base) {
+          li.system .copy-button::part(base), li.assistant .copy-button::part(base) {
             background: #c4c4c4;
           }
 
@@ -800,7 +800,7 @@ export class AppHome extends LitElement {
             margin-top: 0;
           }
 
-          li.user, li.system {
+          li.user, li.system, li.assistant {
             min-width: 30vw;
             max-width: 45vw;
           }
@@ -1474,31 +1474,51 @@ export class AppHome extends LitElement {
 
           const { requestLocalAI } = await import('../services/local-ai');
 
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "system",
-              // content: data.choices[0].message.content,
-              content: ""
-            }
-          ]
+          console.log("prev messages 1", this.previousMessages);
+
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "assistant",
+          //     // content: data.choices[0].message.content,
+          //     content: ""
+          //   }
+          // ];
+          console.log("prev messages 2", this.previousMessages);
 
           this.handleScroll(list);
 
-          /*const response = */await requestLocalAI(prompt as string, (event: any, string: string) => {
-            console.log('event', event, string);
+          const asyncGen = await requestLocalAI(this.previousMessages);
 
-            streamedContent += string;
-
-            if (streamedContent && streamedContent.length > 0) {
-
-              this.previousMessages[this.previousMessages.length - 1].content = marked.parse(string);
-
-              this.previousMessages = this.previousMessages;
-
-              this.requestUpdate();
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "assistant",
+              // content: data.choices[0].message.content,
+              content: ""
             }
-          });
+          ];
+
+          let message = "";
+          for await (const chunk of asyncGen) {
+            console.log(chunk);
+            if (chunk.choices[0].delta.content) {
+              // Last chunk has undefined content
+              message += chunk.choices[0].delta.content;
+              streamedContent += message;
+
+              if (streamedContent && streamedContent.length > 0) {
+
+                this.previousMessages[this.previousMessages.length - 1].content = marked.parse(message);
+
+                this.previousMessages = this.previousMessages;
+                console.log("prev messages 3", this.previousMessages);
+
+                this.requestUpdate();
+              }
+            }
+            // engine.interruptGenerate();  // works with interrupt as well
+          }
 
           await this.doSayIt(streamedContent);
 
@@ -1511,6 +1531,7 @@ export class AppHome extends LitElement {
             const goodMessages = this.previousMessages;
 
             console.log("goodMessages", goodMessages)
+            console.log("prev messages 4", goodMessages);
 
             const { saveConversation } = await import('../services/storage');
             await saveConversation(this.convoName as string, goodMessages);

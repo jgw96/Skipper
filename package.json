@@ -17,7 +17,7 @@
   "dependencies": {
     "@fluentui/web-components": "^2.5.16",
     "@google/generative-ai": "^0.2.0",
-    "@mlc-ai/web-llm": "^0.2.28",
+    "@mlc-ai/web-llm": "^0.2.32",
     "@shoelace-style/shoelace": "^2.14.0",
     "@thepassle/app-tools": "^0.9.12",
     "@vaadin/router": "^1.7.4",
