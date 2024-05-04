@@ -72,8 +72,9 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
+    // https://gpt-server-two-qsqckaz7va-uc.a.run.app
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",

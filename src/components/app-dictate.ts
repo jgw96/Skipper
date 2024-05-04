@@ -4,8 +4,6 @@ import { customElement, state } from "lit/decorators.js";
 
 import { fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
 
-import 'speech-to-text-toolkit';
-
 provideFluentDesignSystem().register(fluentProgressRing());
 
 @customElement("app-dictate")
@@ -90,10 +88,6 @@ export class AppDictate extends LitElement {
                 #stop fluent-progress-ring::part(indeterminate-indicator-1) {
                     stroke: white;
                 }
-
-                #dictate::part(control) {
-                    box-shadow: 0px 2px 20px #00000070;
-                }
             }
 
             @media(prefers-color-scheme: light) {
@@ -129,17 +123,32 @@ export class AppDictate extends LitElement {
     }
 
     async firstUpdated() {
-        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
-        speechToText.addEventListener('recognized', (e: any) => {
-            console.log('recognized', e.detail.message);
+        // speech to text
+        (window as any).requestIdleCallback(
+            async () => {
+                const sdk = await import("microsoft-cognitiveservices-speech-sdk");
 
-            let event = new CustomEvent("got-text", {
-                detail: {
-                    messageData: e.detail.message,
-                },
-            });
-            this.dispatchEvent(event);
-        });
+                const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+                const speechConfig = sdk.SpeechConfig.fromSubscription(
+                    "b5b594f480a64837a37d7c3f24da9c38",
+                    "westus"
+                );
+
+                speechConfig.speechRecognitionLanguage = "en-us";
+
+                this.recog = new sdk.SpeechRecognizer(
+                    speechConfig,
+                    audioConfig
+                );
+
+                console.log(this.recog);
+
+                this.setUpListeners();
+            },
+            {
+                timeout: 2000,
+            }
+        );
     }
 
     public async dictate() {
@@ -147,12 +156,11 @@ export class AppDictate extends LitElement {
             await (navigator as any).setAppBadge();
         }
 
-        this.wakeLock = await this.requestWakeLock();
-
-        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
-        speechToText?.startSpeechToText();
+        this.recog.startContinuousRecognitionAsync();
 
         this.started = true;
+
+        this.wakeLock = await this.requestWakeLock();
 
         let event = new CustomEvent("start-text", {
             detail: {
@@ -163,8 +171,7 @@ export class AppDictate extends LitElement {
     }
 
     async stop() {
-        const speechToText: any = this.shadowRoot?.querySelector("speech-to-text");
-        speechToText?.stopSpeechToText();
+        this.recog.stopContinuousRecognitionAsync();
 
         this.started = false;
 
@@ -178,7 +185,47 @@ export class AppDictate extends LitElement {
     }
 
     setUpListeners() {
+        this.lines = [];
 
+        if (this.recog) {
+            this.recog.recognizing = (s?: any, e?: any) => {
+                console.log(s);
+                console.log(e.result);
+
+                if (e.result.text && e.result.text.length > 0) {
+                    this.thinkingLines.push(e.result.text);
+                }
+
+                let event = new CustomEvent("thinking-text", {
+                    detail: {
+                        messageData: this.thinkingLines.join(" "),
+                    },
+                });
+                this.dispatchEvent(event);
+
+                this.thinkingLines = [];
+            };
+
+            this.recog.recognized = (s?: any, e?: any) => {
+                console.log(s);
+                console.log("recognized", e.result.text);
+
+                if (e.result.text && e.result.text.length > 0) {
+                    this.lines.push(e.result.text);
+
+                    let event = new CustomEvent("got-text", {
+                        detail: {
+                            messageData: this.lines,
+                        },
+                    });
+                    this.dispatchEvent(event);
+
+                    this.lines = [];
+
+                    this.stop();
+                }
+            };
+        }
     }
 
     requestWakeLock = async () => {
@@ -201,19 +248,17 @@ export class AppDictate extends LitElement {
 
     render() {
         return html`
-         <speech-to-text localOrCloud="local">
-            ${this.started === false
+      ${this.started === false
                 ? html`<fluent-button id="dictate" @click="${() => this.dictate()}">
-                    <img src="/assets/mic-outline.svg" />
-            </fluent-button>
-            <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
-            `
+                <img src="/assets/mic-outline.svg" />
+          </fluent-button>
+          <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
+          `
                 : html`
-                <fluent-button id="stop" @click="${() => this.stop()}">
-                <fluent-progress-ring></fluent-progress-ring>
-                </fluent-button>
-            `}
-          </speech-to-text>
+            <fluent-button id="stop" @click="${() => this.stop()}">
+              <fluent-progress-ring></fluent-progress-ring>
+            </fluent-button>
+          `}
     `;
     }
 }

@@ -47,12 +47,12 @@ export class AppHome extends LitElement {
       styles,
       css`
         fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip, fluent-search {
-          --accent-fill-rest: #8c6ee0;
-          --accent-stroke-control-rest: #8c6ee0;
-          --accent-fill-active: #8c6ee0;
-          --accent-stroke-control-active: #8c6ee0;
-          --accent-fill-hover: #8c6ee0;
-          --accent-stroke-control-hover: #8c6ee0;
+          --accent-fill-rest: #8769dc;
+          --accent-stroke-control-rest: #8769dc;
+          --accent-fill-active: #8769dc;
+          --accent-stroke-control-active: #8769dc;
+          --accent-fill-hover: #8769dc;
+          --accent-stroke-control-hover: #8769dc;
         }
 
         sl-dropdown sl-menu {
@@ -61,7 +61,7 @@ export class AppHome extends LitElement {
         }
 
         fluent-tooltip {
-          --neutral-layer-card-container: #8c6ee0;
+          --neutral-layer-card-container: #8769dc;
           --fill-color: var(--theme-color);
           color: white;
           border: none;
@@ -260,7 +260,7 @@ export class AppHome extends LitElement {
         }
 
         #input-block.drag-over {
-          background: #8c6ee042;
+          background: #8769dc42;
         }
 
         fluent-card {
@@ -432,13 +432,14 @@ export class AppHome extends LitElement {
 
         .content-bar img {
           border-radius: 8px;
-          width: 100px;
+          width: 210px;
+          margin: 10px;
         }
 
 
         main {
           display: grid;
-          grid-template-columns: 20vw 80vw;
+          grid-template-columns: 18vw 82vw;
         }
 
         #saved {
@@ -552,7 +553,7 @@ export class AppHome extends LitElement {
 
         li.user {
           align-self: flex-end;
-          background: #8c6ee0;
+          background: #8769dc;
           margin-left: 10vw;
 
           animation: quickup 0.3s ease;
@@ -621,7 +622,7 @@ export class AppHome extends LitElement {
         }
 
         #dont-speak {
-          background: #8c6ee0;
+          background: #8769dc;
         }
 
         #input-block fluent-button::part(label) {
@@ -660,12 +661,12 @@ export class AppHome extends LitElement {
           font-size: 38px;
           width: 420px;
 
-          color: #8c6ee0;
+          color: #8769dc;
           font-size: 54px;
           margin-top: 0;
           text-wrap: pretty;
 
-          text-shadow: #8c6ee082 2px 2px;
+          text-shadow: #8769dc82 2px 2px;
 
           view-transition-name: greeting-caption;
         }
@@ -768,7 +769,7 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            background: #8c6ee073;
+            background: #8769dc73;
           }
 
           #saved li {
@@ -1551,83 +1552,131 @@ export class AppHome extends LitElement {
           resolve();
         }
         else {
-          const { makeAIRequestStreaming } = await import('../services/ai');
-          const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
+          // const { makeAIRequestStreaming } = await import('../services/ai');
+          // const evtSource = await makeAIRequestStreaming(this.currentPhoto ? this.currentPhoto : "", prompt as string, this.previousMessages);
+
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "system",
+          //     // content: data.choices[0].message.content,
+          //     content: ""
+          //   }
+          // ]
+
+          // evtSource.onmessage = async (event) => {
+          //   console.log('event', event);
+          //   this.handleScroll(list);
+
+          //   const data = JSON.parse(event.data);
+          //   console.log('data', data);
+
+          //   // close evtSource if the response is complete
+          //   if (data.choices[0].finish_reason !== null) {
+          //     console.log("data stream closed");
+
+          //     evtSource.close();
+
+          //     await this.doSayIt(streamedContent);
+
+          //     streamedContent = "";
+
+          //     const markedContent = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+          //     this.previousMessages[this.previousMessages.length - 1].content = markedContent;
+
+          //     window.requestIdleCallback(async () => {
+          //       if (this.previousMessages.length > 1) {
+          //         const goodMessages = this.previousMessages;
+
+          //         const { saveConversation } = await import('../services/storage');
+          //         await saveConversation(this.convoName as string, goodMessages);
+
+          //         const { getConversations } = await import('../services/storage');
+          //         this.savedConvos = await getConversations();
+
+          //         console.log("this.savedConvos", this.savedConvos)
+          //       }
+
+
+          //     }, { timeout: 1000 });
+
+          //     this.loading = false;
+
+          //     this.handleScroll(list);
+
+          //     resolve();
+          //   }
+
+          //   // continuously add to the last message in this.previousMessages
+          //   // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
+
+          //   if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
+          //     streamedContent += data.choices[0].delta.content;
+
+          //     if (streamedContent && streamedContent.length > 0) {
+
+          //       // turn "" into '' so that marked can parse it
+          //       streamedContent = streamedContent.replace(/"/g, "'");
+
+          //       const markdown = await marked.parse(streamedContent);
+          //       console.log("markdown", markdown)
+
+          //       this.previousMessages[this.previousMessages.length - 1].content = markdown;
+
+          //       this.previousMessages = this.previousMessages;
+
+          //       this.requestUpdate();
+          //     }
+          //   }
+          // }
+
+          const { makeAIRequest } = await import('../services/ai');
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          await this.doSayIt(data.choices[0].message.content);
 
           this.previousMessages = [
             ...this.previousMessages,
             {
               role: "system",
-              // content: data.choices[0].message.content,
-              content: ""
+              content: data.choices[0].message.content,
+              // content: data
             }
-          ]
+          ];
 
-          evtSource.onmessage = async (event) => {
-            console.log('event', event);
+          this.handleScroll(list);
+
+          if (this.previousMessages.length > 1) {
+            console.log("look here", this.convoName, this.previousMessages);
+
+            const { marked } = await import('marked');
+
+            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+
+            const goodMessages = this.previousMessages;
+
+            console.log("goodMessages", goodMessages)
+
+            const { saveConversation } = await import('../services/storage');
+            await saveConversation(this.convoName as string, goodMessages);
+
+            const { getConversations } = await import('../services/storage');
+            this.savedConvos = await getConversations();
+
+            console.log("this.savedConvos", this.savedConvos)
+
+            this.loading = false;
+
             this.handleScroll(list);
 
-            const data = JSON.parse(event.data);
-            console.log('data', data);
-
-            // close evtSource if the response is complete
-            if (data.choices[0].finish_reason !== null) {
-              console.log("data stream closed");
-
-              evtSource.close();
-
-              await this.doSayIt(streamedContent);
-
-              streamedContent = "";
-
-              const markedContent = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
-              this.previousMessages[this.previousMessages.length - 1].content = markedContent;
-
-              window.requestIdleCallback(async () => {
-                if (this.previousMessages.length > 1) {
-                  const goodMessages = this.previousMessages;
-
-                  const { saveConversation } = await import('../services/storage');
-                  await saveConversation(this.convoName as string, goodMessages);
-
-                  const { getConversations } = await import('../services/storage');
-                  this.savedConvos = await getConversations();
-
-                  console.log("this.savedConvos", this.savedConvos)
-                }
-
-
-              }, { timeout: 1000 });
-
-              this.loading = false;
-
-              this.handleScroll(list);
-
-              resolve();
-            }
-
-            // continuously add to the last message in this.previousMessages
-            // this.previousMessages[this.previousMessages.length - 1].content += data.choices[0].delta.content;
-
-            if (data.choices[0].delta.content && data.choices[0].delta.content.length > 0) {
-              streamedContent += data.choices[0].delta.content;
-
-              if (streamedContent && streamedContent.length > 0) {
-
-                // turn "" into '' so that marked can parse it
-                streamedContent = streamedContent.replace(/"/g, "'");
-
-                const markdown = await marked.parse(streamedContent);
-                console.log("markdown", markdown)
-
-                this.previousMessages[this.previousMessages.length - 1].content = markdown;
-
-                this.previousMessages = this.previousMessages;
-
-                this.requestUpdate();
-              }
-            }
+            resolve();
           }
+
+          this.loading = false;
+
+          this.handleScroll(list);
+
+          resolve();
 
         }
 
@@ -1753,12 +1802,14 @@ export class AppHome extends LitElement {
   }
 
   async handleDictate(event: any) {
-    const text = event.detail.messageData;
+    console.log("handle dictate", event.detail.messageData)
+    const text = event.detail.messageData[0];
 
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = text;
 
     await this.send();
+    console.log("sent");
 
     const dictate: any = this.shadowRoot?.querySelector('app-dictate');
     dictate.dictate();
@@ -1843,7 +1894,7 @@ export class AppHome extends LitElement {
             New Conversation
           </sl-menu-item>
           <sl-menu-item @click="${() => this.addImageToConvo()}">
-            <sl-icon slot="prefix" src="/assets/image-outline.svg"></sl-icon>
+          <sl-icon slot="prefix" src="/assets/image-outline.svg"></sl-icon>
             Add Image
           </sl-menu-item>
       </right-click>
@@ -2013,7 +2064,7 @@ export class AppHome extends LitElement {
         <div id="extra-actions">
           <div id="inner-extra-actions">
           ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" id="add-image-to-convo" size="small">
-            <img src="/assets/image-outline.svg" alt="image icon">
+          <img src="/assets/image-outline.svg" alt="image icon">
           </fluent-button>
           <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
 
@@ -2049,7 +2100,7 @@ export class AppHome extends LitElement {
           <fluent-text-area ?disabled="${this.modelLoading}" placeholder="Enter your message"></fluent-text-area>
 
           <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.send}>
-            <img src="/assets/send-outline.svg" alt="send" />
+          <img src="/assets/send-outline.svg" alt="send" />
           </fluent-button>
         </div>
     </div>
