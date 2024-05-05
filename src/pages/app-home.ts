@@ -1691,8 +1691,11 @@ export class AppHome extends LitElement {
   async doSayIt(text: string): Promise<void> {
     return new Promise(async (resolve) => {
       if (this.sayIT) {
+        const regex = /(<([^>]+)>)/ig;
+        const result = text.replace(regex, "");
+
         const { doTextToSpeech } = await import("../services/ai");
-        doTextToSpeech(text);
+        doTextToSpeech(result);
 
         resolve();
       }
@@ -1761,7 +1764,10 @@ export class AppHome extends LitElement {
   }
 
   async copyButton(content: string) {
-    await navigator.clipboard.writeText(content);
+    const regex = /(<([^>]+)>)/ig;
+    const result = content.replace(regex, "");
+
+    await navigator.clipboard.writeText(result);
   }
 
   async shareButton(content: string) {
@@ -1869,6 +1875,14 @@ export class AppHome extends LitElement {
 
   doSpeech() {
     this.sayIT = !this.sayIT;
+  }
+
+  async speakIt(content: string) {
+    const regex = /(<([^>]+)>)/ig;
+    const result = content.replace(regex, "");
+
+    const { doTextToSpeech } = await import("../services/ai");
+    await doTextToSpeech(result);
   }
 
   render() {
@@ -2038,6 +2052,10 @@ export class AppHome extends LitElement {
                 <sl-button @click="${() => this.copyButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/copy-outline.svg" alt="copy" />
                 </sl-button>
+
+                <sl-button @click="${() => this.speakIt(message.content)}" circle size="small" class="copy-button">
+                  <img src="/assets/volume-high-outline.svg" alt="copy" />
+                </sl-button>
             </div>
 
             <div class="content-bar">
@@ -2062,13 +2080,12 @@ export class AppHome extends LitElement {
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
               <li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>
               <li @click="${() => this.preDefinedChat("What is the weather right now in Seattle?")}">What is the weather right now in Seattle?</li>
-              ${
-                this.authToken && this.authToken.length > 0 ? html`
+              ${this.authToken && this.authToken.length > 0 ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Set a todo for me to learn guitar")}">Set a todo for me to learn guitar</li>
 
                 ` : null
-              }
+        }
             </ul>
           </div>
        `}

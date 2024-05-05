@@ -17,7 +17,7 @@ export class AppLogin extends LitElement {
             }
 
             fluent-button::part(control) {
-                background: #8769dc;
+                background: #ffffff0f;
             }
 
             fluent-button img {
@@ -38,7 +38,7 @@ export class AppLogin extends LitElement {
             // }
 
             #block p {
-                background: #8769dc;
+                background: #ffffff0f;
                 padding: 8px;
                 border-radius: 8px;
                 font-size: 12px;
