@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/msal-browser": "^3.13.0",
     "@fluentui/web-components": "^2.5.16",
     "@google/generative-ai": "^0.2.0",
     "@mlc-ai/web-llm": "^0.2.32",

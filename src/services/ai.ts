@@ -74,7 +74,9 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     prompt = prompt + ". " + extraPrompt;
     // https://gpt-server-two-qsqckaz7va-uc.a.run.app
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}`, {
+    const authToken = localStorage.getItem("accessToken");
+
+    const response = await fetch(`http://localhost:8080/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
