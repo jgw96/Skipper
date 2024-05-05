@@ -7,14 +7,16 @@ import "./key-manager";
 import {
     provideFluentDesignSystem,
     fluentSelect,
-    fluentOption
+    fluentOption,
+    fluentSwitch
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
 
 provideFluentDesignSystem()
     .register(
         fluentSelect(),
-        fluentOption()
+        fluentOption(),
+        fluentSwitch()
     );
 
 @customElement("app-settings")
@@ -55,6 +57,13 @@ export class AppSettings extends LitElement {
         fluent-option {
             margin-top: 3px;
             margin-bottom: 3px;
+        }
+
+        fluent-switch[checked] {
+            --accent-fill-rest: #8769dc;
+            --accent-fill-hover: #8769dc;
+            --accent-fill-active: #8769dc;
+            --neutral-fill-rest: #8769dc;
         }
 
         label {
@@ -130,6 +139,17 @@ export class AppSettings extends LitElement {
             modelInput.currentValue = 'openai';
             setChosenModelShipper('openai');
         }
+
+        const voiceQuality = localStorage.getItem('voiceQuality');
+        const voiceQualityInput = this.shadowRoot?.querySelector('#voiceQuality') as any;
+        if (voiceQuality) {
+            // voiceQualityInput.checked = voiceQuality === 'high';
+            voiceQualityInput.setAttribute('checked', voiceQuality === 'high');
+        }
+        else {
+            // voiceQualityInput.checked = true;
+            voiceQualityInput.setAttribute('checked', 'true');
+        }
     }
 
     chooseModel($event: any) {
@@ -140,6 +160,16 @@ export class AppSettings extends LitElement {
         this.dispatchEvent(new CustomEvent('theme-changed', {
             detail: {
                 model: $event.target.value
+            }
+        }));
+    }
+
+    chooseVoiceQuality($event: any) {
+        localStorage.setItem('voiceQuality', $event.target.checked ? 'high' : 'low');
+
+        this.dispatchEvent(new CustomEvent('theme-changed', {
+            detail: {
+                voiceQuality: $event.target.checked ? 'high' : 'low'
             }
         }));
     }
@@ -181,6 +211,19 @@ export class AppSettings extends LitElement {
                     Choose the AI model Skipper uses to chat to you. The cloud models are more powerful, faster and can work on any device.
                     However, the local models ensure your chat never leaves the device. Be aware though that the local model may be slower, much slower depending on your device,
                     and will use more battery. For the best local model performance, use a device with a dedicated GPU.
+                </p>
+            </div>
+
+            <div class="setting">
+                <label for="voiceQuality">Voice Quality</label>
+                <fluent-switch @change="${this.chooseVoiceQuality}" id="voiceQuality" title="Voice Quality">
+                    <span slot="checked-message">High</span>
+                    <span slot="unchecked-message">Low</span>
+                </fluent-switch>
+
+                <p>
+                    Choose the quality of the voice synthesis. High quality will sound more natural but will take longer to generate before speaking.
+                    Low quality will sound more robotic but will be faster.
                 </p>
             </div>
 
