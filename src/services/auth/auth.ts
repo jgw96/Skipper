@@ -3,7 +3,7 @@ import { AccountInfo, InteractionRequiredAuthError, PublicClientApplication } fr
 const msalConfig = {
     auth: {
         clientId: '385ccfbf-05e4-4f18-8e83-2e0ce7d3c636',
-        redirectUri: 'http://localhost:3002/'
+        redirectUri: location.href
     },
 };
 
