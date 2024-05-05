@@ -18,12 +18,12 @@ export class AppImage extends LitElement {
             }
 
             fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-progress-ring {
-                --accent-fill-rest: #8c6ee0;
-                --accent-stroke-control-rest: #8c6ee0;
-                --accent-fill-active: #8c6ee0;
-                --accent-stroke-control-active: #8c6ee0;
-                --accent-fill-hover: #8c6ee0;
-                --accent-stroke-control-hover: #8c6ee0;
+                --accent-fill-rest: #8769dc;
+                --accent-stroke-control-rest: #8769dc;
+                --accent-fill-active: #8769dc;
+                --accent-stroke-control-active: #8769dc;
+                --accent-fill-hover: #8769dc;
+                --accent-stroke-control-hover: #8769dc;
               }
 
             main {
@@ -137,11 +137,11 @@ export class AppImage extends LitElement {
                 font-weight: bold;
                 font-size: 38px;
                 width: 472px;
-                color: #8c6ee0;
+                color: #8769dc;
                 font-size: 54px;
                 margin-top: 18px;
                 text-wrap: pretty;
-                text-shadow: #8c6ee082 2px 2px;
+                text-shadow: #8769dc82 2px 2px;
 
                 view-transition-name: greeting-caption;
             }
@@ -194,7 +194,7 @@ export class AppImage extends LitElement {
 
               @media(prefers-color-scheme: light) {
                 #image-input-block, #generating-spinner {
-                  background: #8c6ee073;
+                  background: #8769dc73;
                 }
 
                 #generating-spinner {
@@ -202,7 +202,7 @@ export class AppImage extends LitElement {
                 }
 
                 #quick-styles fluent-button::part(control) {
-                    background: #8c6ee0;
+                    background: #8769dc;
                     color: white;
                 }
 

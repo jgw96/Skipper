@@ -72,8 +72,41 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
+    // https://gpt-server-two-qsqckaz7va-uc.a.run.app
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}&key=${GPTKey}`, {
+    const authToken = localStorage.getItem("accessToken");
+    const taskListID = localStorage.getItem("taskListID");
+
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
+        method: 'POST',
+        headers: new Headers({
+            "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({
+            image: currentBase64Data || base64data,
+            previousMessages: previousMessages,
+            key: GPTKey
+        })
+    });
+
+    const data = await response.json();
+    console.log(data.choices[0]);
+
+    return data;
+}
+
+export async function makeAIRequestWithImage(base64data: string, prompt: string, previousMessages: any[]) {
+    console.log("makeAIRequest", base64data, prompt, previousMessages)
+    currentBase64Data = base64data;
+
+    // add instruction to format response as HTML
+    prompt = prompt + ". " + extraPrompt;
+    // https://gpt-server-two-qsqckaz7va-uc.a.run.app
+
+    const authToken = localStorage.getItem("accessToken");
+    const taskListID = localStorage.getItem("taskListID");
+
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",

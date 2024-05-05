@@ -1,6 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
 
+import './app-login';
+
 
 import { fluentAnchor, provideFluentDesignSystem } from '@fluentui/web-components';
 
@@ -214,6 +216,7 @@ export class AppHeader extends LitElement {
         </div>
 
         <div id="header-actions">
+          <app-login></app-login>
           ${this.enableBack === false ? html`<fluent-anchor href="/photo">
             <img src="/assets/scan-outline.svg">
           </fluent-anchor>` : null}

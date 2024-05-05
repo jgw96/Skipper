@@ -23,12 +23,12 @@ export class KeyManager extends LitElement {
             }
 
             fluent-button, fluent-text-field, fluent-listbox, fluent-card, fluent-tooltip {
-                --accent-fill-rest: #8c6ee0;
-                --accent-stroke-control-rest: #8c6ee0;
-                --accent-fill-active: #8c6ee0;
-                --accent-stroke-control-active: #8c6ee0;
-                --accent-fill-hover: #8c6ee0;
-                --accent-stroke-control-hover: #8c6ee0;
+                --accent-fill-rest: #8769dc;
+                --accent-stroke-control-rest: #8769dc;
+                --accent-fill-active: #8769dc;
+                --accent-stroke-control-active: #8769dc;
+                --accent-fill-hover: #8769dc;
+                --accent-stroke-control-hover: #8769dc;
               }
 
             fluent-text-field {

@@ -20,12 +20,12 @@ export class AppIndex extends LitElement {
       }
 
       fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
-        --accent-fill-rest: #8c6ee0;
-        --accent-stroke-control-rest: #8c6ee0;
-        --accent-fill-active: #8c6ee0;
-        --accent-stroke-control-active: #8c6ee0;
-        --accent-fill-hover: #8c6ee0;
-        --accent-stroke-control-hover: #8c6ee0;
+        --accent-fill-rest: #8769dc;
+        --accent-stroke-control-rest: #8769dc;
+        --accent-fill-active: #8769dc;
+        --accent-stroke-control-active: #8769dc;
+        --accent-fill-hover: #8769dc;
+        --accent-stroke-control-hover: #8769dc;
       }
 
       #intro-image-block {
@@ -33,7 +33,7 @@ export class AppIndex extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #8c6ee0;
+        background: #8769dc;
         padding: 18px;
         border-radius: 8px 0px 0px 8px;
       }

@@ -114,12 +114,12 @@ export class AppVoice extends LitElement {
     }
 
     fluent-button {
-      --accent-fill-rest: #8c6ee0;
-      --accent-stroke-control-rest: #8c6ee0;
-      --accent-fill-active: #8c6ee0;
-      --accent-stroke-control-active: #8c6ee0;
-      --accent-fill-hover: #8c6ee0;
-      --accent-stroke-control-hover: #8c6ee0;
+      --accent-fill-rest: #8769dc;
+      --accent-stroke-control-rest: #8769dc;
+      --accent-fill-active: #8769dc;
+      --accent-stroke-control-active: #8769dc;
+      --accent-fill-hover: #8769dc;
+      --accent-stroke-control-hover: #8769dc;
     }
 
     ul {
@@ -460,7 +460,7 @@ export class AppVoice extends LitElement {
           ${this.loading === false ? html`<fluent-button appearance="accent" id="start-button" @click="${() => this.start()}">
             Start Conversation
         </fluent-button>` : html`<fluent-button class="stop-button" id="start-button" @click="${() => this.stop()}">
-            <img slot="prefix" src="/assets/mic-outline.svg" alt="Start" />
+        <img slot="prefix" src="/assets/mic-outline.svg" alt="Start" />
 
             Stop Conversation
         </fluent-button>`}

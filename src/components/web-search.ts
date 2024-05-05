@@ -24,12 +24,12 @@ export class WebSearch extends LitElement {
             }
 
             fluent-button, fluent-text-area, fluent-listbox, fluent-card {
-                --accent-fill-rest: #8c6ee0;
-                --accent-stroke-control-rest: #8c6ee0;
-                --accent-fill-active: #8c6ee0;
-                --accent-stroke-control-active: #8c6ee0;
-                --accent-fill-hover: #8c6ee0;
-                --accent-stroke-control-hover: #8c6ee0;
+                --accent-fill-rest: #8769dc;
+                --accent-stroke-control-rest: #8769dc;
+                --accent-fill-active: #8769dc;
+                --accent-stroke-control-active: #8769dc;
+                --accent-fill-hover: #8769dc;
+                --accent-stroke-control-hover: #8769dc;
               }
 
               fluent-card {
@@ -38,7 +38,7 @@ export class WebSearch extends LitElement {
               }
 
               fluent-card a {
-                color: #8c6ee0;
+                color: #8769dc;
                 text-decoration: none;
 
               }
