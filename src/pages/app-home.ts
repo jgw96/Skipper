@@ -41,6 +41,7 @@ export class AppHome extends LitElement {
 
   captureStream: any;
   modelShipper: string = "";
+  @state() authToken: string | null = null;
 
   static get styles() {
     return [
@@ -641,7 +642,8 @@ export class AppHome extends LitElement {
           align-items: center;
           gap: 10px;
           font-size: 18px;
-          margin-top: 10vh;
+          margin-top: 5vh;
+          max-height: 70vh;
 
           animation: fadein 0.5s ease;
         }
@@ -1072,6 +1074,8 @@ export class AppHome extends LitElement {
           reader.readAsDataURL(sharedFile);
         }
       }
+
+      this.authToken = localStorage.getItem("accessToken");
     }, 2000);
 
     // this method is a lifecycle even in lit
@@ -1413,8 +1417,8 @@ export class AppHome extends LitElement {
           resolve();
         }
         else if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
-          const { makeAIRequest } = await import('../services/ai');
-          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+          const { makeAIRequestWithImage } = await import('../services/ai');
+          const data = await makeAIRequestWithImage(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
           if (this.currentPhoto) {
             this.currentPhoto = undefined;
@@ -2056,6 +2060,15 @@ export class AppHome extends LitElement {
               <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
+              <li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>
+              <li @click="${() => this.preDefinedChat("What is the weather right now in Seattle?")}">What is the weather right now in Seattle?</li>
+              ${
+                this.authToken && this.authToken.length > 0 ? html`
+                  <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
+                  <li @click="${() => this.preDefinedChat("Set a todo for me to learn guitar")}">Set a todo for me to learn guitar</li>
+
+                ` : null
+              }
             </ul>
           </div>
        `}

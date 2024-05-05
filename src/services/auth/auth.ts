@@ -21,7 +21,7 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
         msalInstance.setActiveAccount(myAccounts[0]);
 
         var request = {
-            scopes: ["User.Read", "Mail.ReadBasic"],
+            scopes: ["User.Read", "Mail.ReadWrite", "Mail.Send", "Tasks.ReadWrite"],
         };
 
         msalInstance.acquireTokenSilent(request).then(async (tokenResponse) => {
@@ -31,6 +31,9 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
             console.log("profile", profile);
 
             localStorage.setItem("accessToken", tokenResponse.accessToken);
+
+            const taskListIDInfo = await setUpDefaultTaskList({ msAuthToken: tokenResponse.accessToken });
+            console.log("taskListID", taskListIDInfo.id);
         }).catch(async (error: any) => {
             console.log("Silent token acquisition fails. Acquiring token using redirect", error)
             if (error instanceof InteractionRequiredAuthError) {
@@ -42,6 +45,9 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
                 const profile = await getUserProfile(tokenResponse.accessToken);
                 console.log("profile", profile);
+
+                const taskListIDInfo = await setUpDefaultTaskList({ msAuthToken: tokenResponse.accessToken });
+                console.log("taskListID", taskListIDInfo.id);
             }
 
 
@@ -56,7 +62,7 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
 export const signIn = async () => {
     const loginRequest = {
-        scopes: ["user.read", "mail.send"], // optional Array<string>
+        scopes: ["user.read", "mail.readwrite", "mail.send", "tasks.readwrite"], // optional Array<string>
     };
 
     try {
@@ -84,3 +90,23 @@ export const getUserProfile = (accessToken: string) => {
             });
     })
 }
+
+export async function setUpDefaultTaskList(args: { msAuthToken: string }) {
+    const { msAuthToken } = args;
+    const response = await fetch("https://graph.microsoft.com/v1.0/me/todo/lists", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${msAuthToken}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            displayName: "Skipper"
+        })
+    });
+
+    const jsonData = await response.json();
+
+    localStorage.setItem("taskListID", jsonData.id);
+    return jsonData;
+}
+
