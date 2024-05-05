@@ -14,6 +14,7 @@ export class AppLogin extends LitElement {
 
             fluent-button {
                 animation: quickSlideFromLeft 0.3s;
+                app-region: no-drag;
             }
 
             fluent-button::part(control) {
