@@ -1430,7 +1430,7 @@ export class AppHome extends LitElement {
           this.previousMessages = [
             ...this.previousMessages,
             {
-              role: "system",
+              role: "assistant",
               content: data.choices[0].message.content,
               // content: data
             }
@@ -1642,7 +1642,7 @@ export class AppHome extends LitElement {
           this.previousMessages = [
             ...this.previousMessages,
             {
-              role: "system",
+              role: "assistant",
               content: data.choices[0].message.content,
               // content: data
             }

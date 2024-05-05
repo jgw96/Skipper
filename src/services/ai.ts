@@ -202,6 +202,16 @@ export async function generateImage(prompt: string) {
 
 export async function doTextToSpeech(script: string) {
     return new Promise(async (resolve) => {
+        const qualityCheck = localStorage.getItem("voiceQuality");
+        if (qualityCheck === "low") {
+            // use web speech api
+            const synth = window.speechSynthesis;
+            const utterThis = new SpeechSynthesisUtterance(script);
+            synth.speak(utterThis);
+
+            resolve(script);
+        }
+
         const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
             method: "POST",
             headers: new Headers({
