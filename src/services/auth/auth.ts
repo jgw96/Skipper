@@ -73,7 +73,7 @@ export const signIn = async () => {
 }
 
 export const getUserProfile = (accessToken: string) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const headers = new Headers();
         const bearer = "Bearer " + accessToken;
         headers.append("Authorization", bearer);
