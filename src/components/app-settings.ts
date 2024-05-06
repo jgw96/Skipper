@@ -79,6 +79,10 @@ export class AppSettings extends LitElement {
                 border: none;
               }
 
+              fluent-switch {
+                --neutral-foreground-rest: white;
+              }
+
               fluent-select::part(listbox), fluent-option {
                 background: var(--theme-color);
                 color: white;
@@ -100,7 +104,8 @@ export class AppSettings extends LitElement {
               }
 
               .setting {
-                color: white;
+                color: black;
+                background: white;
               }
 
               fluent-select::part(listbox) {
@@ -110,10 +115,6 @@ export class AppSettings extends LitElement {
 
               fluent-option {
                 background: white;
-              }
-
-              .setting {
-                background: #0000002b;
               }
         }
         `;

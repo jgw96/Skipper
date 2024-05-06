@@ -129,7 +129,7 @@ export class AppHeader extends LitElement {
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
-          background: #cecece;
+          background: transparent;
         }
       }
 
@@ -141,6 +141,10 @@ export class AppHeader extends LitElement {
           -webkit-backdrop-filter: blur(40px);
         }
 
+        fluent-button img, fluent-anchor img {
+          filter: invert(1);
+        }
+
         fluent-anchor::part(control), fluent-button::part(control) {
           background: transparent;
           color: white;
@@ -150,6 +154,13 @@ export class AppHeader extends LitElement {
           background: #2d2d2d;
         }
       }
+
+      @media(max-width: 680px) {
+        header {
+          background: transparent;
+        }
+      }
+
 
       @keyframes quickSlideFromleft {
         from {

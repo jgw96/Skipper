@@ -17,6 +17,7 @@ import { styles } from '../styles/shared-styles';
 import "../components/app-dictate";
 import "../components/right-click";
 import "../components/web-search";
+import "../components/message-skeleton";
 import { marked } from 'marked';
 
 @customElement('app-home')
@@ -681,6 +682,10 @@ export class AppHome extends LitElement {
             -webkit-backdrop-filter: blur(40px);
           }
 
+          fluent-button img, sl-button img {
+            filter: invert(1);
+          }
+
           fluent-card {
             background: rgba(255, 255, 255, 0.06);
             border: none;
@@ -705,6 +710,12 @@ export class AppHome extends LitElement {
             background: var(--theme-color);
           }
 
+          #big-time-button img {
+
+              filter: invert(1);
+
+          }
+
           sl-dropdown sl-menu {
             background: #cabcf0;
             color: white;
@@ -712,10 +723,10 @@ export class AppHome extends LitElement {
           }
 
           #convo-name .action-bar {
-            background: #cbbdf1;
             border-radius: 22px;
             padding-left: 8px;
             padding-right: 8px;
+            background: transparent;
           }
 
           .copy-button::part(label) {
@@ -726,6 +737,11 @@ export class AppHome extends LitElement {
 
           sl-dialog::part(panel) {
             background: white;
+          }
+
+          sl-drawer::part(panel) {
+            background: #f1f1f1;
+
           }
 
           fluent-menu-item {
@@ -755,7 +771,7 @@ export class AppHome extends LitElement {
           }
 
           .delete-button::part(base) {
-            background: #c4c4c4;
+            background: transparent;
           }
 
           li.user {
@@ -771,15 +787,17 @@ export class AppHome extends LitElement {
           }
 
           #input-block {
-            background: #8769dc73;
+            background: var(--theme-color);
           }
 
           #saved li {
             background: var(--theme-color);
           }
 
-          li.system .copy-button::part(base), li.assistant .copy-button::part(base) {
-            background: #c4c4c4;
+          li.user sl-button img {
+
+              filter: invert(1);
+
           }
 
           fluent-tooltip {
@@ -801,6 +819,15 @@ export class AppHome extends LitElement {
             left: 20vw;
             right: 0px;
             margin-top: 0;
+          }
+
+          #suggested {
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 480px;
+          }
+
+          #no-messages.main-content p {
+            width: 480px;
           }
 
           li.user, li.system, li.assistant {
@@ -1634,28 +1661,28 @@ export class AppHome extends LitElement {
           //   }
           // }
 
-          const { makeAIRequest } = await import('../services/ai');
-          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
-
-          await this.doSayIt(data.choices[0].message.content);
-
           this.previousMessages = [
             ...this.previousMessages,
             {
               role: "assistant",
-              content: data.choices[0].message.content,
+              // content: data.choices[0].message.content,
+              content: "<message-skeleton></message-skeleton>"
               // content: data
             }
           ];
+
+          const { makeAIRequest } = await import('../services/ai');
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          const { marked } = await import('marked');
+          this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+
+          await this.doSayIt(data.choices[0].message.content);
 
           this.handleScroll(list);
 
           if (this.previousMessages.length > 1) {
             console.log("look here", this.convoName, this.previousMessages);
-
-            const { marked } = await import('marked');
-
-            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
             const goodMessages = this.previousMessages;
 
@@ -2082,8 +2109,10 @@ export class AppHome extends LitElement {
               <li @click="${() => this.preDefinedChat("What is the weather right now in Seattle?")}">What is the weather right now in Seattle?</li>
               ${this.authToken && this.authToken.length > 0 ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
-                  <li @click="${() => this.preDefinedChat("Set a todo for me to learn guitar")}">Set a todo for me to learn guitar</li>
-
+                  <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
+                  <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
+                  <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
+                  <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
                 ` : null
         }
             </ul>
@@ -2129,7 +2158,7 @@ export class AppHome extends LitElement {
 
           <fluent-text-area ?disabled="${this.modelLoading}" placeholder="Enter your message"></fluent-text-area>
 
-          <fluent-button ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.send}>
+          <fluent-button id="big-time-button" ?loading="${this.loading}" ?disabled="${this.loading}" appearance="accent" type="primary" @click=${this.send}>
           <img src="/assets/send-outline.svg" alt="send" />
           </fluent-button>
         </div>

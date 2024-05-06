@@ -60,6 +60,7 @@ export class KeyManager extends LitElement {
             h3 {
                 margin-top: 0;
                 margin-bottom: 0;
+                font-size: 16px;
             }
 
             p {
@@ -73,6 +74,12 @@ export class KeyManager extends LitElement {
 
             #key-section {
                 margin-bottom: 20px;
+            }
+
+            @media(prefers-color-scheme: light) {
+              fluent-text-field {
+                color: black;
+              }
             }
         `
     ];

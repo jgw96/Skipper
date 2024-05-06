@@ -103,6 +103,16 @@ export class AppDictate extends LitElement {
                 fluent-tooltip span {
                     color: black;
                 }
+
+                #dictate img {
+                    filter: invert(1);
+                }
+            }
+
+            @media(prefers-color-scheme: dark) {
+                fluent-button img {
+                    filter: invert(1);
+                  }
             }
 
             @keyframes quickSlideFromLeft {
