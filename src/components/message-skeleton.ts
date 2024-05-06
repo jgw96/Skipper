@@ -19,9 +19,13 @@ export class MessageSkeleton extends LitElement {
                 --neutral-fill-secondary-hover: #4a4949;
                 margin-bottom: 4px;
 
-                width: 80%;
+                width: 30vw;
                 height: 25px;
                 border-radius: 4px;
+            }
+
+            fluent-skeleton#second {
+                width: 25vw;
             }
 
             @media(prefers-color-scheme: light) {
@@ -47,6 +51,7 @@ export class MessageSkeleton extends LitElement {
         ></fluent-skeleton>
 
         <fluent-skeleton
+            id="second"
             shimmer
             shape="rect"
         ></fluent-skeleton>
