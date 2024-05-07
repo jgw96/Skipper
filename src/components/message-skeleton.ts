@@ -1,43 +1,53 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import { fluentSkeleton, provideFluentDesignSystem } from '@fluentui/web-components';
-
-provideFluentDesignSystem().register(fluentSkeleton());
-
 @customElement('message-skeleton')
 export class MessageSkeleton extends LitElement {
     static styles = [
         css`
             :host {
                 display: block;
+
+                overflow-x: hidden;
             }
 
-            fluent-skeleton {
+            .skeleton {
                 background: #ffffff0f;
-                --skeleton-fill: #3c3c3c;
-                --neutral-fill-secondary-hover: #4a4949;
                 margin-bottom: 4px;
 
-                width: 30vw;
+                width: 48vw;
                 height: 25px;
                 border-radius: 4px;
+
+                overflow-x: hidden;
             }
 
-            fluent-skeleton#second {
-                width: 25vw;
+            .skeleton#second {
+                width: 30vw;
             }
+
+            .shimmer {
+                background: linear-gradient(to right, #ffffff0f, #5c5c5c , #ffffff0f);
+                animation: shimmer 2s infinite linear;
+            }
+
 
             @media(prefers-color-scheme: light) {
-                fluent-skeleton {
-                    --skeleton-fill: #e1e1e1;
-                    --neutral-fill-secondary-hover: #f1f1f1;
+                .skeleton {
+                    background: #e1e1e1;
+                }
+
+                .shimmer {
+                    background: linear-gradient(to right, #e1e1e1, #f1f1f1 , #e1e1e1);
                 }
             }
 
-            @media(max-width: 680px) {
-                fluent-skeleton {
-                    width: 60vw;
+            @keyframes shimmer {
+                from {
+                    transform: translateX(-100%);
+                }
+                to {
+                    transform: translateX(100%);
                 }
             }
         `
@@ -45,16 +55,10 @@ export class MessageSkeleton extends LitElement {
 
     render() {
         return html`
-          <fluent-skeleton
-            shimmer
-            shape="rect"
-        ></fluent-skeleton>
+           <div class="skeleton shimmer">
+           </div>
 
-        <fluent-skeleton
-            id="second"
-            shimmer
-            shape="rect"
-        ></fluent-skeleton>
+           <div class="skeleton shimmer" id="second"></div>
         `;
     }
 }

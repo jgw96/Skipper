@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getUserProfile, signIn } from '../services/auth/auth';
+import { getUserProfile, logOut, signIn } from '../services/auth/auth';
 
 @customElement('app-login')
 export class AppLogin extends LitElement {
@@ -15,6 +15,7 @@ export class AppLogin extends LitElement {
             fluent-button {
                 animation: quickSlideFromLeft 0.3s;
                 app-region: no-drag;
+                height: 90%;
             }
 
             fluent-button::part(control) {
@@ -64,10 +65,16 @@ export class AppLogin extends LitElement {
 
     }
 
+    async doLogOut() {
+        console.log('Log out');
+
+        await logOut();
+    }
+
     render() {
         return html`
           <div id="block">
-            ${this.displayName ? html`<fluent-button size="small">Logout</fluent-button>` : html`
+            ${this.displayName ? html`<fluent-button size="small" @click="${() => this.doLogOut()}">Logout</fluent-button>` : html`
             <fluent-button size="small" @click="${() => this.doSignIn()}"/>Sign in with Microsoft</fluent-button>
             `
             }

@@ -72,6 +72,19 @@ export const signIn = async () => {
     }
 }
 
+export const logOut = async () => {
+    const logoutRequest = {
+        account: msalInstance.getActiveAccount()
+    };
+
+    try {
+        msalInstance.logoutRedirect(logoutRequest);
+    } catch (err) {
+        // handle error
+    }
+
+}
+
 export const getUserProfile = (accessToken: string) => {
     return new Promise((resolve) => {
         const headers = new Headers();

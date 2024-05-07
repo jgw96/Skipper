@@ -1722,7 +1722,7 @@ export class AppHome extends LitElement {
         const result = text.replace(regex, "");
 
         const { doTextToSpeech } = await import("../services/ai");
-        doTextToSpeech(result);
+        await doTextToSpeech(result);
 
         resolve();
       }
@@ -1848,8 +1848,10 @@ export class AppHome extends LitElement {
     await this.send();
     console.log("sent");
 
-    const dictate: any = this.shadowRoot?.querySelector('app-dictate');
-    dictate.dictate();
+    if (this.sayIT === false) {
+      const dictate: any = this.shadowRoot?.querySelector('app-dictate');
+      dictate.dictate();
+    }
   }
 
   handleContinuiousDictate(event: any) {
