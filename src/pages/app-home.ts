@@ -1159,6 +1159,15 @@ export class AppHome extends LitElement {
       this.previousMessages = convo;
     }
 
+    window.requestIdleCallback(() => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        localStorage.setItem("lat", position.coords.latitude.toString());
+        localStorage.setItem("long", position.coords.longitude.toString());
+      });
+    }, {
+      timeout: 1000
+    });
+
   }
 
   public async handleModelChange(model: string) {
@@ -2103,12 +2112,8 @@ export class AppHome extends LitElement {
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
-              <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
-              <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
-              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
-              <li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>
-              <li @click="${() => this.preDefinedChat("What is the weather right now in Seattle?")}">What is the weather right now in Seattle?</li>
+            <li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>
+              <li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>
               ${this.authToken && this.authToken.length > 0 ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
@@ -2116,7 +2121,12 @@ export class AppHome extends LitElement {
                   <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
                   <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
                 ` : null
-        }
+              }
+              <li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>
+              <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
+              <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
+              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
+              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
             </ul>
           </div>
        `}

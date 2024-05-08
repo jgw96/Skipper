@@ -76,8 +76,11 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
+    const lat = localStorage.getItem("lat");
+    const long = localStorage.getItem("long");
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
@@ -85,7 +88,9 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         body: JSON.stringify({
             image: currentBase64Data || base64data,
             previousMessages: previousMessages,
-            key: GPTKey
+            key: GPTKey,
+            lat: lat,
+            long: long
         })
     });
 
