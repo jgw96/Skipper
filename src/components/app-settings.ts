@@ -24,6 +24,7 @@ export class AppSettings extends LitElement {
 
     @state() gpuCheck: boolean = false;
     @state() selectedModel: string = "openai";
+    @state() highVoiceQuality: boolean = true;
 
     static get styles() {
         return css`
@@ -144,12 +145,15 @@ export class AppSettings extends LitElement {
         const voiceQuality = localStorage.getItem('voiceQuality');
         const voiceQualityInput = this.shadowRoot?.querySelector('#voiceQuality') as any;
         if (voiceQuality) {
-            // voiceQualityInput.checked = voiceQuality === 'high';
+            voiceQualityInput.checked = voiceQuality === 'high';
             voiceQualityInput.setAttribute('checked', voiceQuality === 'high');
+
+            this.highVoiceQuality = voiceQuality === "high";
         }
         else {
-            // voiceQualityInput.checked = true;
+            voiceQualityInput.checked = true;
             voiceQualityInput.setAttribute('checked', 'true');
+            this.highVoiceQuality = true;
         }
     }
 
@@ -198,7 +202,7 @@ export class AppSettings extends LitElement {
                 <key-manager></key-manager>
             </div>
 
-            <div class="setting">
+            <!-- <div class="setting">
                 <label for="model">Choose AI Model</label>
                 <fluent-select @change="${this.chooseModel}" .currentValue="${this.selectedModel}" id="model" title="Select an AI model">
                     <fluent-option value="openai">Cloud: OpenAI GPT-4</fluent-option>
@@ -213,11 +217,11 @@ export class AppSettings extends LitElement {
                     However, the local models ensure your chat never leaves the device. Be aware though that the local model may be slower, much slower depending on your device,
                     and will use more battery. For the best local model performance, use a device with a dedicated GPU.
                 </p>
-            </div>
+            </div> -->
 
             <div class="setting">
                 <label for="voiceQuality">Voice Quality</label>
-                <fluent-switch @change="${this.chooseVoiceQuality}" id="voiceQuality" title="Voice Quality">
+                <fluent-switch .checked="${this.highVoiceQuality}" @change="${this.chooseVoiceQuality}" id="voiceQuality" title="Voice Quality">
                     <span slot="checked-message">High</span>
                     <span slot="unchecked-message">Low</span>
                 </fluent-switch>

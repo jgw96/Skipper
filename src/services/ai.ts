@@ -1,15 +1,15 @@
-import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
-import { getGoogleKey, getOpenAIKey } from "./keys";
+// import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
+import { /*getGoogleKey,*/ getOpenAIKey } from "./keys";
 
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
 const extraPrompt = "";
 
-const apiKey = await getGoogleKey();
-let potentialGemeniModel: GenerativeModel | null = null;
+// const apiKey = await getGoogleKey();
+// let potentialGemeniModel: GenerativeModel | null = null;
 export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" = "openai";
-let genAI: GoogleGenerativeAI | null = null;
+// let genAI: GoogleGenerativeAI | null = null;
 
 const GPTKey = await getOpenAIKey();
 
@@ -19,51 +19,51 @@ export async function setChosenModelShipper(shipper: "openai" | "google" | "redp
 
 // @ts-ignore
 export async function makeAIRequestWithGemini(base64data: string, prompt: string, previousMessages: any[]): Promise<any> {
-    if (!genAI) {
-        const newGenAI = new GoogleGenerativeAI(apiKey);
-        genAI = newGenAI;
-    }
+    // if (!genAI) {
+    //     const newGenAI = new GoogleGenerativeAI(apiKey);
+    //     genAI = newGenAI;
+    // }
 
-    const model = genAI.getGenerativeModel({
-        model: base64data && base64data.length > 0 ? "gemini-pro-vision" : "gemini-pro",
-    });
-    potentialGemeniModel = model;
+    // const model = genAI.getGenerativeModel({
+    //     model: base64data && base64data.length > 0 ? "gemini-pro-vision" : "gemini-pro",
+    // });
+    // potentialGemeniModel = model;
 
-    // fix previousMessages to google history format
-    const history = previousMessages.map((message) => {
-        return {
-            role: message.role === "user" ? "user" : "model",
-            parts: message.content
-        }
-    });
+    // // fix previousMessages to google history format
+    // const history = previousMessages.map((message) => {
+    //     return {
+    //         role: message.role === "user" ? "user" : "model",
+    //         parts: message.content
+    //     }
+    // });
 
-    const modelMessageIndex = history.findIndex((message) => message.parts.trim() === prompt.trim());
-    if (modelMessageIndex !== -1) {
-        history.splice(modelMessageIndex, 1);
-    }
+    // const modelMessageIndex = history.findIndex((message) => message.parts.trim() === prompt.trim());
+    // if (modelMessageIndex !== -1) {
+    //     history.splice(modelMessageIndex, 1);
+    // }
 
-    if (base64data) {
-        // remove first part of base64 data
-        const base64dataParts = base64data.split(",")[1];
+    // if (base64data) {
+    //     // remove first part of base64 data
+    //     const base64dataParts = base64data.split(",")[1];
 
 
-        const result = await potentialGemeniModel?.generateContentStream([prompt, {
-            inlineData: { data: base64dataParts, mimeType: "image/jpeg" }
-        }]);
-        return result?.stream;
-    }
-    else {
-        const chat = potentialGemeniModel!.startChat({
-            history,
-            generationConfig: {
-                maxOutputTokens: 2000,
-            },
-        });
+    //     const result = await potentialGemeniModel?.generateContentStream([prompt, {
+    //         inlineData: { data: base64dataParts, mimeType: "image/jpeg" }
+    //     }]);
+    //     return result?.stream;
+    // }
+    // else {
+    //     const chat = potentialGemeniModel!.startChat({
+    //         history,
+    //         generationConfig: {
+    //             maxOutputTokens: 2000,
+    //         },
+    //     });
 
-        // const result = await chat.sendMessage(prompt);
-        const result = await chat.sendMessageStream(prompt);
-        return result.stream;
-    }
+    //     // const result = await chat.sendMessage(prompt);
+    //     const result = await chat.sendMessageStream(prompt);
+    //     return result.stream;
+    // }
 }
 
 export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {
@@ -216,25 +216,26 @@ export async function doTextToSpeech(script: string) {
 
             resolve(script);
         }
+        else {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
+                method: "POST",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                }),
+                body: JSON.stringify({
+                    previousMessages,
+                    key: GPTKey
+                })
+            });
+            const data = await response.blob();
 
-        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
-            method: "POST",
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({
-                previousMessages,
-                key: GPTKey
-            })
-        });
-        const data = await response.blob();
+            const audio = new Audio(URL.createObjectURL(data));
 
-        const audio = new Audio(URL.createObjectURL(data));
+            audio.onended = () => {
+                resolve(script);
+            }
 
-        audio.onended = () => {
-            resolve(script);
+            audio.play();
         }
-
-        audio.play();
     });
 }

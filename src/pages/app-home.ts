@@ -682,7 +682,7 @@ export class AppHome extends LitElement {
             -webkit-backdrop-filter: blur(40px);
           }
 
-          fluent-button img, sl-button img {
+          fluent-button img, sl-button img, sl-menu-item img {
             filter: invert(1);
           }
 
@@ -1686,7 +1686,7 @@ export class AppHome extends LitElement {
           const { marked } = await import('marked');
           this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
 
-          await this.doSayIt(data.choices[0].message.content);
+          this.doSayIt(data.choices[0].message.content);
 
           this.handleScroll(list);
 
@@ -1727,11 +1727,11 @@ export class AppHome extends LitElement {
   async doSayIt(text: string): Promise<void> {
     return new Promise(async (resolve) => {
       if (this.sayIT) {
-        const regex = /(<([^>]+)>)/ig;
-        const result = text.replace(regex, "");
+        // const regex = /(<([^>]+)>)/ig;
+        // const result = text.replace(regex, "");
 
         const { doTextToSpeech } = await import("../services/ai");
-        await doTextToSpeech(result);
+        await doTextToSpeech(text);
 
         resolve();
       }
