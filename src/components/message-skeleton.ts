@@ -28,7 +28,7 @@ export class MessageSkeleton extends LitElement {
 
             .shimmer {
                 background: linear-gradient(to right, #ffffff0f, #5c5c5c , #ffffff0f);
-                animation: shimmer 2s infinite linear;
+                animation: shimmer 3s infinite linear;
             }
 
 
@@ -44,10 +44,10 @@ export class MessageSkeleton extends LitElement {
 
             @keyframes shimmer {
                 from {
-                    transform: translateX(-100%);
+                    transform: translateX(-200%);
                 }
                 to {
-                    transform: translateX(100%);
+                    transform: translateX(200%);
                 }
             }
         `

@@ -121,14 +121,13 @@ export class KeyManager extends LitElement {
     }
 
     save() {
-        const input = this.shadowRoot?.querySelector('#google-api-key') as any;
         const gptInput = this.shadowRoot?.querySelector('#gpt-api-key') as any
 
-        if ((input.value || gptInput.value) && (input.value.length > 0 || gptInput.value.length > 0)) {
+        if (gptInput.value && gptInput.value.length > 0) {
             // fire custom event
             const event = new CustomEvent('keys-saved', {
                 detail: {
-                    google: input.value,
+                    google: "",
                     gpt: gptInput.value
                 }
             });

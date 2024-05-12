@@ -6,7 +6,7 @@
   "start_url": "/",
   "short_name": "Skipper",
   "theme_color": "#242424",
-  "description": "Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.",
+  "description": "Skipper is a powerful multi-modal AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too.",
   "orientation": "any",
   "background_color": "#242424",
   "related_applications": [],

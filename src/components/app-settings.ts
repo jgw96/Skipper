@@ -129,17 +129,31 @@ export class AppSettings extends LitElement {
         document.documentElement.setAttribute('data-theme', 'fluent');
 
         const model = localStorage.getItem('model');
-        const modelInput = this.shadowRoot?.querySelector('#model') as any;
+        // const modelInput = this.shadowRoot?.querySelector('#model') as any;
+        // if (model) {
+        //     this.selectedModel = model;
+
+        //     this.requestUpdate(this.selectedModel);
+
+        //     setChosenModelShipper((model as "openai" | "google" | 'redpajama' | 'llama' | 'gemma'));
+        // }
+        // else {
+        //     modelInput.currentValue = 'openai';
+        //     setChosenModelShipper('openai');
+        // }
         if (model) {
             this.selectedModel = model;
-
             this.requestUpdate(this.selectedModel);
 
             setChosenModelShipper((model as "openai" | "google" | 'redpajama' | 'llama' | 'gemma'));
+
+            if (model === 'gemma') {
+                this.gpuCheck = true;
+            }
         }
         else {
-            modelInput.currentValue = 'openai';
             setChosenModelShipper('openai');
+            this.gpuCheck = false;
         }
 
         const voiceQuality = localStorage.getItem('voiceQuality');

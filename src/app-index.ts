@@ -196,14 +196,15 @@ export class AppIndex extends LitElement {
       <div id="intro-content-block">
         <h1>Hello!</h1>
         <p>
-          Skipper is a multi-modal, multi-model AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too. Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.
+          Skipper is a powerful multi-modal AI assistant.
+          Skipper can work with you how you want. Want to interact with your voice? You can.
+          Need Skipper to see something? Give it an image! Simply want text chat? That works too.
         </p>
 
         <p>
-          To get started, you need to set up your API keys for the cloud models we support, OpenAI GPT4-Turbo and Google Gemini Pro.
-          Check <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">here to learn how to get an OpenAI Key</a> and <a href="https://aistudio.google.com/app/apikey">here to get a Google Gemini Pro key</a>.
-          Once you have your keys, enter them below, and then click Save.
-          Note, you must supply a key for atleast one cloud based model to use Skipper.
+          To get started, you need to set up your API key for the OpenAI GPT4-Turbo model, which powers Skipper.
+          Start <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">here to learn how to get an OpenAI Key</a>.
+          Once you have your key, enter it below, and click Update.
         </p>
         <key-manager @keys-saved="${() => this.getStarted()}"></key-manager>
       </div>
