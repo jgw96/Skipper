@@ -2112,17 +2112,17 @@ export class AppHome extends LitElement {
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
-            <li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>
-              <li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>
-              ${this.authToken && this.authToken.length > 0 ? html`
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>` : null}
+              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
                   <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
                   <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
                   <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
                 ` : null
-              }
-              <li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>
+        }
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
               <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
               <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>

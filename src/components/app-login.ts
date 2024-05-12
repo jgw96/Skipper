@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getUserProfile, logOut, signIn } from '../services/auth/auth';
 
 @customElement('app-login')
 export class AppLogin extends LitElement {
@@ -51,6 +50,7 @@ export class AppLogin extends LitElement {
 
     async firstUpdated() {
         setTimeout(async () => {
+            const { getUserProfile } = await import('../services/auth/auth');
             const profile: any = await getUserProfile(localStorage.getItem('accessToken')!);
             console.log("profile info", profile)
 
@@ -61,6 +61,7 @@ export class AppLogin extends LitElement {
     async doSignIn() {
         console.log('Sign in with Microsoft');
 
+        const { signIn } = await import('../services/auth/auth');
         await signIn();
 
     }
@@ -68,6 +69,7 @@ export class AppLogin extends LitElement {
     async doLogOut() {
         console.log('Log out');
 
+        const { logOut } = await import('../services/auth/auth');
         await logOut();
     }
 

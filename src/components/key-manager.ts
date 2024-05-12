@@ -140,21 +140,16 @@ export class KeyManager extends LitElement {
         return html`
           <div id="main-block">
             <h3>Key Manager</h3>
-            <p>Manage your API keys</p>
+            <p>Manage your API key</p>
 
             <div id="key-section">
                 <div class="label">
                   <label for="gpt-api-key">GPT-4 API Key</label>
                   <fluent-text-field @change="${this.handleGPTChange}" id="gpt-api-key" type="text"></fluent-text-field>
                 </div>
-
-                <div class="label">
-                    <label for="google-api-key">Google Gemeni API Key</label>
-                    <fluent-text-field @change="${this.handleGoogleChange}" id="google-api-key" type="text"></fluent-text-field>
-                </div>
             </div>
 
-            <fluent-button appearance="accent" @click="${this.save}">Save</fluent-button>
+            <fluent-button appearance="accent" @click="${this.save}">Update</fluent-button>
           </div>
         `;
     }

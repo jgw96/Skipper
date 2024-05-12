@@ -32,8 +32,7 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
             localStorage.setItem("accessToken", tokenResponse.accessToken);
 
-            const taskListIDInfo = await setUpDefaultTaskList({ msAuthToken: tokenResponse.accessToken });
-            console.log("taskListID", taskListIDInfo.id);
+            await checkForDefaultListFirst(tokenResponse.accessToken);
         }).catch(async (error: any) => {
             console.log("Silent token acquisition fails. Acquiring token using redirect", error)
             if (error instanceof InteractionRequiredAuthError) {
@@ -46,8 +45,7 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
                 const profile = await getUserProfile(tokenResponse.accessToken);
                 console.log("profile", profile);
 
-                const taskListIDInfo = await setUpDefaultTaskList({ msAuthToken: tokenResponse.accessToken });
-                console.log("taskListID", taskListIDInfo.id);
+                await checkForDefaultListFirst(tokenResponse.accessToken);
             }
 
 
@@ -104,8 +102,7 @@ export const getUserProfile = (accessToken: string) => {
     })
 }
 
-export async function setUpDefaultTaskList(args: { msAuthToken: string }) {
-    const { msAuthToken } = args;
+export async function setUpDefaultTaskList(msAuthToken: string) {
     const response = await fetch("https://graph.microsoft.com/v1.0/me/todo/lists", {
         method: "POST",
         headers: {
@@ -123,3 +120,19 @@ export async function setUpDefaultTaskList(args: { msAuthToken: string }) {
     return jsonData;
 }
 
+async function checkForDefaultListFirst(msAuthToken: string) {
+    const response = await fetch("https://graph.microsoft.com/v1.0/me/todo/lists", {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${msAuthToken}`,
+            "Content-Type": "application/json"
+        }
+    });
+
+    const jsonData = await response.json();
+    const skipperList = jsonData.value.find((list: any) => list.displayName === "Skipper");
+
+    if (!skipperList) {
+        await setUpDefaultTaskList(msAuthToken!);
+    }
+}

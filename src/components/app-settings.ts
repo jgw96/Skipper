@@ -169,6 +169,31 @@ export class AppSettings extends LitElement {
         }));
     }
 
+    chooseLocalModel($event: any) {
+        if ($event.target.checked === true) {
+            setChosenModelShipper("gemma");
+
+            localStorage.setItem('model', 'gemma');
+
+            this.dispatchEvent(new CustomEvent('theme-changed', {
+                detail: {
+                    model: 'gemma'
+                }
+            }));
+        }
+        else {
+            setChosenModelShipper("openai");
+
+            localStorage.setItem('model', 'openai');
+
+            this.dispatchEvent(new CustomEvent('theme-changed', {
+                detail: {
+                    model: 'openai'
+                }
+            }));
+        }
+    }
+
     chooseVoiceQuality($event: any) {
         localStorage.setItem('voiceQuality', $event.target.checked ? 'high' : 'low');
 
@@ -190,16 +215,26 @@ export class AppSettings extends LitElement {
                 <h3>About Skipper</h3>
 
                 <p>
-                    Skipper is a multi-modal, multi-model AI assistant.
+                    Skipper is a powerful multi-modal AI assistant.
                     Skipper can work with you how you want. Want to interact with your voice? You can.
                     Need Skipper to see something? Give it an image! Simply want text chat? That works too.
-                    Want to chat with OpenAI's GPT-4? Or Google's Gemini Pro? Or, want to chat with a model that
-                    runs locally on your device? You can do that too. Skipper is designed to be flexible and work with you.
                 </p>
             </div>
 
             <div class="setting">
                 <key-manager></key-manager>
+            </div>
+
+            <div class="setting">
+                <label for="local">Local Mode</label>
+                <fluent-switch .checked="${this.gpuCheck}" @change="${this.chooseLocalModel}" id="local" title="Local Mode">
+                    <span slot="checked-message">On</span>
+                    <span slot="unchecked-message">Off</span>
+                </fluent-switch>
+
+                <p>
+                    Choose whether to use the local model on your device. The local model is slower in some cases, uses more battery and currently does not support actions, but ensures your data never leaves your device. This also means that you can use Skipper offline in Local Mode.
+                    Requires a device with a dedicated GPU for the best performance.
             </div>
 
             <!-- <div class="setting">
