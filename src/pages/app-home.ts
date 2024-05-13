@@ -44,6 +44,16 @@ export class AppHome extends LitElement {
   modelShipper: string = "";
   @state() authToken: string | null = null;
 
+  quickActions = [
+    "Generate a blog post",
+    "Explain a topic",
+    "Translate text to Spanish",
+    "Summarize a legal document",
+    "Summarize a research paper",
+    "Help brainstorm a story",
+  ];
+
+
   static get styles() {
     return [
       styles,
@@ -436,6 +446,8 @@ export class AppHome extends LitElement {
           border-radius: 8px;
           width: 210px;
           margin: 10px;
+          cursor: pointer;
+          box-shadow: 0px 2px 20px #0000004a;
         }
 
 
@@ -699,10 +711,6 @@ export class AppHome extends LitElement {
           fluent-card fluent-button {
             margin-top: 8px;
           }
-
-          #saved {
-            box-shadow: #00000040 3px 0px 9px 0px;
-          }
         }
 
         @media(prefers-color-scheme: light) {
@@ -833,6 +841,7 @@ export class AppHome extends LitElement {
           li.user, li.system, li.assistant {
             min-width: 30vw;
             max-width: 45vw;
+            box-shadow: var(--elevation-shadow-card-rest);
           }
 
           #saved ul {
@@ -1923,6 +1932,22 @@ export class AppHome extends LitElement {
     await doTextToSpeech(result);
   }
 
+  async openInViewer(content: string) {
+    console.log("content", content)
+    // content is a string of html, find the image element inside this html
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+
+    const image = doc.querySelector('img');
+
+    const imageSrc = image?.getAttribute('src');
+
+    console.log("imageSrc", imageSrc)
+
+    // open in new tab
+    window.open(imageSrc as string, "_blank");
+  }
+
   render() {
     return html`
       <!-- <app-header></app-header> -->
@@ -2096,7 +2121,7 @@ export class AppHome extends LitElement {
                 </sl-button>
             </div>
 
-            <div class="content-bar">
+            <div class="content-bar" @click="${() => this.openInViewer(message.content)}">
               ${message.image ? html`<img src="${message.image}" alt="photo" />` : html``}
               <div .innerHTML="${message.content}"></div>
             </div>
@@ -2114,6 +2139,7 @@ export class AppHome extends LitElement {
             <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
@@ -2123,8 +2149,11 @@ export class AppHome extends LitElement {
                 ` : null
         }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              <li @click="${() => this.preDefinedChat("Why is the sky blue?")}">Why is the sky blue?</li>
-              <li @click="${() => this.preDefinedChat("Write a poem about the ocean")}">Write a poem about the ocean</li>
+              ${
+                this.quickActions.map((action: any) => {
+          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
+                })
+              }
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
             </ul>
