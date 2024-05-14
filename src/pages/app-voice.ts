@@ -5,49 +5,52 @@ import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 
 import { styles } from '../styles/shared-styles';
-import { doTextToSpeech, requestGPT } from '../services/ai';
+import { requestGPT } from '../services/ai';
 import { SpeechRecognizer } from 'microsoft-cognitiveservices-speech-sdk';
 import { saveConversation } from '../services/storage';
 
 import { fluentButton, fluentTextField, fluentOption, fluentListbox, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components';
+import { getOpenAIKey } from '../services/keys';
 
 provideFluentDesignSystem().register(fluentButton(), fluentTextField(), fluentOption(), fluentListbox(), fluentCard());
 
 @customElement('app-voice')
 export class AppVoice extends LitElement {
 
-    // For more information on using properties and state in lit
-    // check out this link https://lit.dev/docs/components/properties/
-    @property() message = 'Welcome!';
+  // For more information on using properties and state in lit
+  // check out this link https://lit.dev/docs/components/properties/
+  @property() message = 'Welcome!';
 
-    @state() previousMessages: any[] = [];
-    @state() convoName: string | undefined;
-    @state() loading = false;
+  @state() previousMessages: any[] = [];
+  @state() convoName: string | undefined;
+  @state() loading = false;
 
-    @state() lines: string[] = [];
-    @state() finalizedLines: string[] = [];
-    @state() transcript = "";
-    @state() focusedLine = "";
-    @state() keyPoints: string[] = [];
+  @state() lines: string[] = [];
+  @state() finalizedLines: string[] = [];
+  @state() transcript = "";
+  @state() focusedLine = "";
+  @state() keyPoints: string[] = [];
 
-    @state() status: string = "Start a conversation with Assist by tapping the button below";
+  @state() status: string = "";
 
-    @state() context: any;
+  @state() context: any;
 
-    sdk: any;
-    audioConfig: any;
-    speechConfig: any;
-    recog: any;
+  sdk: any;
+  audioConfig: any;
+  speechConfig: any;
+  recog: any;
 
-    stream: any;
-    analyser: any;
+  stream: any;
+  analyser: any;
 
-    previewAnimation: any;
+  previewAnimation: any;
+
+  currentAudioEl: HTMLAudioElement | null = null;
 
 
-    static styles = [
-        styles,
-        css`
+  static styles = [
+    styles,
+    css`
     #welcomeBar {
       display: flex;
       justify-content: center;
@@ -73,14 +76,18 @@ export class AppVoice extends LitElement {
       bottom: 20px;
       display: flex;
       align-items: center;
+      gap: 33px;
 
       flex-direction: column;
-    justify-content: space-between;
+      justify-content: space-between;
     }
 
     #status {
       font-weight: bold;
-      font-size: 12px;
+      font-size: 16px;
+      text-align: center;
+
+      animation: quickSlideInFromBottom 0.5s ease;
     }
 
     main {
@@ -94,13 +101,12 @@ export class AppVoice extends LitElement {
       left: 0;
       right: 0;
       bottom: 0;
-      height: 100vh;
+      height: calc(100vh - 30px);
       width: 100vw;
-      z-index: -1;
-    }
 
-    #status {
-      text-align: center;
+      margin-top: 30px;
+
+      animation: quickFadeIn 2s ease;
     }
 
     sl-card::part(footer) {
@@ -120,6 +126,8 @@ export class AppVoice extends LitElement {
       --accent-stroke-control-active: #8769dc;
       --accent-fill-hover: #8769dc;
       --accent-stroke-control-hover: #8769dc;
+
+      animation: quickSlideInFromBottom 0.5s ease;
     }
 
     ul {
@@ -167,292 +175,329 @@ export class AppVoice extends LitElement {
         margin-right: 64px;
       }
     }
+
+    @keyframes quickSlideInFromBottom {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes quickFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
   `];
 
-    async firstUpdated() {
-        // this method is a lifecycle even in lit
-        // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-        console.log('This is your home page');
+  async firstUpdated() {
+    // this method is a lifecycle even in lit
+    // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
+    console.log('This is your home page');
 
-        this.sdk = await import("microsoft-cognitiveservices-speech-sdk");
-        console.log("this.sdk", this.sdk);
+    this.sdk = await import("microsoft-cognitiveservices-speech-sdk");
+    console.log("this.sdk", this.sdk);
 
-        this.audioConfig = this.sdk.AudioConfig.fromDefaultMicrophoneInput();
-        this.speechConfig = this.sdk.SpeechConfig.fromSubscription('a3484733425e4929ae1da1f90a5f0a16', 'eastus');
+    this.audioConfig = this.sdk.AudioConfig.fromDefaultMicrophoneInput();
+    this.speechConfig = this.sdk.SpeechConfig.fromSubscription('a3484733425e4929ae1da1f90a5f0a16', 'eastus');
 
-        this.speechConfig!.speechRecognitionLanguage = 'en-US';
-        this.speechConfig!.enableDictation();
+    this.speechConfig!.speechRecognitionLanguage = 'en-US';
+    this.speechConfig!.enableDictation();
 
-        (this.recog as SpeechRecognizer) = new this.sdk.SpeechRecognizer(this.speechConfig, this.audioConfig);
+    (this.recog as SpeechRecognizer) = new this.sdk.SpeechRecognizer(this.speechConfig, this.audioConfig);
 
-        await this.setUpListeners();
+    await this.setUpListeners();
 
-        await this.startVisual();
+    await this.startVisual();
 
-    }
+  }
 
-    async setUpListeners() {
-        this.lines = [];
-        this.finalizedLines = [];
-        this.keyPoints = [];
+  async setUpListeners() {
+    this.lines = [];
+    this.finalizedLines = [];
+    this.keyPoints = [];
 
-        if (this.recog) {
-            this.recog.recognizing = (s?: any, e?: any) => {
-                this.status = "Listening...";
-
-                console.log("s", s);
-                console.log("s.results", e.result);
-
-
-                this.transcript = e.result.text;
-
-                if (this.lines.length && this.lines[this.lines.length - 1] !== this.finalizedLines[this.finalizedLines.length - 1]) {
-                    // remove the last line from this.lines
-                    this.lines = this.lines.slice(0, this.lines.length - 1);
-                }
-
-                this.lines = [...this.lines, e.result.text];
-
-                this.requestUpdate();
-
-            };
-
-            let recogCounter = 0;
-
-            this.recog.recognized = async (s?: any, e?: any) => {
-                console.log(s);
-                console.log('recognized', e.result.text);
-
-                recogCounter++;
-
-                if (e.result.text && e.result.text.length > 0) {
-                    this.finalizedLines = [...this.finalizedLines, e.result.text];
-                    this.lines = [...this.finalizedLines];
-
-                    this.focusedLine = e.result.text;
-                    console.log('this.focusedLine', this.focusedLine);
-
-                    if (this.focusedLine && this.focusedLine.length > 0) {
-                        const data = await this.send(this.focusedLine as string)
-                        console.log("home data", data)
-                    }
-
-                    this.requestUpdate();
-                }
-            }
-
-            this.recog.canceled = async (s?: any, e?: any) => {
-                console.log(`CANCELED: Reason=${e.reason}, ${s}`);
-
-                if (e.reason == this.sdk.CancellationReason.Error) {
-                    console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
-                    console.log(`"CANCELED: ErrorDetails=${e.errorDetails}`);
-                    console.log("CANCELED: Did you set the speech resource key and region values?");
-                }
-
-                await this.recog.stopContinuousRecognitionAsync();
-
-                // try to restart
-                await this.recog.startContinuousRecognitionAsync();
-            };
-
-            this.recog.sessionStopped = () => {
-                console.log("\n    Session stopped event.");
-                this.recog.stopContinuousRecognitionAsync();
-            };
-        }
-    }
-
-    async start() {
-        this.recog.startContinuousRecognitionAsync();
-
-        this.loading = true;
-
+    if (this.recog) {
+      this.recog.recognizing = (s?: any, e?: any) => {
         this.status = "Listening...";
+
+        console.log("s", s);
+        console.log("s.results", e.result);
+
+
+        this.transcript = e.result.text;
+
+        if (this.lines.length && this.lines[this.lines.length - 1] !== this.finalizedLines[this.finalizedLines.length - 1]) {
+          // remove the last line from this.lines
+          this.lines = this.lines.slice(0, this.lines.length - 1);
+        }
+
+        this.lines = [...this.lines, e.result.text];
+
+        this.requestUpdate();
+
+      };
+
+      let recogCounter = 0;
+
+      this.recog.recognized = async (s?: any, e?: any) => {
+        console.log(s);
+        console.log('recognized', e.result.text);
+
+        recogCounter++;
+
+        if (e.result.text && e.result.text.length > 0) {
+          this.finalizedLines = [...this.finalizedLines, e.result.text];
+          this.lines = [...this.finalizedLines];
+
+          this.focusedLine = e.result.text;
+          console.log('this.focusedLine', this.focusedLine);
+
+          if (this.focusedLine && this.focusedLine.length > 0) {
+            const data = await this.send(this.focusedLine as string)
+            console.log("home data", data)
+          }
+
+          this.requestUpdate();
+        }
+      }
+
+      this.recog.canceled = async (s?: any, e?: any) => {
+        console.log(`CANCELED: Reason=${e.reason}, ${s}`);
+
+        if (e.reason == this.sdk.CancellationReason.Error) {
+          console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
+          console.log(`"CANCELED: ErrorDetails=${e.errorDetails}`);
+          console.log("CANCELED: Did you set the speech resource key and region values?");
+        }
+
+        await this.recog.stopContinuousRecognitionAsync();
+
+        // try to restart
+        // await this.recog.startContinuousRecognitionAsync();
+      };
+
+      this.recog.sessionStopped = () => {
+        console.log("\n    Session stopped event.");
+        this.recog.stopContinuousRecognitionAsync();
+      };
+    }
+  }
+
+  async start() {
+    this.recog.startContinuousRecognitionAsync();
+
+    this.loading = true;
+
+    this.status = "Listening...";
+  }
+
+  private async startVisual() {
+    this.stream = await navigator.mediaDevices.getUserMedia({
+      video: false,
+      audio: true
+    });
+    console.log("here 1");
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const source = audioContext.createMediaStreamSource(this.stream);
+
+    this.analyser = audioContext.createAnalyser();
+
+    source.connect(this.analyser);
+
+    this.analyser.fftSize = 2048;
+    const bufferLength = this.analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    this.runVisual(dataArray);
+  }
+
+  runVisual(data: Uint8Array) {
+    let onscreenCanvas = null;
+
+    if ('OffscreenCanvas' in window) {
+      onscreenCanvas = this.shadowRoot?.querySelector('canvas')?.getContext('bitmaprenderer');
+    }
+    else {
+      onscreenCanvas = this.shadowRoot?.querySelector('canvas');
     }
 
-    private async startVisual() {
-        this.stream = await navigator.mediaDevices.getUserMedia({
-            video: false,
-            audio: true
-        });
-        console.log("here 1");
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const source = audioContext.createMediaStreamSource(this.stream);
+    let canvas = null;
 
-        this.analyser = audioContext.createAnalyser();
-
-        source.connect(this.analyser);
-
-        this.analyser.fftSize = 2048;
-        const bufferLength = this.analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        this.runVisual(dataArray);
+    if ('OffscreenCanvas' in window) {
+      // @ts-ignore
+      canvas = new OffscreenCanvas(window.innerWidth, window.innerHeight);
+    }
+    else {
+      canvas = document.createElement('canvas');
     }
 
-    runVisual(data: Uint8Array) {
-        let onscreenCanvas = null;
 
-        if ('OffscreenCanvas' in window) {
-            onscreenCanvas = this.shadowRoot?.querySelector('canvas')?.getContext('bitmaprenderer');
-        }
-        else {
-            onscreenCanvas = this.shadowRoot?.querySelector('canvas');
-        }
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        let canvas = null;
-
-        if ('OffscreenCanvas' in window) {
-            // @ts-ignore
-            canvas = new OffscreenCanvas(window.innerWidth, window.innerHeight);
-        }
-        else {
-            canvas = document.createElement('canvas');
-        }
-
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        if (!this.context) {
-            this.context = canvas.getContext('2d');
-        }
-
-        // @ts-ignore
-        this.context?.clearRect(0, 0, canvas.width, canvas.height);
-
-        this.draw(data, this.context, canvas, onscreenCanvas);
+    if (!this.context) {
+      this.context = canvas.getContext('2d');
     }
 
     // @ts-ignore
-    draw(data: Uint8Array, context: any, canvas: HTMLCanvasElement | OffscreenCanvas, onScreenCanvas: ImageBitmapRenderingContext | HTMLCanvasElement | null | undefined) {
-        this.analyser?.getByteFrequencyData(data);
+    this.context?.clearRect(0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = window.matchMedia('(prefers-color-scheme: dark)').matches ? '#232734db' : '#edebe9';
-        context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    this.draw(data, this.context, canvas, onscreenCanvas);
+  }
 
-        let barWidth = (window.innerWidth / data.length) * 4.5;
-        let barHeight;
-        let x = 0;
+  // @ts-ignore
+  draw(data: Uint8Array, context: any, canvas: HTMLCanvasElement | OffscreenCanvas, onScreenCanvas: ImageBitmapRenderingContext | HTMLCanvasElement | null | undefined) {
+    this.analyser?.getByteFrequencyData(data);
 
-        for (let i = 0; i < data.length; i++) {
-            barHeight = data[i];
+    // draw a circle that expands and contracts based on the audio data
+    let radius = 100 + data[30] / 5;
+    const randomShadeOfPurple = 'rgb(' + (radius) + ',107,210)';
+    context.beginPath();
+    context.arc(window.innerWidth / 2, window.innerHeight / 2, radius, 0, 2 * Math.PI, false);
+    context.fillStyle = randomShadeOfPurple;
+    context.fill();
 
-            context.fillStyle = 'rgb(' + (barHeight + 100) + ',107,210)';
-            context.fillRect(x, window.innerHeight - barHeight * 4, barWidth, barHeight * 4);
+    if ('OffscreenCanvas' in window) {
+      // @ts-ignore
+      let bitmapOne = (canvas as OffscreenCanvas).transferToImageBitmap();
+      (onScreenCanvas as ImageBitmapRenderingContext).transferFromImageBitmap(bitmapOne);
+    }
 
-            x += barWidth + 1;
+    window.requestAnimationFrame(() => this.draw(data, context, canvas, onScreenCanvas));
+  }
+
+  share() {
+    if ((navigator as any).share) {
+      (navigator as any).share({
+        title: 'PWABuilder pwa-starter',
+        text: 'Check out the PWABuilder pwa-starter!',
+        url: 'https://github.com/pwa-builder/pwa-starter',
+      });
+    }
+  }
+
+  async send(content: string) {
+    await this.recog.stopContinuousRecognitionAsync();
+
+    if (this.status !== "Responding..." && this.status !== "Thinking...") {
+      this.status = "Thinking...";
+
+      const inputValue = content;
+
+      if (this.previousMessages.length === 0) {
+        // first coupe of words of inputValue
+        const convoName = inputValue?.split(" ").slice(0, 8).join(" ");
+        console.log('convoName', convoName)
+        this.convoName = convoName;
+      }
+
+      if (inputValue && inputValue.length > 0) {
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "user",
+            content: inputValue
+          }
+        ];
+
+        const data = await requestGPT(inputValue as string)
+        console.log("home data", data)
+
+        this.previousMessages = [
+          ...this.previousMessages,
+          {
+            role: "assistant",
+            content: data.choices[0].message.content
+          }
+        ]
+
+        this.status = "Responding...";
+
+        const GPTKey = await getOpenAIKey();
+
+        // onst speakerEl = await doTextToSpeech(data.choices[0].message.content);
+        const script = data.choices[0].message.content;
+        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/json",
+          }),
+          body: JSON.stringify({
+            previousMessages: this.previousMessages,
+            key: GPTKey
+          })
+        });
+        const speakerData = await response.blob();
+
+        const audio = new Audio(URL.createObjectURL(speakerData));
+        this.currentAudioEl = audio;
+
+        audio.onended = async () => {
+          await this.recog.startContinuousRecognitionAsync();
+
+          this.status = "Listening...";
+          this.loading = true;
+
+          return data;
         }
 
-        if ('OffscreenCanvas' in window) {
-            // @ts-ignore
-            let bitmapOne = (canvas as OffscreenCanvas).transferToImageBitmap();
-            (onScreenCanvas as ImageBitmapRenderingContext).transferFromImageBitmap(bitmapOne);
+        audio.play();
+
+        if (this.previousMessages.length > 1) {
+          console.log("look here", this.convoName, this.previousMessages)
+          await saveConversation(this.convoName as string, this.previousMessages);
         }
 
-        window.requestAnimationFrame(() => this.draw(data, context, canvas, onScreenCanvas));
+      }
+    }
+  }
+
+  async stop() {
+    await this.recog.stopContinuousRecognitionAsync();
+    this.loading = false;
+
+    if (this.currentAudioEl) {
+      this.currentAudioEl.pause();
     }
 
-    share() {
-        if ((navigator as any).share) {
-            (navigator as any).share({
-                title: 'PWABuilder pwa-starter',
-                text: 'Check out the PWABuilder pwa-starter!',
-                url: 'https://github.com/pwa-builder/pwa-starter',
-            });
-        }
-    }
+    this.status = "";
+  }
 
-    async send(content: string) {
-        await this.recog.stopContinuousRecognitionAsync();
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.stop();
+  }
 
-        if (this.status !== "Responding..." && this.status !== "Thinking...") {
-            this.status = "Thinking...";
-
-            const inputValue = content;
-
-            if (this.previousMessages.length === 0) {
-                // first coupe of words of inputValue
-                const convoName = inputValue?.split(" ").slice(0, 8).join(" ");
-                console.log('convoName', convoName)
-                this.convoName = convoName;
-            }
-
-            if (inputValue && inputValue.length > 0) {
-
-                this.previousMessages = [
-                    ...this.previousMessages,
-                    {
-                        role: "user",
-                        content: inputValue
-                    }
-                ];
-
-                const data = await requestGPT(inputValue as string)
-                console.log("home data", data)
-
-                this.previousMessages = [
-                    ...this.previousMessages,
-                    {
-                        role: "system",
-                        content: data.choices[0].message.content
-                    }
-                ]
-
-                this.status = "Responding...";
-
-                await doTextToSpeech(data.choices[0].message.content);
-
-                if (this.previousMessages.length > 1) {
-                    console.log("look here", this.convoName, this.previousMessages)
-                    await saveConversation(this.convoName as string, this.previousMessages);
-                }
-
-                await this.recog.startContinuousRecognitionAsync();
-
-                this.status = "Listening...";
-                this.loading = true;
-
-                return data;
-
-            }
-        }
-    }
-
-    async stop() {
-        await this.recog.stopContinuousRecognitionAsync();
-        this.loading = false;
-
-        this.status = "Stopped";
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.stop();
-    }
-
-    render() {
-        return html`
+  render() {
+    return html`
       <!-- <app-header></app-header> -->
 
       <canvas></canvas>
 
       <main>
-        <div id="messages">
+        <!-- <div id="messages">
           ${this.previousMessages && this.previousMessages.length > 0 ? html`
           <ul>
           ${this.previousMessages.map((message: any) => {
-            return html`
+      return html`
                 <li class="message ${message.role}">
                   <h4>${message.role}</h4>
                   <p>${message.content}</p>
                 </li>
               `;
-        })
-                }
+    })
+        }
           </ul>` : null}
-        </div>
+        </div> -->
 
         <div id="toolbar">
           <p id="status">${this.status}</p>
@@ -467,5 +512,5 @@ export class AppVoice extends LitElement {
         </div>
       </main>
     `;
-    }
+  }
 }
