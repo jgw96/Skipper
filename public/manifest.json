@@ -103,6 +103,18 @@
           "sizes": "192x192"
         }
       ]
+    },
+    {
+      "name": "Voice Mode",
+      "short_name": "Voice Mode",
+      "description": "Start chatting with voice",
+      "url": "/voice",
+      "icons": [
+        {
+          "src": "assets/icons/maskable_icon_x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "share_target": {

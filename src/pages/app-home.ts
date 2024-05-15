@@ -1222,20 +1222,28 @@ export class AppHome extends LitElement {
         dropElement.classList.remove("drag-over");
       });
 
-      dropElement?.addEventListener('drop', (event) => {
+      dropElement?.addEventListener('drop', async (event) => {
         event.preventDefault();
         dropElement.classList.remove("drag-over");
 
         const dt = event.dataTransfer;
         const files = dt!.files;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const base64data = e.target?.result;
-          this.addImageToConvo(base64data as string);
-        }
+        if (files.length > 0 && files[0].type.includes("image")) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64data = e.target?.result;
+            this.addImageToConvo(base64data as string);
+          }
 
-        reader.readAsDataURL(files[0]);
+          reader.readAsDataURL(files[0]);
+        }
+        else if ((files.length > 0 && files[0].type.includes("audio"))) {
+          const { doSpeechToText } = await import("../services/ai");
+          const text = await doSpeechToText(files[0]);
+          const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+          input.value = text;
+        }
       });
     }
   }
@@ -2149,11 +2157,10 @@ export class AppHome extends LitElement {
                 ` : null
         }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${
-                this.quickActions.map((action: any) => {
+              ${this.quickActions.map((action: any) => {
           return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
-                })
-              }
+        })
+        }
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
             </ul>

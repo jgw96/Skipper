@@ -239,3 +239,30 @@ export async function doTextToSpeech(script: string) {
         }
     });
 }
+
+export async function doSpeechToText(audioFile: File) {
+    return new Promise(async (resolve, reject) => {
+        const goodData = new FormData();
+        goodData.append("file", audioFile, audioFile.name);
+
+        try {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}`, {
+                method: "POST",
+                body: goodData,
+            });
+
+            const transcript = await response.json();
+
+            if (transcript) {
+                resolve(transcript);
+            }
+            else {
+                reject("No transcription returned")
+            }
+        }
+        catch (err) {
+            console.error('err', err)
+            reject(err);
+        }
+    })
+}

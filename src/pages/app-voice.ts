@@ -35,6 +35,9 @@ export class AppVoice extends LitElement {
 
   @state() context: any;
 
+  @state() currentPhoto: string | null = null;
+  @state() inPhotoConvo = false;
+
   sdk: any;
   audioConfig: any;
   speechConfig: any;
@@ -56,6 +59,18 @@ export class AppVoice extends LitElement {
       justify-content: center;
       align-items: center;
       flex-direction: column;
+    }
+
+    img {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 160px;
+      height: auto;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 30px;
+      animation: quickFadeIn 0.5s ease;
     }
 
     .stop-button::part(control) {
@@ -217,6 +232,64 @@ export class AppVoice extends LitElement {
 
     await this.startVisual();
 
+    this.addImageWithDragDrop();
+
+  }
+
+  addImageWithDragDrop() {
+    const dropElement: HTMLElement | null | undefined = this.shadowRoot?.querySelector('main');
+    console.log('dropElement', dropElement)
+
+    dropElement?.addEventListener('dragover', (event) => {
+      console.log("dragover")
+      event.preventDefault();
+      dropElement.classList.add("drag-over");
+    });
+
+    dropElement?.addEventListener('dragleave', (event) => {
+      event.preventDefault();
+      dropElement.classList.remove("drag-over");
+    });
+
+    dropElement?.addEventListener('drop', async (event) => {
+      event.preventDefault();
+      dropElement.classList.remove("drag-over");
+
+      const dt = event.dataTransfer;
+      const files = dt!.files;
+
+      console.log("files", files[0])
+
+      if (files.length > 0 && files[0].type.includes("image")) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const base64data = e.target?.result;
+          this.addImageToConvo(base64data as string);
+
+          await this.start();
+        }
+
+        reader.readAsDataURL(files[0]);
+      }
+      // else if ((files.length > 0 && files[0].type.includes("audio"))) {
+      //   // const reader = new FileReader();
+      //   // reader.onload = (e) => {
+      //   //   const base64data = e.target?.result;
+      //   //   const text = await doSpeechToText(new Blob([files[0]]));
+      //   // }
+
+      //   // reader.readAsDataURL(files[0]);
+      //   const text = await doSpeechToText(files[0]);
+      //   const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+      //   input.value = text;
+      // }
+    });
+
+  }
+
+  async addImageToConvo(base64data: string) {
+    this.currentPhoto = base64data;
+    this.inPhotoConvo = true;
   }
 
   async setUpListeners() {
@@ -374,16 +447,6 @@ export class AppVoice extends LitElement {
     window.requestAnimationFrame(() => this.draw(data, context, canvas, onScreenCanvas));
   }
 
-  share() {
-    if ((navigator as any).share) {
-      (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
-      });
-    }
-  }
-
   async send(content: string) {
     await this.recog.stopContinuousRecognitionAsync();
 
@@ -405,12 +468,24 @@ export class AppVoice extends LitElement {
           ...this.previousMessages,
           {
             role: "user",
-            content: inputValue
+            content: inputValue,
+            image: this.currentPhoto
           }
         ];
 
-        const data = await requestGPT(inputValue as string)
-        console.log("home data", data)
+        let data: any;
+        if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
+          const { makeAIRequestWithImage } = await import('../services/ai');
+          data = await makeAIRequestWithImage(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          if (this.currentPhoto) {
+            this.currentPhoto = null;
+            this.inPhotoConvo = true;
+          }
+        }
+        else {
+          data = await requestGPT(inputValue as string)
+        }
 
         this.previousMessages = [
           ...this.previousMessages,
@@ -480,6 +555,12 @@ export class AppVoice extends LitElement {
   render() {
     return html`
       <!-- <app-header></app-header> -->
+
+      ${
+      this.inPhotoConvo === true && this.currentPhoto ? html`
+        <img src="${this.currentPhoto}" alt="Current Photo" />
+      ` : null
+      }
 
       <canvas></canvas>
 

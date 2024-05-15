@@ -21,7 +21,7 @@ const baseURL: string = (import.meta as any).env.BASE_URL;
 export const router = new Router({
     routes: [
       {
-        path: resolveRouterPath(),
+        path: "/",
         title: 'Home',
         render: () => html`<app-home></app-home>`
       },
