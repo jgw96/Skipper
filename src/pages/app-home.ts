@@ -18,6 +18,7 @@ import "../components/app-dictate";
 import "../components/right-click";
 import "../components/web-search";
 import "../components/message-skeleton";
+import "../components/screen-sharing";
 import { marked } from 'marked';
 
 @customElement('app-home')
@@ -2179,6 +2180,8 @@ export class AppHome extends LitElement {
             <img src="/assets/camera-outline.svg" alt="camera icon">
           </fluent-button>
           ` : null}
+
+          <screen-sharing @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>

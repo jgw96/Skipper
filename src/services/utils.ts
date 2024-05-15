@@ -13,3 +13,25 @@ export async function checkGPUSupport() {
         return false;
     }
 }
+
+let stream: MediaStream | null = null;
+
+export async function startScreenSharing(): Promise<MediaStream | any> {
+    const displayMediaOptions = {
+        video: true,
+        audio: false
+    };
+    try {
+        stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+        return stream;
+    } catch (err) {
+        console.error("Error: " + err);
+        return err;
+    }
+}
+
+export async function stopScreenSharing() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+}
