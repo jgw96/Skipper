@@ -12,6 +12,8 @@ import { saveConversation } from '../services/storage';
 import { fluentButton, fluentTextField, fluentOption, fluentListbox, fluentCard, provideFluentDesignSystem } from '@fluentui/web-components';
 import { getOpenAIKey } from '../services/keys';
 
+import "../components/screen-sharing";
+
 provideFluentDesignSystem().register(fluentButton(), fluentTextField(), fluentOption(), fluentListbox(), fluentCard());
 
 @customElement('app-voice')
@@ -38,6 +40,8 @@ export class AppVoice extends LitElement {
   @state() currentPhoto: string | null = null;
   @state() inPhotoConvo = false;
 
+  @state() sharingScreen = false;
+
   sdk: any;
   audioConfig: any;
   speechConfig: any;
@@ -61,7 +65,18 @@ export class AppVoice extends LitElement {
       flex-direction: column;
     }
 
-    img {
+    #extra-tools {
+      z-index: 99999;
+      display: block;
+      position: fixed;
+      bottom: 15px;
+      left: 0vw;
+
+      display: flex;
+      gap: 2px;
+    }
+
+    #current-photo {
       position: fixed;
       right: 18px;
       bottom: 18px;
@@ -145,6 +160,19 @@ export class AppVoice extends LitElement {
       animation: quickSlideInFromBottom 0.5s ease;
     }
 
+    #extra-tools fluent-button::part(control) {
+      background: transparent;
+    }
+
+    #extra-tools fluent-button img {
+      height: 24px;
+      width: 24px;
+
+      filter: invert(1);
+
+      margin-top: 4px;
+    }
+
     ul {
       list-style: none;
       padding: 0;
@@ -170,6 +198,12 @@ export class AppVoice extends LitElement {
     ul li h4 {
       margin: 0;
       padding: 0;
+    }
+
+    @media(prefers-color-scheme: light) {
+      #extra-tools fluent-button img {
+        filter: invert(0);
+      }
     }
 
     @media(min-width: 750px) {
@@ -402,7 +436,7 @@ export class AppVoice extends LitElement {
       onscreenCanvas = this.shadowRoot?.querySelector('canvas');
     }
 
-    let canvas = null;
+    let canvas: HTMLCanvasElement | null = null;
 
     if ('OffscreenCanvas' in window) {
       // @ts-ignore
@@ -413,17 +447,25 @@ export class AppVoice extends LitElement {
     }
 
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas!.width = window.innerWidth;
+    canvas!.height = window.innerHeight;
 
     if (!this.context) {
-      this.context = canvas.getContext('2d');
+      this.context = canvas!.getContext('2d');
     }
+
+    // handle resizing
+    window.addEventListener('resize', () => {
+      canvas!.width = window.innerWidth;
+      canvas!.height = window.innerHeight;
+
+      // this.draw(data, this.context, canvas, onscreenCanvas);
+    });
 
     // @ts-ignore
     this.context?.clearRect(0, 0, canvas.width, canvas.height);
 
-    this.draw(data, this.context, canvas, onscreenCanvas);
+    this.draw(data, this.context, canvas!, onscreenCanvas);
   }
 
   // @ts-ignore
@@ -452,6 +494,15 @@ export class AppVoice extends LitElement {
 
     if (this.status !== "Responding..." && this.status !== "Thinking...") {
       this.status = "Thinking...";
+
+      if (this.sharingScreen === true) {
+        const screen: any = this.shadowRoot?.querySelector('screen-sharing');
+        if (screen) {
+          screen.takeScreenshotFromStreamCont();
+        }
+
+        this.sharingScreen = false;
+      }
 
       const inputValue = content;
 
@@ -547,6 +598,29 @@ export class AppVoice extends LitElement {
     this.status = "";
   }
 
+  openCamera() {
+    const input = document.createElement('input');
+    input.type = "file";
+    input.name = "image";
+    input.accept = "image/*";
+    input.capture = "environment";
+
+    input.click();
+
+    // add iamge from input
+    input.addEventListener("change", async (event: any) => {
+      const file = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        this.addImageToConvo(base64data as string);
+      }
+
+      reader.readAsDataURL(file);
+    });
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
     this.stop();
@@ -556,9 +630,15 @@ export class AppVoice extends LitElement {
     return html`
       <!-- <app-header></app-header> -->
 
-      ${
-      this.inPhotoConvo === true && this.currentPhoto ? html`
-        <img src="${this.currentPhoto}" alt="Current Photo" />
+      <div id="extra-tools">
+        <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
+        <fluent-button id="open-camera-button" @click="${() => this.openCamera()}" apperance="accent" size="small">
+            <img src="/assets/camera-outline.svg" alt="camera icon">
+          </fluent-button>
+      </div>
+
+      ${this.inPhotoConvo === true && this.currentPhoto ? html`
+        <img src="${this.currentPhoto}" id="current-photo" alt="Current Photo" />
       ` : null
       }
 
@@ -569,13 +649,13 @@ export class AppVoice extends LitElement {
           ${this.previousMessages && this.previousMessages.length > 0 ? html`
           <ul>
           ${this.previousMessages.map((message: any) => {
-      return html`
+        return html`
                 <li class="message ${message.role}">
                   <h4>${message.role}</h4>
                   <p>${message.content}</p>
                 </li>
               `;
-    })
+      })
         }
           </ul>` : null}
         </div> -->

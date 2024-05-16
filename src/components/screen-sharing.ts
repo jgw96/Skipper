@@ -4,12 +4,14 @@ import { startScreenSharing, stopScreenSharing } from '../services/utils';
 
 @customElement('screen-sharing')
 export class ScreenSharing extends LitElement {
-    @state() streaming = false;
-    @state() stream: MediaStream | null = null;
-    @state() displayCheck = false;
+  @state() streaming = false;
+  @state() stream: MediaStream | null = null;
+  @state() displayCheck = false;
 
-    static styles = [
-        css`
+  // @property({ type: Boolean }) show = true;
+
+  static styles = [
+    css`
             :host {
                 display: block;
             }
@@ -17,7 +19,7 @@ export class ScreenSharing extends LitElement {
             #video-wrapper {
                 width: 268px;
                 position: absolute;
-                bottom: 16vh;
+                bottom: 100%;
                 padding: 8px;
                 border-radius: 8px;
                 backdrop-filter: blur(64px);
@@ -33,6 +35,7 @@ export class ScreenSharing extends LitElement {
             video {
                 width: 100%;
                 border-radius: 6px;
+                pointer-events: none;
             }
 
             fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip, fluent-search {
@@ -86,60 +89,169 @@ export class ScreenSharing extends LitElement {
                 }
               }
         `
-    ];
+  ];
 
-    firstUpdated() {
-        // check for getDisplayMedia
-        this.displayCheck = 'getDisplayMedia' in navigator.mediaDevices;
+  firstUpdated() {
+    // check for getDisplayMedia
+    this.displayCheck = 'getDisplayMedia' in navigator.mediaDevices && navigator.userAgent.toLowerCase().includes("android") === false;
+  }
+
+  async doScreenShare() {
+    const stream = await startScreenSharing();
+    this.streaming = true;
+    this.stream = (stream as MediaStream);
+
+    this.dispatchEvent(new CustomEvent('streamStarted', {
+      detail: {
+        stream: this.stream
+      }
+    }));
+
+    await this.updateComplete;
+
+    const videoEl = this.shadowRoot?.querySelector('video');
+    videoEl!.onloadedmetadata = () => {
+      this.setupDraggable();
+    }
+  }
+
+  setupDraggable() {
+    const dragItem = this.shadowRoot?.querySelector('#video-wrapper');
+    const container = this.shadowRoot;
+
+    let active = false;
+    let currentX: number;
+    let currentY: number;
+    let initialX: number;
+    let initialY: number;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    container!.addEventListener("touchstart", dragStart, false);
+    container!.addEventListener("touchend", dragEnd, false);
+    container!.addEventListener("touchmove", drag, false);
+
+    container!.addEventListener("mousedown", dragStart, false);
+    container!.addEventListener("mouseup", dragEnd, false);
+    container!.addEventListener("mousemove", drag, false);
+
+    function dragStart(e: any) {
+      console.log("e.target", e.target, dragItem);
+      if (e.type === "touchstart") {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+      } else {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+      }
+
+      if (e.target === dragItem) {
+        active = true;
+      }
     }
 
-    async doScreenShare() {
-        const stream = await startScreenSharing();
-        this.streaming = true;
-        this.stream = (stream as MediaStream);
+    function dragEnd() {
+      initialX = currentX;
+      initialY = currentY;
+
+      active = false;
     }
 
-    async takeScreenshotFromStream() {
-        const video = this.shadowRoot?.querySelector('video');
-        if (!video) return;
+    function drag(e: any) {
+      if (active) {
 
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+        e.preventDefault();
 
-        const goodSrc = canvas.toDataURL('image/png');
+        if (e.type === "touchmove") {
+          currentX = e.touches[0].clientX - initialX;
+          currentY = e.touches[0].clientY - initialY;
+        } else {
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+        }
 
-        const img = document.createElement('img');
-        img.src = goodSrc;
+        xOffset = currentX;
+        yOffset = currentY;
 
-        console.log(img);
-
-        // fire custom event with goodSrc
-        this.dispatchEvent(new CustomEvent('screenshotTaken', {
-            detail: {
-                src: goodSrc
-            }
-        }));
-
-        this.stream = null;
-        this.streaming = false;
-
-        await stopScreenSharing();
-
+        setTranslate(currentX, currentY, dragItem!);
+      }
     }
 
-    render() {
-        return html`
+    function setTranslate(xPos: number, yPos: number, el: any) {
+      el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    }
+  }
+
+  public async takeScreenshotFromStream() {
+    const video = this.shadowRoot?.querySelector('video');
+    if (!video) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const goodSrc = canvas.toDataURL('image/png');
+
+    const img = document.createElement('img');
+    img.src = goodSrc;
+
+    console.log(img);
+
+    // fire custom event with goodSrc
+    this.dispatchEvent(new CustomEvent('screenshotTaken', {
+      detail: {
+        src: goodSrc
+      }
+    }));
+
+    this.doStopScreen();
+
+  }
+
+  public async takeScreenshotFromStreamCont() {
+    const video = this.shadowRoot?.querySelector('video');
+    if (!video) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const goodSrc = canvas.toDataURL('image/png');
+
+    const img = document.createElement('img');
+    img.src = goodSrc;
+
+    console.log(img);
+
+    // fire custom event with goodSrc
+    this.dispatchEvent(new CustomEvent('screenshotTaken', {
+      detail: {
+        src: goodSrc
+      }
+    }));
+
+  }
+
+  doStopScreen() {
+    this.stream = null;
+    this.streaming = false;
+
+    stopScreenSharing();
+  }
+
+  render() {
+    return html`
         ${this.displayCheck ? html`
         ${this.stream ? html`
               <div id="video-wrapper">
                 <video .srcObject="${this.stream}" autoplay></video>
 
-                <fluent-button appearance="accent" @click="${() => this.takeScreenshotFromStream()}">Take Screenshot</fluent-button>
+                <fluent-button appearance="accent" @click="${() => this.doStopScreen()}">Stop Sharing Screen</fluent-button>
                 </div>
             ` : null
-                }
+        }
 
           <div>
             <fluent-button id="start-button" @click="${() => this.doScreenShare()}">
@@ -148,5 +260,5 @@ export class ScreenSharing extends LitElement {
           </div>
         ` : null}
         `;
-    }
+  }
 }

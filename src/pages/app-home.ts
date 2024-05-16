@@ -40,6 +40,7 @@ export class AppHome extends LitElement {
 
   @state() modelLoading = false;
   @state() sayIT: boolean = false;
+  @state() sharingScreen: boolean = false;
 
   captureStream: any;
   modelShipper: string = "";
@@ -1396,6 +1397,15 @@ export class AppHome extends LitElement {
 
         input.value = "";
 
+        if (this.sharingScreen === true) {
+          const screen: any = this.shadowRoot?.querySelector('screen-sharing');
+          if (screen) {
+            screen.takeScreenshotFromStreamCont();
+          }
+
+          this.sharingScreen = false;
+        }
+
         this.previousMessages = [
           ...this.previousMessages,
           {
@@ -2181,7 +2191,7 @@ export class AppHome extends LitElement {
           </fluent-button>
           ` : null}
 
-          <screen-sharing @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
+          <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
           <app-dictate @got-text=${this.handleDictate}></app-dictate>
