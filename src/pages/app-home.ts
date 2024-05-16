@@ -1481,6 +1481,16 @@ export class AppHome extends LitElement {
           resolve();
         }
         else if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
+
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "assistant",
+              content: "<message-skeleton></message-skeleton>",
+              // content: data
+            }
+          ];
+
           const { makeAIRequestWithImage } = await import('../services/ai');
           const data = await makeAIRequestWithImage(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
@@ -1491,14 +1501,17 @@ export class AppHome extends LitElement {
 
           await this.doSayIt(data.choices[0].message.content);
 
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "assistant",
-              content: data.choices[0].message.content,
-              // content: data
-            }
-          ];
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "assistant",
+          //     content: data.choices[0].message.content,
+          //     // content: data
+          //   }
+          // ];
+
+          // replace content of last message with the actual content
+          this.previousMessages[this.previousMessages.length - 1].content = data.choices[0].message.content;
 
           this.handleScroll(list);
 
