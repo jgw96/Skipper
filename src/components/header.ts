@@ -10,7 +10,7 @@ provideFluentDesignSystem().register(fluentAnchor());
 
 @customElement('app-header')
 export class AppHeader extends LitElement {
-  @property({ type: String }) title = 'gpt-client';
+  @property({ type: String }) title = 'Skipper AI';
 
   @state() enableBack: boolean = false;
 
@@ -41,6 +41,10 @@ export class AppHeader extends LitElement {
         -webkit-app-region: drag;
 
         z-index: 1
+      }
+
+      app-login {
+        margin-bottom: 3px;
       }
 
       #header-actions {
@@ -86,8 +90,8 @@ export class AppHeader extends LitElement {
       header h1 {
         margin-top: 0;
         margin-bottom: 0;
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 12px;
+        font-weight: 500;
       }
 
       nav a {
@@ -98,7 +102,9 @@ export class AppHeader extends LitElement {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 12em;
+
+        width: max-content;
+        gap: 12px;
       }
 
       #back-button-block img {
@@ -124,12 +130,15 @@ export class AppHeader extends LitElement {
           background: var(--theme-color);
         }
 
+
+
         nav a {
           color: initial;
         }
 
         fluent-anchor::part(control), fluent-button::part(control) {
           background: transparent;
+          color: black;
         }
       }
 
@@ -223,7 +232,13 @@ export class AppHeader extends LitElement {
           </fluent-anchor>` : null}
 
           ${!this.enableBack ? html`
-          <img src="/assets/icons/maskable_icon_x48.png" alt="app icon">` : null}
+          <img src="/assets/icons/maskable_icon_x48.png" alt="app icon">
+
+          <h1>${this.title}</h1>
+
+          `
+
+           : null}
         </div>
 
         <div id="header-actions">

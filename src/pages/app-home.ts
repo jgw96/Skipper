@@ -696,6 +696,10 @@ export class AppHome extends LitElement {
             -webkit-backdrop-filter: blur(40px);
           }
 
+          #mainBlock {
+            background: #1c1c1c;
+          }
+
           fluent-button img, sl-button img, sl-menu-item img {
             filter: invert(1);
           }
@@ -832,12 +836,19 @@ export class AppHome extends LitElement {
           }
 
           #suggested {
-            grid-template-columns: 1fr 1fr 1fr;
-            width: 480px;
+            display: flex;
+            flex-direction: row;
+            overflow-y: scroll;
+            white-space: nowrap;
+            width: 59vw;
           }
 
           #no-messages.main-content p {
             width: 480px;
+          }
+
+          #no-messages {
+            margin-top: 14vh;
           }
 
           li.user, li.system, li.assistant {

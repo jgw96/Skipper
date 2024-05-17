@@ -5,10 +5,10 @@
   "display": "standalone",
   "start_url": "/",
   "short_name": "Skipper",
-  "theme_color": "#242424",
+  "theme_color": "#212121",
   "description": "Skipper is a powerful multi-modal AI assistant. Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image! Simply want text chat? That works too.",
   "orientation": "any",
-  "background_color": "#242424",
+  "background_color": "#212121",
   "related_applications": [],
   "prefer_related_applications": false,
   "display_override": [

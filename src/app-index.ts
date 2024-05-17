@@ -13,10 +13,8 @@ export class AppIndex extends LitElement {
   static get styles() {
     return css`
       sl-drawer::part(panel) {
-        backdrop-filter: blur(40px);
-        -webkit-backdrop-filter: blur(40px);
         padding-top: env(titlebar-area-height, initial);
-        background: #20202040;
+       background: #212121;
       }
 
       fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
