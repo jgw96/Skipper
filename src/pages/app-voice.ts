@@ -53,6 +53,7 @@ export class AppVoice extends LitElement {
   previewAnimation: any;
 
   currentAudioEl: HTMLAudioElement | null = null;
+  wakeLock: any;
 
 
   static styles = [
@@ -268,7 +269,27 @@ export class AppVoice extends LitElement {
 
     this.addImageWithDragDrop();
 
+    this.wakeLock = this.requestWakeLock();
+
   }
+
+  requestWakeLock = async () => {
+    if ("wakeLock" in navigator) {
+      let wakeLock: any;
+
+      try {
+        wakeLock = await (navigator as any).wakeLock.request();
+
+        wakeLock.addEventListener("release", () => {
+          console.log("Screen Wake Lock released:", wakeLock.released);
+        });
+
+        return wakeLock;
+      } catch (err) {
+        console.error(`${(err as any).name}, ${(err as any).message}`);
+      }
+    }
+  };
 
   addImageWithDragDrop() {
     const dropElement: HTMLElement | null | undefined = this.shadowRoot?.querySelector('main');
@@ -624,6 +645,10 @@ export class AppVoice extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.stop();
+
+    if (this.wakeLock) {
+      this.wakeLock.release();
+    }
   }
 
   render() {
