@@ -845,11 +845,10 @@ export class AppHome extends LitElement {
           }
 
           #suggested {
-            display: flex;
-            flex-direction: row;
-            overflow-y: scroll;
-            white-space: nowrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             width: 59vw;
+            max-height: 38vh;
           }
 
           #now {
@@ -861,7 +860,7 @@ export class AppHome extends LitElement {
           }
 
           #no-messages {
-            margin-top: 14vh;
+            margin-top: 10vh;
           }
 
           li.user, li.system, li.assistant {
