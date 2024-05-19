@@ -32,6 +32,8 @@ html, body {
   overflow: hidden;
 
   height: 100vh;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -40,11 +42,15 @@ html::-webkit-scrollbar {
 }
 
 @media (prefers-color-scheme: dark) {
+  html {
+    background: linear-gradient(117deg, #202020, #8769dc 71%, #202020 89%);
+  }
+
   html[data-theme="fluent"], html[data-theme="fluent"] body {
     --theme-color: #212121;
     color: white;
-    background-color: var(--theme-color);
     --neutral-foreground-rest: white;
+    background-color: #232323eb !important;
   }
 
   /* html[data-theme="fluent"] {
@@ -71,8 +77,8 @@ html::-webkit-scrollbar {
 @media (prefers-color-scheme: light) {
   html[data-theme="fluent"], html[data-theme="fluent"] body {
     --theme-color: #1e1e1e0f;
-    background-color: white;
     --neutral-foreground-rest: black;
+    background-color: #f4f4f4;
   }
 
   html[data-theme="fluent-darker"], html[data-theme="fluent-darker"] body {
@@ -87,11 +93,4 @@ html::-webkit-scrollbar {
     --neutral-foreground-rest: white;
   }
 
-  html[data-theme="fluent"] {
-    background: white;
-  }
-
-  html[data-theme="fluent"] body {
-    background-color: white;
-  }
 }

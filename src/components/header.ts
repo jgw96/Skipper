@@ -16,6 +16,10 @@ export class AppHeader extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        --theme-color: transparent;
+      }
+
       header {
         display: flex;
         justify-content: space-between;

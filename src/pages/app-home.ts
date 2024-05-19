@@ -42,6 +42,9 @@ export class AppHome extends LitElement {
   @state() sayIT: boolean = false;
   @state() sharingScreen: boolean = false;
 
+  @state() weatherString: string | undefined;
+  @state() forecastString: string | undefined;
+
   captureStream: any;
   modelShipper: string = "";
   @state() authToken: string | null = null;
@@ -67,6 +70,11 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8769dc;
           --accent-fill-hover: #8769dc;
           --accent-stroke-control-hover: #8769dc;
+        }
+
+        #now fluent-card {
+          padding-left: 16px;
+          padding-right: 16px;
         }
 
         sl-dropdown sl-menu {
@@ -245,7 +253,7 @@ export class AppHome extends LitElement {
           background: #ffffff0f;
           font-size: 14px;
           cursor: pointer;
-          min-height: 50px;
+          min-height: 32px;
         }
 
         fluent-card {
@@ -460,6 +468,8 @@ export class AppHome extends LitElement {
 
         #saved {
           /* color: white; */
+          --theme-color: transparent;
+
           background-color: var(--theme-color);
           /* border-color: #2d2d2d1a; */
           backdrop-filter: blur(40px);
@@ -544,6 +554,8 @@ export class AppHome extends LitElement {
 
         fluent-text-area {
           border-radius: 8px;
+
+          --theme-color: #262626;
         }
 
         fluent-text-area::part(root) {
@@ -673,7 +685,7 @@ export class AppHome extends LitElement {
           display: none;
         }
 
-        #no-messages.main-content p {
+        #no-messages.main-content #greeting-text {
           font-weight: bold;
           font-size: 38px;
           width: 420px;
@@ -694,10 +706,6 @@ export class AppHome extends LitElement {
             color: white;
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-          }
-
-          #mainBlock {
-            background: #1c1c1c;
           }
 
           fluent-button img, sl-button img, sl-menu-item img {
@@ -721,6 +729,7 @@ export class AppHome extends LitElement {
 
         @media(prefers-color-scheme: light) {
           li.system, li.assistant {
+            --theme-color: white;
             background: var(--theme-color);
           }
 
@@ -843,7 +852,11 @@ export class AppHome extends LitElement {
             width: 59vw;
           }
 
-          #no-messages.main-content p {
+          #now {
+            width: 59vw;
+          }
+
+          #no-messages.main-content #greeting-text {
             width: 480px;
           }
 
@@ -881,6 +894,10 @@ export class AppHome extends LitElement {
             display: none;
           }
 
+          #suggested li {
+            min-height: 46px;
+          }
+
           #convo-name h2 {
             max-width: 60vw;
           }
@@ -899,7 +916,7 @@ export class AppHome extends LitElement {
             display: none;
           }
 
-          #no-messages.main-content p {
+          #no-messages.main-content #greeting-text {
             width: 82%;
           }
 
@@ -941,7 +958,7 @@ export class AppHome extends LitElement {
             padding-bottom: 0;
           }
 
-          #suggested {
+          #suggested, #now {
             width: 82%;
           }
 
@@ -1019,7 +1036,7 @@ export class AppHome extends LitElement {
         }
 
         @media(max-width: 300px) {
-          #no-messages.main-content p {
+          #no-messages.main-content #greeting-text {
             font-size: 38px;
           }
         }
@@ -1046,7 +1063,7 @@ export class AppHome extends LitElement {
             margin-top: 6vh;
           }
 
-          #no-messages.main-content p {
+          #no-messages.main-content #greeting-text {
             margin-bottom: 8px;
           }
 
@@ -1147,8 +1164,10 @@ export class AppHome extends LitElement {
       }
     });
 
+    // handle drag and drop
     this.addImageWithDragDrop();
 
+    // load and set up correct model
     if (chosenModelShipper === "redpajama") {
       const { loadChatModule } = await import('../services/local-ai');
 
@@ -1172,6 +1191,7 @@ export class AppHome extends LitElement {
       this.modelLoading = false;
     }
 
+    // check if we are deeplinked into a convo
     const queryParams = new URLSearchParams(window.location.search);
     const title = queryParams.get('title');
     const convo = JSON.parse(queryParams.get('convo')!);
@@ -1181,6 +1201,7 @@ export class AppHome extends LitElement {
       this.previousMessages = convo;
     }
 
+    // get position for actions
     window.requestIdleCallback(() => {
       navigator.geolocation.getCurrentPosition((position) => {
         localStorage.setItem("lat", position.coords.latitude.toString());
@@ -1189,7 +1210,6 @@ export class AppHome extends LitElement {
     }, {
       timeout: 1000
     });
-
   }
 
   public async handleModelChange(model: string) {
