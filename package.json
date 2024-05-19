@@ -10,7 +10,9 @@
     "deploy": " npx @azure/static-web-apps-cli login --no-use-keychain && npx @azure/static-web-apps-cli deploy",
     "build": "tsc && vite build",
     "start": "npm run dev",
-    "start-remote": "vite --host"
+    "start-remote": "vite --host",
+    "test": "playwright test",
+    "generate-screenshots": "node screenshots.js"
   },
   "author": "",
   "license": "ISC",
@@ -40,6 +42,8 @@
     "workbox-window": "^6.5.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.12",
     "rollup-plugin-minify-html-literals": "^1.2.6",
     "typescript": "^5.3.3",
     "vite": "^5.1.0",
