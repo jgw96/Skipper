@@ -14,7 +14,7 @@ export class AppIndex extends LitElement {
     return css`
       sl-drawer::part(panel) {
         padding-top: env(titlebar-area-height, initial);
-       background: #212121;
+        background: rgb(39 39 49);
       }
 
       fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
