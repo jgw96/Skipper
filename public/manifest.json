@@ -16,20 +16,25 @@
   ],
   "icons": [
     {
-      "src": "assets/icons/maskable_icon_x512.png",
+      "src": "assets/icons/512-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/icons/maskable_icon_x192.png",
-      "sizes": "192x192",
+      "src": "assets/icons/256-icon.png",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/maskable_icon_x48.png",
-      "sizes": "48x48",
+      "src": "assets/icons/128-icon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/64-icon.png",
+      "sizes": "64x64",
       "type": "image/png"
     }
   ],
@@ -99,8 +104,8 @@
       "url": "/photo",
       "icons": [
         {
-          "src": "assets/icons/maskable_icon_x192.png",
-          "sizes": "192x192"
+          "src": "assets/image-outline.png",
+          "sizes": "512x512"
         }
       ]
     },
@@ -111,8 +116,8 @@
       "url": "/voice",
       "icons": [
         {
-          "src": "assets/icons/maskable_icon_x192.png",
-          "sizes": "192x192"
+          "src": "assets/headset-outline.png",
+          "sizes": "512x512"
         }
       ]
     }

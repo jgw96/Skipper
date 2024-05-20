@@ -236,7 +236,7 @@ export class AppHeader extends LitElement {
           </fluent-anchor>` : null}
 
           ${!this.enableBack ? html`
-          <img src="/assets/icons/maskable_icon_x48.png" alt="app icon">
+          <img src="/assets/icons/64-icon.png" alt="app icon">
 
           <h1>${this.title}</h1>
 

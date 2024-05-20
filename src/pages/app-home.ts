@@ -847,7 +847,7 @@ export class AppHome extends LitElement {
           #suggested {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            width: 59vw;
+            width: 480px;
             max-height: 38vh;
           }
 
