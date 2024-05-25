@@ -9,10 +9,15 @@ on:
     branches:
       - main
 
+env:
+  VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+  VITE_SPEECH_SUB: ${{ secrets.VITE_SPEECH_SUB }}
+
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
+    environment: main
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
