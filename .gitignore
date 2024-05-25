@@ -5,6 +5,7 @@ dev-dist
 build
 types
 .idea
+.env
 .github
 /test-results/
 /playwright-report/

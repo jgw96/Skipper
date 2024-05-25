@@ -105,7 +105,7 @@ export class AppDictate extends LitElement {
                 }
 
                 fluent-button img {
-                    filter: invert(1);
+                    filter: invert(0);
                 }
             }
 
@@ -140,7 +140,7 @@ export class AppDictate extends LitElement {
 
                 const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
                 const speechConfig = sdk.SpeechConfig.fromSubscription(
-                    "b5b594f480a64837a37d7c3f24da9c38",
+                    import.meta.env.VITE_SPEECH_SUB,
                     "westus"
                 );
 

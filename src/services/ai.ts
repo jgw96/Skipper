@@ -1,15 +1,11 @@
-// import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
-import { /*getGoogleKey,*/ getOpenAIKey } from "./keys";
+import { getOpenAIKey } from "./keys";
 
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
 
 const extraPrompt = "";
 
-// const apiKey = await getGoogleKey();
-// let potentialGemeniModel: GenerativeModel | null = null;
 export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" = "openai";
-// let genAI: GoogleGenerativeAI | null = null;
 
 const GPTKey = await getOpenAIKey();
 

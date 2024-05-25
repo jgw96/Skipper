@@ -2,7 +2,7 @@ import { AccountInfo, InteractionRequiredAuthError, PublicClientApplication } fr
 
 const msalConfig = {
     auth: {
-        clientId: '385ccfbf-05e4-4f18-8e83-2e0ce7d3c636',
+        clientId: import.meta.env.VITE_CLIENT_ID,
         redirectUri: location.href
     },
 };

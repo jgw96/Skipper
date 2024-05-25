@@ -243,6 +243,7 @@ export class AppHome extends LitElement {
         .system p, .assistant p {
           padding: 0;
           margin: 0;
+          margin-top: 8px;
         }
 
         #suggested li {
@@ -468,7 +469,8 @@ export class AppHome extends LitElement {
 
         #saved {
           /* color: white; */
-          --theme-color: transparent;
+          --theme-color: rgba(255, 255, 255, 0.06);
+          border-radius: 0px 8px 8px 0px;
 
           background-color: var(--theme-color);
           /* border-color: #2d2d2d1a; */
@@ -802,6 +804,7 @@ export class AppHome extends LitElement {
           }
 
           #saved {
+            --theme-color: #1e1e1e0f;
             background: var(--theme-color);
           }
 
