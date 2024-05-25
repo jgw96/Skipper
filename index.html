@@ -588,17 +588,6 @@ onload="window.matchMedia('(prefers-color-scheme: dark)').matches ? document.doc
           }
         });
       }
-
-      const registration = await navigator.serviceWorker.ready;
-
-      registration.addEventListener("updatefound", event => {
-        const newSW = registration.installing;
-        newSW.addEventListener("statechange", event => {
-          if (newSW.state == "installed") {
-            // New service worker is installed, but waiting activation
-          }
-        });
-      })
     }
   </script>
 
