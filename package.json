@@ -24,6 +24,7 @@
     "@shoelace-style/shoelace": "^2.14.0",
     "@thepassle/app-tools": "^0.9.12",
     "@vaadin/router": "^1.7.4",
+    "@xenova/transformers": "github:xenova/transformers.js#v3",
     "browser-fs-access": "^0.35.0",
     "idb-keyval": "^6.2.1",
     "lit": "^3.1.2",

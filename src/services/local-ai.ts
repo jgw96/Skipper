@@ -22,58 +22,77 @@ const initProgressCallback = async (report: webllm.InitProgressReport): Promise<
 };
 
 export async function loadChatModule(model: "redpajama" | "llama" | "gemma" = "redpajama") {
+    // return new Promise<void>(async (resolve) => {
+    //     if (!chatModule) {
+    //         let modelToUse = redpajama;
+    //         switch (model) {
+    //             case "llama":
+    //                 modelToUse = llama;
+    //                 break;
+    //             case "gemma":
+    //                 modelToUse = gemma;
+    //                 break;
+    //             default:
+    //                 modelToUse = redpajama;
+    //                 break;
+    //         }
+
+    //         const appConfig = webllm.prebuiltAppConfig;
+    //         appConfig.useIndexedDBCache = true;
+
+    //         // chatModule = new webllm.ChatModule();
+    //         chatModule = await webllm.CreateWebWorkerEngine(new Worker(
+    //             new URL('./local-ai-worker.ts', import.meta.url),
+    //             { type: 'module' }
+    //         ),
+    //             modelToUse,
+    //             {
+    //                 initProgressCallback
+    //             }
+    //         );
+
+    //         resolve();
+    //     }
+    //     else {
+    //         resolve();
+    //     }
+    // });
+
     return new Promise<void>(async (resolve) => {
-        if (!chatModule) {
-            let modelToUse = redpajama;
-            switch (model) {
-                case "llama":
-                    modelToUse = llama;
-                    break;
-                case "gemma":
-                    modelToUse = gemma;
-                    break;
-                default:
-                    modelToUse = redpajama;
-                    break;
-            }
+        const { loadPhi } = await import("./phi-controller");
+        await loadPhi();
 
-            const appConfig = webllm.prebuiltAppConfig;
-            appConfig.useIndexedDBCache = true;
-
-            // chatModule = new webllm.ChatModule();
-            chatModule = await webllm.CreateWebWorkerEngine(new Worker(
-                new URL('./local-ai-worker.ts', import.meta.url),
-                { type: 'module' }
-            ),
-                modelToUse,
-                {
-                    initProgressCallback
-                }
-            );
-
-            resolve();
-        }
-        else {
-            resolve();
-        }
-    });
+        resolve();
+    })
 }
 
 export async function requestLocalAI(previousMessages: any[]) {
-    if (chatModule) {
-        const request: webllm.ChatCompletionRequest = {
-            stream: true,
-            messages: previousMessages,
-            temperature: 1.5,
-            logprobs: true,
-            top_logprobs: 2,
-        };
+    // if (chatModule) {
+    //     const request: webllm.ChatCompletionRequest = {
+    //         stream: true,
+    //         messages: previousMessages,
+    //         temperature: 1.5,
+    //         logprobs: true,
+    //         top_logprobs: 2,
+    //     };
 
-        const asyncChunkGenerator = await chatModule?.chat.completions.create(request);
-        return asyncChunkGenerator;
+    //     const asyncChunkGenerator = await chatModule?.chat.completions.create(request);
+    //     return asyncChunkGenerator;
 
+    // }
+    // else {
+    //     throw new Error("Chat module not loaded");
+    // }
+    if (previousMessages.filter(x => x.role === 'user').length === 0) {
+        // No user messages yet: do nothing.
+        return;
     }
-    else {
-        throw new Error("Chat module not loaded");
+    if (previousMessages.at(-1).role === 'assistant') {
+        // Do not update if the last message is from the assistant
+        return;
     }
+
+    const { runOnPhi } = await import("./phi-controller");
+    console.log("previousMessages", previousMessages);
+    await runOnPhi(previousMessages);
 }
