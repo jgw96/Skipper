@@ -892,6 +892,7 @@ export class AppHome extends LitElement {
 
           #suggested li {
             min-height: 46px;
+            max-width: initial;
           }
 
           #convo-name h2 {
@@ -1081,12 +1082,22 @@ export class AppHome extends LitElement {
 
           #saved {
             padding-right: 12px;
+            background: transparent;
+          }
+
+          #saved ul {
+            display: grid;
+            grid-template-columns: 49% 49%;
           }
 
 
             sl-drawer::part(panel) {
               width: 49vw;
             }
+
+          #suggested {
+            display: grid;
+          }
 
        }
 
