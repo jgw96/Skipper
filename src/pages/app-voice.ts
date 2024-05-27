@@ -611,6 +611,7 @@ export class AppVoice extends LitElement {
   async stop() {
     await this.recog.stopContinuousRecognitionAsync();
     this.loading = false;
+    this.recog = null;
 
     if (this.currentAudioEl) {
       this.currentAudioEl.pause();

@@ -240,6 +240,12 @@ export class AppHome extends LitElement {
           margin-top: 8px;
         }
 
+        .assistant .item-toolbar .robot-icon {
+          /* height: 16px; */
+          width: 20px;
+          margin-bottom: 8px;
+        }
+
         #suggested li {
           display: flex;
           align-items: center;
@@ -249,7 +255,7 @@ export class AppHome extends LitElement {
           font-size: 16px;
           cursor: pointer;
 
-          padding: 16px;
+          padding: 10px;
           min-height: 50px;
           max-width: 128px;
         }
@@ -436,7 +442,7 @@ export class AppHome extends LitElement {
 
         .item-toolbar {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           align-items: center;
           padding-bottom: 4px;
           display: flex;
@@ -834,6 +840,10 @@ export class AppHome extends LitElement {
           display: none;
         }
 
+        #suggested fluent-button::part(control) {
+          background: #ffffff0f;
+        }
+
         @media(min-width: 860px) {
           #convo-name {
             left: 20vw;
@@ -848,12 +858,20 @@ export class AppHome extends LitElement {
 
             display: flex;
             flex-direction: row;
-            width: 68vw;
+            width: 70vw;
+
+            gap: 8px;
+
+            margin: 0;
+            padding: 0;
+            margin-bottom: -15px;
           }
 
           #suggested li {
             animation: quickup 0.3s ease;
-            min-width: 127px;
+            min-width: max-content;
+            min-height: fit-content;
+            font-size: 14px;
           }
 
           #now {
@@ -865,7 +883,7 @@ export class AppHome extends LitElement {
           }
 
           #no-messages {
-            margin-top: 10vh;
+            margin-top: 12vh;
           }
 
           li.user, li.system, li.assistant {
@@ -965,6 +983,12 @@ export class AppHome extends LitElement {
 
           #suggested, #now {
             width: 82%;
+          }
+
+          #suggested {
+            margin-bottom: 52px;
+            width: 100%;
+            max-height: 20vh;
           }
 
           #open-camera-button {
@@ -2204,6 +2228,8 @@ export class AppHome extends LitElement {
           ${this.previousMessages.map((message) => {
           return html`<li class="${message.role}">
             <div class="item-toolbar">
+                ${message.role === "assistant" ? html`<img class="robot-icon" src="/assets/icons/64-icon.png" />` : null}
+                <div>
                 <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/share-social-outline.svg" alt="share" />
                 </sl-button>
@@ -2215,6 +2241,7 @@ export class AppHome extends LitElement {
                 <sl-button @click="${() => this.speakIt(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/volume-high-outline.svg" alt="copy" />
                 </sl-button>
+                </div>
             </div>
 
             <div class="content-bar" @click="${() => this.openInViewer(message.content)}">
@@ -2232,7 +2259,7 @@ export class AppHome extends LitElement {
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
-            <ul id="suggested">
+            <!-- <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
@@ -2245,17 +2272,39 @@ export class AppHome extends LitElement {
                 ` : null
         }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
+              ${this.quickActions.map((action: any) => {
+          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
+        })
+        }
+              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
+              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
+            </ul> -->
+          </div>
+       `}
+
+       <div id="input-block">
+       ${this.previousMessages.length === 0 ? html`<ul id="suggested">
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
+              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
+                  <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
+                  <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
+                  <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
+                  <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
+                  <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
+                ` : null
+        }
+              <!-- ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null} -->
               <!-- ${this.quickActions.map((action: any) => {
           return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
         })
         } -->
               <!-- <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li> -->
-            </ul>
-          </div>
-       `}
+            </ul>` : null}
 
-       <div id="input-block">
         <div id="extra-actions">
           <div id="inner-extra-actions">
           ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" id="add-image-to-convo" size="small">
