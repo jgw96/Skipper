@@ -77,7 +77,7 @@ export class AppLogin extends LitElement {
         return html`
           <div id="block">
             ${this.displayName ? html`<fluent-button size="small" @click="${() => this.doLogOut()}">Logout</fluent-button>` : html`
-            <fluent-button size="small" @click="${() => this.doSignIn()}"/>Sign in with Microsoft</fluent-button>
+            <fluent-button size="small" @click="${() => this.doSignIn()}"/>Connect to Microsoft 365</fluent-button>
             `
             }
     </div>

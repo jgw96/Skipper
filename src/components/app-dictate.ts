@@ -109,6 +109,12 @@ export class AppDictate extends LitElement {
                 }
             }
 
+            @media(max-width: 600px) and (prefers-color-scheme: light) {
+                fluent-button img {
+                    filter: invert(1);
+                }
+            }
+
             @media(prefers-color-scheme: dark) {
                 fluent-button img {
                     filter: invert(1);

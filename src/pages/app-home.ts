@@ -8,9 +8,11 @@ import '@shoelace-style/shoelace/dist/components/menu/menu.js';
 import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
 
-import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, fluentTooltip, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fluentButton, fluentTextArea, fluentOption, fluentListbox, fluentCard, fluentSearch, fluentMenu, fluentMenuItem, fluentTooltip, provideFluentDesignSystem, baseLayerLuminance } from '@fluentui/web-components';
 
 provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOption(), fluentListbox(), fluentCard(), fluentSearch(), fluentMenu(), fluentMenuItem(), fluentTooltip());
+
+console.log('baseLayerLuminance', baseLayerLuminance);
 
 import { styles } from '../styles/shared-styles';
 
@@ -166,21 +168,6 @@ export class AppHome extends LitElement {
         width: 100%;
       }
 
-        fluent-menu {
-          background: #ffffff14;
-          backdrop-filter: blur(48px);
-          -webkit-backdrop-filter: blur(48px);
-          color: white;
-          z-index: 99;
-        }
-
-        fluent-menu-item {
-          color: white;
-        }
-
-        fluent-menu-item {
-          --neutral-fill-stealth-hover: #181818;
-        }
 
         .mobile-saved {
           --size: 40rem;
@@ -232,6 +219,13 @@ export class AppHome extends LitElement {
           width: 420px;
           padding: 0;
           margin: 0;
+
+          animation: quickup 0.3s ease;
+        }
+
+
+        #suggested li {
+          animation: quickup 0.3s ease;
         }
 
         .system ul, .assistant ul {
@@ -252,9 +246,12 @@ export class AppHome extends LitElement {
           justify-content: center;
           text-align: center;
           background: #ffffff0f;
-          font-size: 14px;
+          font-size: 16px;
           cursor: pointer;
-          min-height: 32px;
+
+          padding: 16px;
+          min-height: 50px;
+          max-width: 128px;
         }
 
         fluent-card {
@@ -769,16 +766,6 @@ export class AppHome extends LitElement {
 
           }
 
-          fluent-menu-item {
-            color: black;
-            --neutral-fill-stealth-hover: white;
-          }
-
-          fluent-menu {
-            background: rgb(235 235 235);
-            backdrop-filter: none;
-          }
-
           #convo-list code {
             background: white;
           }
@@ -850,8 +837,15 @@ export class AppHome extends LitElement {
           #suggested {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            width: 480px;
             max-height: 38vh;
+
+            display: flex;
+            flex-direction: row;
+            width: max-content;
+          }
+
+          #suggested li {
+            animation: quickup 0.3s ease;
           }
 
           #now {
@@ -1212,6 +1206,15 @@ export class AppHome extends LitElement {
     }, {
       timeout: 1000
     });
+
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (isDarkMode) {
+      const fluentMenu: any = this.shadowRoot?.querySelectorAll("right-click fluent-menu-item");
+      for (let i = 0; i < fluentMenu.length; i++) {
+        baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
+      }
+    }
   }
 
   public async handleModelChange(model: string) {
@@ -1849,6 +1852,11 @@ export class AppHome extends LitElement {
     await drawer?.hide();
   }
 
+  async openVoiceMode() {
+    const { router } = await import("../router");
+    router.navigate("/voice");
+  }
+
   async newConvo() {
     this.previousMessages = [];
     this.convoName = undefined;
@@ -2035,14 +2043,18 @@ export class AppHome extends LitElement {
       </sl-dialog>
 
       <right-click>
-          <sl-menu-item @click="${() => this.newConvo()}">
+          <fluent-menu-item @click="${() => this.newConvo()}">
             <sl-icon slot="prefix" src="/assets/send-outline.svg"></sl-icon>
             New Conversation
-          </sl-menu-item>
-          <sl-menu-item @click="${() => this.addImageToConvo()}">
+          </fluent-menu-item>
+          <fluent-menu-item @click="${() => this.addImageToConvo()}">
           <sl-icon slot="prefix" src="/assets/image-outline.svg"></sl-icon>
             Add Image
-          </sl-menu-item>
+          </fluent-menu-item>
+          <fluent-menu-item @click="${() => this.openVoiceMode()}">
+            <sl-icon slot="prefix" src="/assets/mic-outline.svg"></sl-icon>
+            Voice Mode
+          </fluent-menu-item>
       </right-click>
 
       ${this.convoName ? html`
@@ -2205,21 +2217,21 @@ export class AppHome extends LitElement {
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
-              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
+              <!-- ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
                   <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
                   <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
                   <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
                 ` : null
-        }
+        } -->
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${this.quickActions.map((action: any) => {
+              <!-- ${this.quickActions.map((action: any) => {
           return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
         })
-        }
-              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
+        } -->
+              <!-- <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
+              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li> -->
             </ul>
           </div>
        `}

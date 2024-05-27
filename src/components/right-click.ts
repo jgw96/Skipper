@@ -1,6 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
+import { baseLayerLuminance, fluentMenu, fluentMenuItem, provideFluentDesignSystem } from '@fluentui/web-components';
+
+provideFluentDesignSystem().register(fluentMenu(), fluentMenuItem());
+
 @customElement('right-click')
 export class RightClick extends LitElement {
     static styles = [
@@ -90,13 +94,20 @@ export class RightClick extends LitElement {
                 })
             }
         }
+
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (isDarkMode) {
+            const fluentMenu: any = this.shadowRoot?.querySelector("fluent-menu");
+            baseLayerLuminance.setValueFor(fluentMenu, 0.1)
+        }
     }
 
     render() {
         return html`
-        <sl-menu id="context-menu">
+        <fluent-menu id="context-menu">
             <slot></slot>
-    </sl-menu>
+    </fluentOption-menu>
         `;
     }
 }

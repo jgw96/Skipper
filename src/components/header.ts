@@ -172,6 +172,10 @@ export class AppHeader extends LitElement {
         header {
           background: transparent;
         }
+
+        header h1 {
+          display: none;
+        }
       }
 
 
