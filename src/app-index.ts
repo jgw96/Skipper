@@ -200,7 +200,7 @@ export class AppIndex extends LitElement {
         </p>
 
         <p>
-          To get started, you need to set up your API key for the OpenAI GPT4-Turbo model, which powers Skipper.
+          To get started, you need to set up your API key for the OpenAI GPT-4o model, which powers Skipper.
           Start <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">here to learn how to get an OpenAI Key</a>.
           Once you have your key, enter it below, and click Update.
         </p>

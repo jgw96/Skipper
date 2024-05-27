@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 
 import { fluentTextField, provideFluentDesignSystem } from '@fluentui/web-components';
 
@@ -7,6 +7,9 @@ provideFluentDesignSystem().register(fluentTextField());
 
 @customElement('key-manager')
 export class KeyManager extends LitElement {
+
+    @state() keyUpdated: boolean = false;
+
     static styles = [
         css`
             :host {
@@ -118,6 +121,15 @@ export class KeyManager extends LitElement {
 
         const { setOpenAIKey } = await import('../services/keys');
         await setOpenAIKey(target.value);
+
+        // emit custom event on the window
+        window.dispatchEvent(new CustomEvent('gpt-key-changed', {
+            detail: {
+                key: target.value
+            }
+        }));
+
+        this.keyUpdated = true;
     }
 
     save() {
@@ -143,12 +155,12 @@ export class KeyManager extends LitElement {
 
             <div id="key-section">
                 <div class="label">
-                  <label for="gpt-api-key">GPT-4 API Key</label>
+                  <label for="gpt-api-key">GPT-4o API Key</label>
                   <fluent-text-field @change="${this.handleGPTChange}" id="gpt-api-key" type="text"></fluent-text-field>
                 </div>
             </div>
 
-            <fluent-button appearance="accent" @click="${this.save}">Update</fluent-button>
+            ${this.keyUpdated ? html`<fluent-button appearance="accent">Updated</fluent-button>` : html`<fluent-button appearance="accent" @click="${this.save}">Update</fluent-button>`}
           </div>
         `;
     }

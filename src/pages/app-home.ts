@@ -2182,10 +2182,10 @@ export class AppHome extends LitElement {
             </sl-dropdown>
 
 
-            ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
+            <!-- ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
             <img src="/assets/globe-outline.svg" alt="web results icon">
-          </fluent-button>` : null
-        }
+             </fluent-button>` : null
+             } -->
 
               <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
@@ -2226,8 +2226,8 @@ export class AppHome extends LitElement {
 
             <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What time is it?")}">What time is it?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
               <!-- ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>

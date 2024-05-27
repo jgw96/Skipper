@@ -7,7 +7,12 @@ const extraPrompt = "";
 
 export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" = "openai";
 
-const GPTKey = await getOpenAIKey();
+let GPTKey = await getOpenAIKey();
+
+// @ts-ignore
+window.addEventListener("gpt-key-changed", (e: CustomEvent) => {
+    GPTKey = e.detail.key;
+});
 
 export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama" | "llama" | "gemma") {
     chosenModelShipper = shipper;
