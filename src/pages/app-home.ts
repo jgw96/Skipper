@@ -864,7 +864,6 @@ export class AppHome extends LitElement {
 
             margin: 0;
             padding: 0;
-            margin-bottom: -15px;
           }
 
           #suggested li {
