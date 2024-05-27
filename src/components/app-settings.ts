@@ -3,6 +3,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 
 import "./key-manager";
+import "./app-actions";
 
 import {
     provideFluentDesignSystem,
@@ -280,6 +281,10 @@ export class AppSettings extends LitElement {
                     Low quality will sound more robotic but will be faster.
                 </p>
             </div>
+
+            <div class="setting">
+                <app-actions></app-actions>
+    </div>
 
             <div class="setting">
                 <label for="export">Export Data</label>

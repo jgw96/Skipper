@@ -467,7 +467,6 @@ export class AppHome extends LitElement {
         #saved {
           /* color: white; */
           --theme-color: rgba(255, 255, 255, 0.06);
-          border-radius: 0px 8px 8px 0px;
 
           background-color: var(--theme-color);
           /* border-color: #2d2d2d1a; */
@@ -476,6 +475,10 @@ export class AppHome extends LitElement {
           padding: 8px;
           animation: slideStart 0.3s ease;
           contain: strict;
+
+          margin-left: 8px;
+          margin-bottom: 7px;
+          border-radius: 8px;
         }
 
         @keyframes slideStart {
@@ -827,6 +830,10 @@ export class AppHome extends LitElement {
           display: none;
         }
 
+        #suggested::webkit-scrollbar {
+          display: none;
+        }
+
         @media(min-width: 860px) {
           #convo-name {
             left: 20vw;
@@ -841,11 +848,12 @@ export class AppHome extends LitElement {
 
             display: flex;
             flex-direction: row;
-            width: max-content;
+            width: 68vw;
           }
 
           #suggested li {
             animation: quickup 0.3s ease;
+            min-width: 127px;
           }
 
           #now {
@@ -2228,14 +2236,14 @@ export class AppHome extends LitElement {
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
-              <!-- ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
+              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
                   <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
                   <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
                   <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
                 ` : null
-        } -->
+        }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
               <!-- ${this.quickActions.map((action: any) => {
           return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
