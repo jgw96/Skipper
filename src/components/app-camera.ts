@@ -79,9 +79,11 @@ export class AppCamera extends LitElement {
     ];
 
     public async startCamera() {
-        this.stream = await navigator.mediaDevices.getUserMedia({ video: {
-            facingMode: this.facingMode
-        }, audio: false });
+        this.stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: this.facingMode
+            }, audio: false
+        });
 
         // @ts-ignore
         this.imageCapture = new ImageCapture(this.stream!.getVideoTracks()[0]);
@@ -126,16 +128,22 @@ export class AppCamera extends LitElement {
 
     async takePicture() {
         // take picture using the Media Capture API
-        const photo = await this.imageCapture!.takePhoto();
-        const url = URL.createObjectURL(photo);
+        const photoBlob = await this.imageCapture!.takePhoto();
+        // turn photoBlob into a base64 string
 
-        // fire event with the photo
-        this.dispatchEvent(new CustomEvent('photo-taken', {
-            detail: {
-                photo: url
-            }
-        }));
-        this.stopCameraAndCleanup();
+        const reader = new FileReader();
+        reader.readAsDataURL(photoBlob);
+        reader.onloadend = () => {
+            // fire event with the photo
+            this.dispatchEvent(new CustomEvent('photo-taken', {
+                detail: {
+                    photo: reader.result
+                }
+            }));
+            this.stopCameraAndCleanup();
+        };
+
+
     }
 
     async switchFacingMode() {
