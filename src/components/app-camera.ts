@@ -12,6 +12,8 @@ export class AppCamera extends LitElement {
 
     videoCallbackID: number | undefined = undefined;
 
+    facingMode: 'user' | 'environment' = 'environment';
+
     static styles = [
         css`
             :host {
@@ -35,7 +37,17 @@ export class AppCamera extends LitElement {
                 left: 0;
             }
 
-            fluent-button::part(control) {
+            #more-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: start;
+
+                position: fixed;
+                top: 20px;
+                left: 10px;
+            }
+
+            #camera-toolbar fluent-button::part(control) {
                 border: none;
 
                 height: 64px;
@@ -44,9 +56,18 @@ export class AppCamera extends LitElement {
                 border-radius: 50%;
             }
 
-            fluent-button img {
+            #camera-toolbar fluent-button img {
                 width: 32px;
                 height: 32px;
+            }
+
+            #facing-mode-button::part(control) {
+                background: transparent;
+            }
+
+            #facing-mode-button img {
+                width: 28px;
+                height: 28px;
             }
 
             @media(prefers-color-scheme: dark) {
@@ -58,7 +79,9 @@ export class AppCamera extends LitElement {
     ];
 
     public async startCamera() {
-        this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        this.stream = await navigator.mediaDevices.getUserMedia({ video: {
+            facingMode: this.facingMode
+        }, audio: false });
 
         // @ts-ignore
         this.imageCapture = new ImageCapture(this.stream!.getVideoTracks()[0]);
@@ -115,8 +138,20 @@ export class AppCamera extends LitElement {
         this.stopCameraAndCleanup();
     }
 
+    async switchFacingMode() {
+        await this.stopCameraAndCleanup();
+        this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+        await this.startCamera();
+    }
+
     render() {
         return html`
+           <div id="more-toolbar">
+             <fluent-button id="facing-mode-button" @click="${() => this.switchFacingMode()}">
+               <img src="/assets/camera-reverse-outline.svg" />
+             </fluent-button>
+           </div>
+
            <canvas></canvas>
 
            <div id="camera-toolbar">
