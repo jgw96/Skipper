@@ -21,6 +21,7 @@ import "../components/right-click";
 import "../components/web-search";
 import "../components/message-skeleton";
 import "../components/screen-sharing";
+import "../components/app-camera";
 import { marked } from 'marked';
 
 @customElement('app-home')
@@ -72,6 +73,10 @@ export class AppHome extends LitElement {
           --accent-stroke-control-active: #8769dc;
           --accent-fill-hover: #8769dc;
           --accent-stroke-control-hover: #8769dc;
+        }
+
+        #app-camera::part(panel) {
+            --size: 100vh;
         }
 
         #now fluent-card {
@@ -1394,26 +1399,23 @@ export class AppHome extends LitElement {
   }
 
   openCamera() {
-    const input = document.createElement('input');
-    input.type = "file";
-    input.name = "image";
-    input.accept = "image/*";
-    input.capture = "environment";
+    const drawer: any = this.shadowRoot?.querySelector('#app-camera');
 
-    input.click();
+    const appCamera = this.shadowRoot?.querySelector('app-camera');
+    (appCamera as any)!.startCamera();
 
-    // add iamge from input
-    input.addEventListener("change", async (event: any) => {
-      const file = event.target.files[0];
+    drawer.addEventListener("sl-hide", async () => {
+      (appCamera as any)!.stopCameraAndCleanup();
+    })
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64data = reader.result;
-        this.addImageToConvo(base64data as string);
-      }
+    appCamera?.addEventListener("photo-taken", async (event: any) => {
+      await drawer.hide();
 
-      reader.readAsDataURL(file);
+      const base64data = event.detail.photo;
+      this.addImageToConvo(base64data);
     });
+
+    drawer.show();
   }
 
   async copyConvoToClipboard() {
@@ -2099,6 +2101,10 @@ export class AppHome extends LitElement {
           </fluent-menu-item>
       </right-click>
 
+      <sl-drawer id="app-camera" placement="bottom">
+        <app-camera></app-camera>
+      </sl-drawer>
+
       ${this.convoName ? html`
       <sl-drawer class="web-results" placement="end" has-header label="Results from the Web">
         <web-search .searchTerm="${this.convoName}"></web-search>
@@ -2216,7 +2222,7 @@ export class AppHome extends LitElement {
             <!-- ${this.convoName ? html`<fluent-button @click="${() => this.openWebResults()}" size="small" class="copy-button">
             <img src="/assets/globe-outline.svg" alt="web results icon">
              </fluent-button>` : null
-             } -->
+        } -->
 
               <fluent-button circle @click="${() => this.shareConvo(this.convoName || "", this.previousMessages)}" class="copy-button">
                 <img src="/assets/share-social-outline.svg" alt="share" />
