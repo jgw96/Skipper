@@ -2,15 +2,15 @@
 
 ![Header Graphic](/public/assets/hero-graphic.png)
 
-Skipper can work with you how you want. Want to interact with your voice? You can. Need Skipper to see something? Give it an image or share your screen! Simply want text chat? That works too. Skipper is designed to be flexible and work with you.
+Introducing Skipper: Your Premier AI Companion. Harnessing the power of the most advanced AI technology available (GPT-4o), Skipper transcends everyday assistance. It’s not just about understanding images or crafting recipes; Skipper is designed to seamlessly integrate into your life, managing your emails, keeping you updated with the latest news, ensuring you’re prepared for any weather, helping you play video games and more.
 
-[Launch the App (on any device)](https://www.skipperai.app/)
+[Launch the App](https://www.skipperai.app/)
 
 ## Table of Contents
 
 - [Get Started](#get-started)
 - [Currently Supported Features](#currently-supported-features)
-- [Supported Devices](#supported-devices)
+- [Supported Operating Systems](#supported-operating-systems)
 - [Screenshots](#screenshots)
 
 ## Get Started
@@ -30,8 +30,21 @@ To grab an API key, [start here](https://www.codecademy.com/article/creating-an-
 - Have responses read back to you with lifelike voices
 - Chat using your voice with low-latency speech-to-text
 - Generate images
+- Actions
+  - Check the weather
+  - Check the news
+  - and much more
 
-## Supported Devices
+### Connect with Microsoft 365
+
+You can connect to Microsoft 365 by logging in with your Microsoft Account to unlock even more features, such as:
+
+- Search your OneDrive
+- Search your Outlook
+- Send email
+- Manage your ToDo
+
+## Supported Operating Systems
 
 Skipper is completely cross-platform, although Firefox is not supported.
 
