@@ -5,7 +5,7 @@ let currentBase64Data: string = "";
 
 const extraPrompt = "";
 
-export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" = "openai";
+export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" | "phi3" = "openai";
 
 let GPTKey = await getOpenAIKey();
 
@@ -14,7 +14,7 @@ window.addEventListener("gpt-key-changed", (e: CustomEvent) => {
     GPTKey = e.detail.key;
 });
 
-export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama" | "llama" | "gemma") {
+export async function setChosenModelShipper(shipper: "openai" | "google" | "redpajama" | "llama" | "gemma" | "phi3") {
     chosenModelShipper = shipper;
 }
 

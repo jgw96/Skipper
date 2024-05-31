@@ -146,9 +146,9 @@ export class AppSettings extends LitElement {
             this.selectedModel = model;
             this.requestUpdate(this.selectedModel);
 
-            setChosenModelShipper((model as "openai" | "google" | 'redpajama' | 'llama' | 'gemma'));
+            setChosenModelShipper((model as "openai" | "google" | 'redpajama' | 'llama' | 'gemma' | 'phi3'));
 
-            if (model === 'gemma') {
+            if (model === 'phi3') {
                 this.gpuCheck = true;
             }
         }
@@ -186,13 +186,13 @@ export class AppSettings extends LitElement {
 
     chooseLocalModel($event: any) {
         if ($event.target.checked === true) {
-            setChosenModelShipper("gemma");
+            setChosenModelShipper("phi3");
 
-            localStorage.setItem('model', 'gemma');
+            localStorage.setItem('model', 'phi3');
 
             this.dispatchEvent(new CustomEvent('theme-changed', {
                 detail: {
-                    model: 'gemma'
+                    model: 'phi3'
                 }
             }));
         }
