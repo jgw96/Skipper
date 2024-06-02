@@ -1,0 +1,188 @@
+#welcomeBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#extra-tools {
+    z-index: 99999;
+    display: block;
+    position: fixed;
+    bottom: 15px;
+    left: 0vw;
+
+    display: flex;
+    gap: 2px;
+}
+
+#current-photo {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    width: 160px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 30px;
+    animation: quickFadeIn 0.5s ease;
+}
+
+.stop-button::part(control) {
+    background: red;
+    color: white;
+}
+
+#welcomeCard,
+#infoCard {
+    padding: 18px;
+    padding-top: 0px;
+}
+
+#toolbar {
+    position: fixed;
+    left: 10vw;
+    right: 10vw;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 33px;
+
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#status {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+
+    animation: quickSlideInFromBottom 0.5s ease;
+}
+
+main {
+    z-index: 9;
+    position: relative;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100vh - 30px);
+    width: 100vw;
+
+    margin-top: 30px;
+
+    animation: quickFadeIn 2s ease;
+}
+
+sl-card::part(footer) {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#start-button img {
+    height: 20px;
+    width: 20px;
+}
+
+fluent-button {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+
+    animation: quickSlideInFromBottom 0.5s ease;
+}
+
+#extra-tools fluent-button::part(control) {
+    background: transparent;
+}
+
+#extra-tools fluent-button img {
+    height: 24px;
+    width: 24px;
+
+    filter: invert(1);
+
+    margin-top: 4px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: #80808059;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+ul li {
+    background: rgba(128, 128, 128, 0.35);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 6px;
+}
+
+ul li h4 {
+    margin: 0;
+    padding: 0;
+}
+
+@media(prefers-color-scheme: light) {
+    #extra-tools fluent-button img {
+        filter: invert(0);
+    }
+}
+
+@media(min-width: 750px) {
+    sl-card {
+        width: 70vw;
+    }
+}
+
+
+@media (horizontal-viewport-segments: 2) {
+    #welcomeBar {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    #welcomeCard {
+        margin-right: 64px;
+    }
+}
+
+@keyframes quickSlideInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes quickFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

@@ -129,8 +129,8 @@ export class AppCamera extends LitElement {
     async takePicture() {
         // take picture using the Media Capture API
         const photoBlob = await this.imageCapture!.takePhoto();
-        // turn photoBlob into a base64 string
 
+        // turn photoBlob into a base64 string
         const reader = new FileReader();
         reader.readAsDataURL(photoBlob);
         reader.onloadend = () => {

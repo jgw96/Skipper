@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js'
-import { startScreenSharing, stopScreenSharing } from '../services/utils';
 
 @customElement('screen-sharing')
 export class ScreenSharing extends LitElement {
@@ -97,6 +96,7 @@ export class ScreenSharing extends LitElement {
   }
 
   async doScreenShare() {
+    const { startScreenSharing } = await import('../services/utils');
     const stream = await startScreenSharing();
     this.streaming = true;
     this.stream = (stream as MediaStream);
@@ -234,10 +234,11 @@ export class ScreenSharing extends LitElement {
 
   }
 
-  doStopScreen() {
+  async doStopScreen() {
     this.stream = null;
     this.streaming = false;
 
+    const { stopScreenSharing } = await import('../services/utils');
     stopScreenSharing();
   }
 

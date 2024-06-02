@@ -14,7 +14,7 @@ import { lazy } from '@thepassle/app-tools/router/plugins/lazy.js';
 // @ts-ignore
 import { title } from '@thepassle/app-tools/router/plugins/title.js';
 
-import './pages/app-home.js';
+import './pages/app-home/app-home.js';
 
 const baseURL: string = (import.meta as any).env.BASE_URL;
 
@@ -29,7 +29,7 @@ export const router = new Router({
         path: resolveRouterPath('voice'),
         title: 'Voice',
         plugins: [
-          lazy(() => import('./pages/app-voice.js')),
+          lazy(() => import('./pages/app-voice/app-voice.js')),
         ],
         render: () => html`<app-voice></app-voice>`
       },
@@ -45,7 +45,7 @@ export const router = new Router({
         path: resolveRouterPath('photo'),
         title: 'Photo',
         plugins: [
-          lazy(() => import('./pages/app-image.js')),
+          lazy(() => import('./pages/app-image/app-image.js')),
         ],
         render: () => html`<app-image></app-image>`
       },

@@ -35,3 +35,26 @@ export async function stopScreenSharing() {
         stream.getTracks().forEach(track => track.stop());
     }
 }
+
+export async function handleShareTargetFile() {
+    return new Promise((resolve => {
+        if ((window as any).shareTargetFile) {
+            const sharedFile = (window as any).shareTargetFile;
+
+            console.log("sharedFile blob image", (window as any).shareTargetFile);
+
+            if (sharedFile) {
+                // this.recorded = file;
+                console.log("file", sharedFile);
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64data = e.target?.result;
+                    resolve(base64data)
+                }
+
+                reader.readAsDataURL(sharedFile);
+            }
+        }
+    }))
+}
