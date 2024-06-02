@@ -3,7 +3,7 @@ import * as ort from 'onnxruntime-web/webgpu';
 
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.simd = true;
-ort.env.wasm.wasmPaths = document.location.pathname.replace('index.html', '') + 'public/';
+ort.env.wasm.wasmPaths = "http://localhost:3002/" + "/";
 
 
 //

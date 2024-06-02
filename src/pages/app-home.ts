@@ -52,6 +52,8 @@ export class AppHome extends LitElement {
   modelShipper: string = "";
   @state() authToken: string | null = null;
 
+  phiWorker: Worker | undefined;
+
   quickActions = [
     "Generate a blog post",
     "Explain a topic",
@@ -1237,9 +1239,20 @@ export class AppHome extends LitElement {
       console.log("loading phi3");
 
       this.modelLoading = true;
-      const { Init } = await import('../services/phi');
-      await Init(false);
-      this.modelLoading = false;
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      // const phiWorker = new Worker(
+      //   new URL('./local-ai-worker.ts', import.meta.url),
+      //   { type: 'module' }
+      // );
+      // phiWorker.onmessage = (event) => {
+      //   if (event.data.type === "loaded") {
+      //     this.modelLoading = false;
+      //   }
+      // }
+
+      // phiWorker.postMessage({ type: "Init" });
     }
 
     // check if we are deeplinked into a convo
@@ -1302,8 +1315,25 @@ export class AppHome extends LitElement {
     else if (chosenModelShipper === "phi3") {
       console.log("loading phi3");
 
-      const { Init } = await import('../services/phi');
-      await Init(false);
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      this.modelLoading = true;
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      this.phiWorker = new Worker(
+        new URL('../services/phi.ts', import.meta.url),
+        { type: 'module' }
+      );
+      console.log("phiWorker", this.phiWorker)
+      this.phiWorker.onmessage = (event: any) => {
+        if (event.data.type === "loaded") {
+          this.modelLoading = false;
+        }
+      }
+
+      this.phiWorker.postMessage({ type: "Init" });
     }
   }
 
@@ -1739,17 +1769,54 @@ export class AppHome extends LitElement {
           ];
 
           let completeMessage = "";
-          const { Query } = await import('../services/phi');
-          await Query(false, prompt, async (message: string) => {
-            console.log("Message received: ", message);
-            completeMessage = message;
+          // const { Query } = await import('../services/phi');
+          // await Query(false, prompt, async (message: string) => {
+          //   console.log("Message received: ", message);
+          //   completeMessage = message;
 
-            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+          //   this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
 
-            this.previousMessages = this.previousMessages;
-            console.log("prev messages 3", this.previousMessages);
+          //   this.previousMessages = this.previousMessages;
+          //   console.log("prev messages 3", this.previousMessages);
 
-            this.requestUpdate();
+          //   this.requestUpdate();
+          // });
+
+          this.phiWorker!.onmessage = async (event: any) => {
+            if (event.data.type === "done") {
+              this.modelLoading = false;
+            }
+            else if (event.data.type === "response") {
+              console.log(event.data.response);
+              const message = event.data.response;
+
+              console.log("Message received: ", message);
+              completeMessage = message;
+
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+
+              this.previousMessages = this.previousMessages;
+              console.log("prev messages 3", this.previousMessages);
+
+              this.requestUpdate();
+            }
+          }
+
+          this.phiWorker!.postMessage({
+            type: "Query",
+            continuation: false,
+            prompt: prompt
+            // type: "Query", continuation: false, prompt: prompt, cb: async (message: string) => {
+            //   console.log("Message received: ", message);
+            //   completeMessage = message;
+
+            //   this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+
+            //   this.previousMessages = this.previousMessages;
+            //   console.log("prev messages 3", this.previousMessages);
+
+            //   this.requestUpdate();
+            // }
           });
 
           if (this.previousMessages.length > 1) {
