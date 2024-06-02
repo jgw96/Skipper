@@ -89,6 +89,7 @@ export class AppHome extends LitElement {
         sl-dropdown sl-menu {
           color: white;
           border-radius: 8px;
+          border: none;
         }
 
         fluent-tooltip {
@@ -746,6 +747,10 @@ export class AppHome extends LitElement {
           li.system, li.assistant {
             --theme-color: white;
             background: var(--theme-color);
+          }
+
+          #model-loading {
+            background: white;
           }
 
           #big-time-button img {

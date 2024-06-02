@@ -61,7 +61,7 @@ export class AppSettings extends LitElement {
             margin-bottom: 3px;
         }
 
-        fluent-switch[checked] {
+        fluent-switch[checked], fluent-switch.checked {
             --accent-fill-rest: #8769dc;
             --accent-fill-hover: #8769dc;
             --accent-fill-active: #8769dc;
@@ -240,7 +240,7 @@ export class AppSettings extends LitElement {
                 <key-manager></key-manager>
             </div>
 
-            <div class="setting">
+           ${"gpu" in navigator ? html`<div class="setting">
                 <label for="local">Local Mode</label>
                 <fluent-switch .checked="${this.gpuCheck}" @change="${this.chooseLocalModel}" id="local" title="Local Mode">
                     <span slot="checked-message">On</span>
@@ -250,7 +250,7 @@ export class AppSettings extends LitElement {
                 <p>
                     Choose whether to use the local model on your device. The local model is slower in some cases, uses more battery and currently does not support actions, but ensures your data never leaves your device. This also means that you can use Skipper offline in Local Mode.
                     Requires a device with a dedicated GPU for the best performance.
-            </div>
+            </div>` : null}
 
             <!-- <div class="setting">
                 <label for="model">Choose AI Model</label>
