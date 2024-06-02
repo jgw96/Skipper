@@ -52,6 +52,8 @@ export class AppHome extends LitElement {
   modelShipper: string = "";
   @state() authToken: string | null = null;
 
+  phiWorker: Worker | undefined;
+
   quickActions = [
     "Generate a blog post",
     "Explain a topic",
@@ -87,6 +89,7 @@ export class AppHome extends LitElement {
         sl-dropdown sl-menu {
           color: white;
           border-radius: 8px;
+          border: none;
         }
 
         fluent-tooltip {
@@ -746,6 +749,10 @@ export class AppHome extends LitElement {
             background: var(--theme-color);
           }
 
+          #model-loading {
+            background: white;
+          }
+
           #big-time-button img {
 
               filter: invert(1);
@@ -1233,6 +1240,25 @@ export class AppHome extends LitElement {
       await loadChatModule("gemma");
       this.modelLoading = false;
     }
+    else if (chosenModelShipper === "phi3") {
+      console.log("loading phi3");
+
+      this.modelLoading = true;
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      // const phiWorker = new Worker(
+      //   new URL('./local-ai-worker.ts', import.meta.url),
+      //   { type: 'module' }
+      // );
+      // phiWorker.onmessage = (event) => {
+      //   if (event.data.type === "loaded") {
+      //     this.modelLoading = false;
+      //   }
+      // }
+
+      // phiWorker.postMessage({ type: "Init" });
+    }
 
     // check if we are deeplinked into a convo
     const queryParams = new URLSearchParams(window.location.search);
@@ -1290,6 +1316,29 @@ export class AppHome extends LitElement {
       this.modelLoading = true;
       await loadChatModule("gemma");
       this.modelLoading = false;
+    }
+    else if (chosenModelShipper === "phi3") {
+      console.log("loading phi3");
+
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      this.modelLoading = true;
+      // const { Init } = await import('../services/phi');
+      // await Init(false);
+
+      this.phiWorker = new Worker(
+        new URL('../services/phi.ts', import.meta.url),
+        { type: 'module' }
+      );
+      console.log("phiWorker", this.phiWorker)
+      this.phiWorker.onmessage = (event: any) => {
+        if (event.data.type === "loaded") {
+          this.modelLoading = false;
+        }
+      }
+
+      this.phiWorker.postMessage({ type: "Init" });
     }
   }
 
@@ -1683,6 +1732,97 @@ export class AppHome extends LitElement {
           }
 
           await this.doSayIt(streamedContent);
+
+          if (this.previousMessages.length > 1) {
+            const { marked } = await import('marked');
+            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+
+            console.log("look here", this.convoName, this.previousMessages);
+
+            const goodMessages = this.previousMessages;
+
+            console.log("goodMessages", goodMessages)
+            console.log("prev messages 4", goodMessages);
+
+            const { saveConversation } = await import('../services/storage');
+            await saveConversation(this.convoName as string, goodMessages);
+
+            const { getConversations } = await import('../services/storage');
+            this.savedConvos = await getConversations();
+
+            console.log("this.savedConvos", this.savedConvos);
+
+            this.loading = false;
+
+            this.handleScroll(list);
+
+            resolve();
+          }
+
+          resolve();
+        }
+        else if (modelShipper === "phi3") {
+          this.handleScroll(list);
+
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "assistant",
+              // content: data.choices[0].message.content,
+              content: ""
+            }
+          ];
+
+          let completeMessage = "";
+          // const { Query } = await import('../services/phi');
+          // await Query(false, prompt, async (message: string) => {
+          //   console.log("Message received: ", message);
+          //   completeMessage = message;
+
+          //   this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+
+          //   this.previousMessages = this.previousMessages;
+          //   console.log("prev messages 3", this.previousMessages);
+
+          //   this.requestUpdate();
+          // });
+
+          this.phiWorker!.onmessage = async (event: any) => {
+            if (event.data.type === "done") {
+              this.modelLoading = false;
+            }
+            else if (event.data.type === "response") {
+              console.log(event.data.response);
+              const message = event.data.response;
+
+              console.log("Message received: ", message);
+              completeMessage = message;
+
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+
+              this.previousMessages = this.previousMessages;
+              console.log("prev messages 3", this.previousMessages);
+
+              this.requestUpdate();
+            }
+          }
+
+          this.phiWorker!.postMessage({
+            type: "Query",
+            continuation: false,
+            prompt: prompt
+            // type: "Query", continuation: false, prompt: prompt, cb: async (message: string) => {
+            //   console.log("Message received: ", message);
+            //   completeMessage = message;
+
+            //   this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+
+            //   this.previousMessages = this.previousMessages;
+            //   console.log("prev messages 3", this.previousMessages);
+
+            //   this.requestUpdate();
+            // }
+          });
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
