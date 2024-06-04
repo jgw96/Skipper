@@ -1,0 +1,272 @@
+:host {
+    display: block;
+}
+
+fluent-button,
+fluent-text-area,
+fluent-listbox,
+fluent-card,
+fluent-progress-ring {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+}
+
+main {
+    margin-top: 30px;
+}
+
+#regen-button::part(control) {
+    background: #ffffff0f;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+}
+
+#image-input-outer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+#generated-buttons {
+    position: fixed;
+    left: 0;
+    right: 18px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    top: 55px;
+
+    animation: quickup 0.3s ease-in-out;
+}
+
+#image-input-block {
+    display: flex;
+    flex-direction: column;
+
+    bottom: 8px;
+    width: 46vw;
+    right: 8px;
+    padding: 8px;
+    background: #ffffff0f;
+    display: flex;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 6px;
+
+
+    animation: quickup 0.3s ease;
+}
+
+#image-input-block fluent-text-area {
+    flex: 1;
+}
+
+#image-input-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#image-input-inner fluent-button {
+    align-self: end;
+    margin-bottom: 1px;
+}
+
+#image-input-block fluent-button img {
+    width: 24px;
+    height: 24px;
+    margin-top: 6px;
+}
+
+#quick-styles fluent-button::part(control) {
+    background: #202020;
+}
+
+#quick-styles p {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+fluent-text-area {
+    border-radius: 8px;
+}
+
+fluent-text-area::part(root) {
+    height: 2.8em;
+}
+
+#image-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin-top: 8vh;
+
+    flex-direction: column;
+    gap: 8px;
+}
+
+#image-block h2 {
+    font-weight: bold;
+    font-size: 38px;
+    width: 472px;
+    color: #8769dc;
+    font-size: 54px;
+    margin-top: 18px;
+    text-wrap: pretty;
+    text-shadow: #8769dc82 2px 2px;
+
+    view-transition-name: greeting-caption;
+}
+
+#generating-spinner {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    position: fixed;
+    top: 10px;
+    right: 40vw;
+    left: 40vw;
+    z-index: 9999999;
+    background: #2d2d2d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+
+    animation: quickDown 0.5s ease;
+}
+
+#style-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+#image-block img {
+    width: 48vw;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px 0px #202020;
+    animation: fadein 0.3s ease-in-out;
+}
+
+@media(prefers-color-scheme: dark) {
+    fluent-text-area {
+        background: var(--theme-color);
+    }
+
+    fluent-text-area::part(control) {
+        background: var(--theme-color);
+        color: white;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+    }
+}
+
+@media(prefers-color-scheme: light) {
+
+    #image-input-block,
+    #generating-spinner {
+        background: #8769dc73;
+    }
+
+    #generating-spinner {
+        color: white;
+    }
+
+    #quick-styles fluent-button::part(control) {
+        background: #8769dc;
+        color: white;
+    }
+
+    fluent-text-area {
+        background: white;
+    }
+
+    #image-block img {
+        box-shadow: 0px 0px 18px 0px #202020a1;
+    }
+}
+
+@media(max-width: 800px) {
+    #image-input-block {
+        position: fixed;
+        width: initial;
+        left: 8px;
+    }
+
+    #image-block {
+        top: 10vh;
+    }
+
+    #image-block h2 {
+        width: 82%;
+    }
+
+    #image-block img {
+        width: 90vw;
+    }
+
+    #generated-buttons {
+        justify-content: center;
+        top: 36px;
+    }
+
+    #generating-spinner {
+        left: 10vw;
+        right: 10vw;
+        top: 40px;
+    }
+}
+
+@keyframes quickup {
+    from {
+        transform: translateY(30%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes quickDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

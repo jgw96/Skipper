@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import './pages/app-home';
+import './pages/app-home/app-home';
 import './components/header';
 import './components/app-settings';
 import './components/key-manager';

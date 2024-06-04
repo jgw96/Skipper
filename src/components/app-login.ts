@@ -31,13 +31,6 @@ export class AppLogin extends LitElement {
                 font-size: 12px;
             }
 
-            // #block {
-            //     background: #8769dc;
-            //     padding: 8px;
-            //     border-radius: 8px;
-            //     font-size: 12px;
-            // }
-
             #block p {
                 background: #ffffff0f;
                 padding: 8px;

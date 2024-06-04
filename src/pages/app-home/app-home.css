@@ -1,0 +1,1091 @@
+fluent-button,
+fluent-text-area,
+fluent-listbox,
+fluent-card,
+fluent-tooltip,
+fluent-search {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+}
+
+#app-camera::part(panel) {
+    --size: 100vh;
+}
+
+#now fluent-card {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+sl-dropdown sl-menu {
+    color: white;
+    border-radius: 8px;
+    border: none;
+}
+
+fluent-tooltip {
+    --neutral-layer-card-container: #8769dc;
+    --fill-color: var(--theme-color);
+    color: white;
+    border: none;
+    display: block;
+
+    animation: quickup 0.3s ease;
+}
+
+fluent-tooltip span {
+    color: white;
+}
+
+sl-dialog::part(footer) {
+    gap: 6px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+#do-delete-button::part(control) {
+    background: #c33b3b;
+}
+
+.mobile-saved::part(footer) {
+    padding: 12px;
+    padding-bottom: 16px;
+}
+
+sl-drawer::part(panel) {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+}
+
+#model-loading {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    position: fixed;
+    top: 10px;
+    right: 40vw;
+    left: 40vw;
+    z-index: 9999999;
+    background: #2d2d2d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+
+    animation: quickDown 0.5s ease;
+}
+
+sl-drawer::part(body) {
+    padding-top: 0;
+}
+
+
+fluent-text-field {
+    --theme-color: #424242;
+    --neutral-fill-input-rest: var(--theme-color);
+    --neutral-fill-input-hover: var(--theme-color);
+    --neutral-fill-input-active: var(--theme-color);
+    --neutral-fill-input-focus: var(--theme-color);
+    background: var(--theme-color);
+    color: white;
+    border: none;
+
+    border-radius: 8px;
+}
+
+fluent-text-field::part(root) {
+    border: none;
+    background: initial;
+    border-radius: 8px;
+}
+
+#rename-input {
+    width: 100%;
+}
+
+
+.mobile-saved {
+    --size: 40rem;
+}
+
+.mobile-saved::part(panel) {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 12px 12px 0px 0px;
+}
+
+fluent-search {
+    width: -webkit-fill-available;
+}
+
+.mobile-saved fluent-search {
+    width: 100%;
+}
+
+.mobile-saved fluent-search::part(root) {
+    height: 3em;
+}
+
+#inner-extra-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-bar {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#input-inner img {
+    object-fit: contain;
+    animation: quickup 0.3s ease;
+    border-radius: 8px;
+}
+
+#saved fluent-card .title-bar .date-display,
+.mobile-saved #mobileSaved fluent-card .title-bar span.date-display {
+    font-size: 10px;
+    color: #888888;
+}
+
+#suggested {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 420px;
+    padding: 0;
+    margin: 0;
+
+    animation: quickup 0.3s ease;
+}
+
+
+#suggested li {
+    animation: quickup 0.3s ease;
+}
+
+.system ul,
+.assistant ul {
+    padding: 0;
+    margin: 0;
+    list-style: initial;
+}
+
+.system p,
+.assistant p {
+    padding: 0;
+    margin: 0;
+    margin-top: 8px;
+}
+
+.assistant .item-toolbar .robot-icon {
+    /* height: 16px; */
+    width: 20px;
+    margin-bottom: 8px;
+}
+
+#suggested li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #ffffff0f;
+    font-size: 16px;
+    cursor: pointer;
+
+    padding: 10px;
+    min-height: 50px;
+    max-width: 128px;
+}
+
+fluent-card {
+    animation: quickup 0.3s ease;
+    border: none;
+    content-visibility: auto;
+
+}
+
+#extra-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#extra-actions fluent-button::part(control) {
+    background: transparent;
+    border: none;
+    color: white;
+}
+
+
+#input-block #extra-actions fluent-button img {
+    width: 20px;
+    height: 20px;
+}
+
+#input-block.drag-over {
+    background: #8769dc42;
+}
+
+fluent-card {
+    cursor: pointer;
+}
+
+#new-convo {
+    width: 100%;
+}
+
+#input-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-saved::part(body) {
+    padding: 8px;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+
+    padding-left: 10px;
+
+    overflow: scroll;
+}
+
+#toolbar {
+    height: 3em;
+    margin-top: 0;
+    width: -webkit-fill-available;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+
+    bottom: 0;
+    top: initial;
+    position: fixed;
+
+    animation: quickup 0.3s ease;
+}
+
+#convo-name {
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    font-size: 14px;
+
+    z-index: 9;
+    margin: 0;
+    border-radius: 0px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    animation: quickDown 0.3s ease;
+}
+
+@keyframes quickDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#convo-name fluent-button::part(control) {
+    background: transparent;
+    border: none;
+}
+
+#mainBlock {
+    display: grid;
+    overflow: hidden;
+}
+
+#convo-name h2 {
+    margin: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    max-width: 80vw;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-right: 3px;
+}
+
+.delete-button {
+    place-self: flex-end;
+}
+
+.delete-button::part(base) {
+    background: transparent;
+}
+
+.copy-button::part(base) {
+    background: transparent;
+    border: none;
+}
+
+.delete-button img {
+    width: 12px;
+    height: 12px;
+}
+
+fluent-listbox {
+    border: none;
+    outline: none;
+    display: flex;
+    gap: 6px;
+    position: sticky;
+    top: 50px;
+}
+
+ul::-webkit-scrollbar {
+    width: 0px;
+}
+
+fluent-card {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+
+
+    height: 104px;
+
+    justify-content: space-between;
+}
+
+fluent-card fluent-button {
+    place-self: flex-end;
+}
+
+.item-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 4px;
+    display: flex;
+    gap: 4px;
+}
+
+.content-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.content-bar img {
+    border-radius: 8px;
+    width: 210px;
+    margin: 10px;
+    cursor: pointer;
+    box-shadow: 0px 2px 20px #0000004a;
+}
+
+
+main {
+    display: grid;
+    grid-template-columns: 18vw 82vw;
+}
+
+#saved {
+    /* color: white; */
+    --theme-color: rgba(255, 255, 255, 0.06);
+
+    background-color: var(--theme-color);
+    /* border-color: #2d2d2d1a; */
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    padding: 8px;
+    animation: slideStart 0.3s ease;
+    contain: strict;
+
+    margin-left: 8px;
+    margin-bottom: 7px;
+    border-radius: 8px;
+}
+
+@keyframes slideStart {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+#convo-list {
+    width: 97%;
+
+    contain: strict;
+
+    height: -webkit-fill-available;
+}
+
+#convo-list code {
+    display: block;
+    padding: 8px;
+    background: #202020;
+    border-radius: 8px;
+    margin: 10px;
+    overflow-x: auto;
+}
+
+#convo-list code::-webkit-scrollbar {
+    display: none;
+}
+
+#mainBlock>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#saved fluent-card span,
+#mobileSaved fluent-card span {
+    max-width: 82%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#mobile-menu {
+    z-index: 2;
+}
+
+#mobile-menu::part(label) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mobile-menu img {
+    height: 26px;
+}
+
+.copy-button img {
+    height: 16px;
+}
+
+fluent-text-area {
+    border-radius: 8px;
+
+    --theme-color: #262626;
+}
+
+fluent-text-area::part(root) {
+    height: 2.8em;
+}
+
+#input-block {
+    display: flex;
+    flex-direction: column;
+
+    animation: quickup 0.3s ease;
+}
+
+#input-block fluent-button {
+    align-self: end;
+    margin-bottom: 1px;
+}
+
+li {
+    padding: 8px;
+    border-radius: 6px;
+}
+
+li.user {
+    align-self: flex-end;
+    background: #8769dc;
+    margin-left: 10vw;
+
+    animation: quickup 0.3s ease;
+}
+
+li.user sl-button {
+    border-color: white;
+}
+
+li.system,
+li.assistant {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.06);
+    margin-right: 10vw;
+
+    animation: quickup 0.3s ease;
+}
+
+#saved li {
+    background: rgba(255, 255, 255, 0.17);
+    min-height: 2em;
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#saved fluent-text-area {
+    margin-bottom: 8px;
+    flex: 1;
+}
+
+#saved ul {
+    padding: 0px;
+    max-height: 83vh;
+    overflow: hidden auto;
+    position: sticky;
+    top: 38px;
+}
+
+#input-block {
+    padding: 8px;
+    background: #ffffff0f;
+    display: flex;
+    justify-content: space-between;
+
+    position: unset;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 8px;
+
+    gap: 8px;
+
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 6px;
+}
+
+#input-block fluent-text-area {
+    flex: 1;
+}
+
+#input-block fluent-button img {
+    width: 24px;
+    height: 24px;
+    margin-top: 6px;
+}
+
+#dont-speak {
+    background: #8769dc;
+}
+
+#input-block fluent-button::part(label) {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+#no-messages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    margin-top: 5vh;
+    max-height: 70vh;
+
+    animation: fadein 0.5s ease;
+}
+
+#no-messages img {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+
+    animation: fadein 0.8s ease;
+
+    display: none;
+}
+
+#no-messages.main-content #greeting-text {
+    font-weight: bold;
+    font-size: 38px;
+    width: 420px;
+
+    color: #8769dc;
+    font-size: 54px;
+    margin-top: 0;
+    text-wrap: pretty;
+
+    text-shadow: #8769dc82 2px 2px;
+
+    view-transition-name: greeting-caption;
+}
+
+@media(prefers-color-scheme: dark) {
+    fluent-text-area::part(root) {
+        background: var(--theme-color);
+        color: white;
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+    }
+
+    fluent-button img,
+    sl-button img,
+    sl-menu-item img {
+        filter: invert(1);
+    }
+
+    fluent-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: none;
+    }
+
+    fluent-card fluent-button::part(control) {
+        background: rgba(255, 255, 255, 0.06);
+        border: none;
+    }
+
+    fluent-card fluent-button {
+        margin-top: 8px;
+    }
+}
+
+@media(prefers-color-scheme: light) {
+
+    li.system,
+    li.assistant {
+        --theme-color: white;
+        background: var(--theme-color);
+    }
+
+    #model-loading {
+        background: white;
+    }
+
+    #big-time-button img {
+
+        filter: invert(1);
+
+    }
+
+    sl-dropdown sl-menu {
+        background: #cabcf0;
+        color: white;
+        border-radius: 8px;
+    }
+
+    #convo-name .action-bar {
+        border-radius: 22px;
+        padding-left: 8px;
+        padding-right: 8px;
+        background: transparent;
+    }
+
+    .copy-button::part(label) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    sl-dialog::part(panel) {
+        background: white;
+    }
+
+    sl-drawer::part(panel) {
+        background: #f1f1f1;
+
+    }
+
+    #convo-list code {
+        background: white;
+    }
+
+    #saved fluent-card .title-bar .date-display,
+    #mobileSaved fluent-card .title-bar {}
+
+    #suggested li {
+        background: var(--theme-color);
+    }
+
+    fluent-card {
+        background: white;
+    }
+
+    .delete-button::part(base) {
+        background: transparent;
+    }
+
+    li.user {
+        color: white;
+    }
+
+    #saved {
+        --theme-color: #1e1e1e0f;
+        background: var(--theme-color);
+    }
+
+    #mobile-menu::part(base) {
+        background: rgba(0, 0, 0, 0.17);
+    }
+
+    #input-block {
+        background: var(--theme-color);
+    }
+
+    #saved li {
+        background: var(--theme-color);
+    }
+
+    li.user sl-button img {
+
+        filter: invert(1);
+
+    }
+
+    fluent-tooltip {
+        background: white;
+        --fill-color: white;
+    }
+
+    fluent-tooltip span {
+        color: black;
+    }
+}
+
+#mobile-menu {
+    display: none;
+}
+
+#suggested::webkit-scrollbar {
+    display: none;
+}
+
+#suggested fluent-button::part(control) {
+    background: #ffffff0f;
+}
+
+@media(min-width: 860px) {
+    #convo-name {
+        left: 20vw;
+        right: 0px;
+        margin-top: 0;
+    }
+
+    #suggested {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        max-height: 38vh;
+
+        display: flex;
+        flex-direction: row;
+        width: 70vw;
+
+        gap: 8px;
+
+        margin: 0;
+        padding: 0;
+    }
+
+    #suggested li {
+        animation: quickup 0.3s ease;
+        min-width: max-content;
+        min-height: fit-content;
+        font-size: 14px;
+    }
+
+    #now {
+        width: 59vw;
+    }
+
+    #no-messages.main-content #greeting-text {
+        width: 480px;
+    }
+
+    #no-messages {
+        margin-top: 12vh;
+    }
+
+    li.user,
+    li.system,
+    li.assistant {
+        min-width: 30vw;
+        max-width: 45vw;
+        box-shadow: var(--elevation-shadow-card-rest);
+    }
+
+    #saved ul {
+        max-height: 84vh;
+    }
+
+    #open-camera-button {
+        display: none;
+    }
+
+    #add-image-to-convo {
+        display: initial;
+    }
+}
+
+@media(min-width: 1200px) {
+    #saved ul {
+        max-height: 85vh;
+    }
+}
+
+@media(max-width: 860px) {
+    #saved {
+        display: none;
+    }
+
+    #suggested li {
+        min-height: 46px;
+        max-width: initial;
+    }
+
+    #convo-name h2 {
+        max-width: 60vw;
+    }
+
+    #new-convo::part(control) {
+        height: 3em;
+    }
+
+    #model-loading {
+        left: 10vw;
+        right: 10vw;
+        top: 40px;
+    }
+
+    .new-window-button {
+        display: none;
+    }
+
+    #no-messages.main-content #greeting-text {
+        width: 82%;
+    }
+
+    main {
+        display: flex;
+    }
+
+    #convo-list {
+        width: unset;
+
+    }
+
+    #mobile-menu {
+        display: block;
+    }
+
+    #mainBlock {
+        width: 100%;
+    }
+
+    ul {
+        padding: 6px;
+    }
+
+    #input-block {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        border-radius: 8px;
+    }
+
+    #mobileSaved li {
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.24);
+        padding: 16px;
+    }
+
+    #mobileSaved {
+        padding-bottom: 0;
+    }
+
+    #suggested,
+    #now {
+        width: 82%;
+    }
+
+    #suggested {
+        margin-bottom: 52px;
+        width: 100%;
+        max-height: 20vh;
+    }
+
+    #open-camera-button {
+        display: initial;
+    }
+
+    #add-image-to-convo {
+        display: none;
+    }
+}
+
+.mobile-saved #no-messages img {
+    display: initial;
+}
+
+@media(max-width: 860px) and (min-height: 910px) {
+    #convo-list {}
+}
+
+@media(min-height: 1000px) {
+    #convo-list {}
+}
+
+@media (max-height: 420px) and (orientation: landscape) {
+    #convo-list {}
+
+    #saved ul {
+        max-height: 79vh;
+    }
+
+    #no-messages {
+        flex-direction: row;
+    }
+
+    #no-messages img {
+        width: 170px;
+        height: 170px;
+    }
+
+    #suggested {
+        width: 50%;
+    }
+}
+
+@media(max-height: 670px) {
+    #no-messages img {
+        width: 170px;
+        height: 170px;
+    }
+}
+
+@media(max-height: 655px) {
+    #convo-list {}
+}
+
+@media(max-height: 620px) {
+    #convo-list {}
+}
+
+@media(max-height: 520px) {
+    #convo-list {}
+}
+
+@media(max-width: 300px) {
+    #no-messages.main-content #greeting-text {
+        font-size: 38px;
+    }
+}
+
+@media(min-width: 700px) and (max-width: 730px) {
+    main {
+        display: grid;
+        grid-template-columns: 24vw 76vw;
+    }
+
+    #saved {
+        display: initial;
+    }
+
+    #input-block {
+        left: 31vw;
+    }
+
+    #new-convo::part(control) {
+        height: initial;
+    }
+
+    #no-messages {
+        margin-top: 6vh;
+    }
+
+    #no-messages.main-content #greeting-text {
+        margin-bottom: 8px;
+    }
+
+    #convo-name {
+        margin-top: 0;
+        left: 24vw;
+    }
+
+    #convo-list {}
+}
+
+@media (horizontal-viewport-segments: 2) {
+    main {
+        grid-template-columns: 49vw 49vw;
+        gap: 23px;
+    }
+
+    #saved {
+        padding-right: 12px;
+        background: transparent;
+    }
+
+    #saved ul {
+        display: grid;
+        grid-template-columns: 49% 49%;
+    }
+
+
+    sl-drawer::part(panel) {
+        width: 49vw;
+    }
+
+    #suggested {
+        display: grid;
+    }
+
+}
+
+@keyframes quickup {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
