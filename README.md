@@ -5,19 +5,9 @@
 [Launch the App](https://www.skipperai.app/)
 
 ## Table of Contents
-
-- [Get Started](#get-started)
 - [Currently Supported Features](#currently-supported-features)
 - [Supported Operating Systems](#supported-operating-systems)
 - [Screenshots](#screenshots)
-
-## Get Started
-
-Getting started with Skipper is easy. The hardest part is grabbing an API key for one of our cloud based models before you start.
-
-Note that to start using Skipper, you must enter your API key for atleast one of our cloud based models (know that if you dont add a Google API key for example, you will not be able to use the Google Gemini model). The app will givey you two inputs to enter your keys upon the first launch of the app. Skipper will use these API keys to chat with these individual models. Note that this will cost money on, for example, your OpenAI account, although the cost is minimal. This also gives you the upside of having full control of your cloud model usage. Please note that your API key does not get stored in any way in the cloud through Skipper. Your keys are only stored locally on your device.
-
-To grab an API key, [start here](https://www.codecademy.com/article/creating-an-openai-api-key?periods=year&plan_id=proGoldAnnualV2&utm_source=pepperjam&utm_medium=affiliate&utm_term=159404&clickId=4684400308&pj_creativeid=8-12462&pj_publisherid=159404)
 
 ## Currently Supported Features
 
@@ -26,7 +16,7 @@ To grab an API key, [start here](https://www.codecademy.com/article/creating-an-
 - Add more context to chat by adding images, including dragging and dropping images onto the chat
 - Share your screen with Skipper to get help with anything you can see on your screen
 - Have responses read back to you with lifelike voices
-- Chat using your voice with low-latency speech-to-text
+- Chat using your voice with speech-to-text
 - Generate images
 - Actions
   - Check the weather
