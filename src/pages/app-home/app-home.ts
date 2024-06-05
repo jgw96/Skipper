@@ -74,6 +74,7 @@ export class AppHome extends LitElement {
 
   async firstUpdated() {
     setTimeout(async () => {
+      // hacky to put this in a setTimeout, but alas
       const { handleShareTargetFile } = await import("../../services/utils");
       const base64data = await handleShareTargetFile();
       this.addImageToConvo(base64data as string);
@@ -81,8 +82,6 @@ export class AppHome extends LitElement {
       this.authToken = localStorage.getItem("accessToken");
     }, 2000);
 
-    // this method is a lifecycle even in lit
-    // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
     const { getConversations } = await import('../../services/storage');
 
     this.savedConvos = await getConversations();
@@ -104,30 +103,7 @@ export class AppHome extends LitElement {
     // handle drag and drop
     this.addImageWithDragDrop();
 
-    // load and set up correct model
-    if (chosenModelShipper === "redpajama") {
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("redpajama");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "llama") {
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("llama");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "gemma") {
-      console.log("loading gemma")
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("gemma");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "phi3") {
+    if (chosenModelShipper === "phi3") {
       console.log("loading phi3");
 
       this.modelLoading = true;
@@ -168,37 +144,14 @@ export class AppHome extends LitElement {
 
     const { chosenModelShipper } = await import('../../services/ai');
 
-    if (chosenModelShipper === "redpajama") {
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("redpajama");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "llama") {
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("llama");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "gemma") {
-      console.log("loading gemma")
-      const { loadChatModule } = await import('../../services/local-ai');
-
-      this.modelLoading = true;
-      await loadChatModule("gemma");
-      this.modelLoading = false;
-    }
-    else if (chosenModelShipper === "phi3") {
-      console.log("loading phi3");
+    if (chosenModelShipper === "phi3") {
       this.modelLoading = true;
 
       this.phiWorker = new Worker(
         new URL('../../services/phi.ts', import.meta.url),
         { type: 'module' }
       );
-      console.log("phiWorker", this.phiWorker)
+
       this.phiWorker.onmessage = (event: any) => {
         if (event.data.type === "loaded") {
           this.modelLoading = false;
@@ -281,11 +234,10 @@ export class AppHome extends LitElement {
 
   async openCamera() {
     await import("../../components/app-camera")
-
-    const drawer: any = this.shadowRoot?.querySelector('#app-camera');
-
     const appCamera = this.shadowRoot?.querySelector('app-camera');
     (appCamera as any)!.startCamera();
+
+    const drawer: any = this.shadowRoot?.querySelector('#app-camera');
 
     drawer.addEventListener("sl-hide", async () => {
       (appCamera as any)!.stopCameraAndCleanup();

@@ -14,6 +14,7 @@ fluent-search {
 
 #app-camera::part(panel) {
     --size: 100vh;
+    background: transparent;
 }
 
 #now fluent-card {
