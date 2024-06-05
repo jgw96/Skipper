@@ -2,8 +2,6 @@
 
 ![Header Graphic](/public/assets/hero-graphic.png)
 
-Introducing Skipper: Your Premier AI Companion. Harnessing the power of the most advanced AI technology available (GPT-4o), Skipper transcends everyday assistance. It’s not just about understanding images or crafting recipes; Skipper is designed to seamlessly integrate into your life, managing your emails, keeping you updated with the latest news, ensuring you’re prepared for any weather, helping you play video games and more.
-
 [Launch the App](https://www.skipperai.app/)
 
 ## Table of Contents
