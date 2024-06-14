@@ -757,6 +757,11 @@ export class AppHome extends LitElement {
             <sl-icon slot="prefix" src="/assets/mic-outline.svg"></sl-icon>
             Voice Mode
           </fluent-menu-item>
+          <fluent-menu-item @click="${this.openInNewWindow}">
+            <sl-icon slot="prefix" src="/assets/open-outline.svg"></sl-icon>
+            Open in New Window
+          </fluent-menu-item>
+
       </right-click>
 
       <sl-drawer id="app-camera" placement="bottom">
