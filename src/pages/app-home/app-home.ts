@@ -45,6 +45,8 @@ export class AppHome extends LitElement {
   @state() weatherString: string | undefined;
   @state() forecastString: string | undefined;
 
+  @state() currentImageSrc: string | undefined;
+
   captureStream: any;
   modelShipper: string = "";
   @state() authToken: string | null = null;
@@ -710,6 +712,8 @@ export class AppHome extends LitElement {
   }
 
   async openInViewer(content: string) {
+    await import("../../components/image-viewer");
+
     console.log("content", content)
     // content is a string of html, find the image element inside this html
     const parser = new DOMParser();
@@ -721,8 +725,13 @@ export class AppHome extends LitElement {
 
     console.log("imageSrc", imageSrc)
 
+    this.currentImageSrc = imageSrc as string;
+
+    const drawer: any = this.shadowRoot?.querySelector('#image-viewer-drawer');
+    drawer.show();
+
     // open in new tab
-    window.open(imageSrc as string, "_blank");
+    // window.open(imageSrc as string, "_blank");
   }
 
   render() {
@@ -764,6 +773,10 @@ export class AppHome extends LitElement {
 
       </right-click>
 
+      <sl-drawer id="image-viewer-drawer" placement="end">
+        <image-viewer .src="${this.currentImageSrc}" .alt="Image Alt"></image-viewer>
+      </sl-drawer>
+
       <sl-drawer id="app-camera" placement="bottom">
         <app-camera></app-camera>
       </sl-drawer>
@@ -784,12 +797,6 @@ export class AppHome extends LitElement {
                 <span>${convo.name}</span>
 
                 <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
-              </div>
-
-              <div class="action-bar">
-                <sl-button circle size="small" @click="${() => this.deleteConvo()}" class="delete-button">
-                  <img src="/assets/trash-outline.svg" alt="delete" />
-                </sl-button>
               </div>
             </fluent-card>`
     }
@@ -821,12 +828,6 @@ export class AppHome extends LitElement {
             <span>${convo.name}</span>
 
             <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
-          </div>
-
-          <div class="action-bar">
-            <sl-button circle size="small" @click="${() => this.deleteConvo()}" class="delete-button">
-              <img src="/assets/trash-outline.svg" alt="delete" />
-            </sl-button>
           </div>
         </fluent-card>`
       }
@@ -896,7 +897,7 @@ export class AppHome extends LitElement {
           ${this.previousMessages.map((message) => {
           return html`<li class="${message.role}">
             <div class="item-toolbar">
-                ${message.role === "assistant" ? html`<img class="robot-icon" src="/assets/icons/64-icon.png" />` : null}
+                ${message.role === "assistant" ? html`<img class="robot-icon" src="/assets/icons/64-icon.png" />` : html`<div></div>`}
                 <div>
                 <sl-button @click="${() => this.shareButton(message.content)}" circle size="small" class="copy-button">
                   <img src="/assets/share-social-outline.svg" alt="share" />
@@ -912,9 +913,11 @@ export class AppHome extends LitElement {
                 </div>
             </div>
 
-            <div class="content-bar" @click="${() => this.openInViewer(message.content)}">
-              ${message.image ? html`<img src="${message.image}" alt="photo" />` : html``}
+            <div class="content-bar">
+              ${message.image ? html`<div><img src="${message.image}" alt="photo" /></div>` : html``}
               <div .innerHTML="${message.content}"></div>
+
+              ${message.content.includes("<img") ? html`<fluent-button class="open-image-button" @click="${() => this.openInViewer(message.content)}" size="small">Open Image</fluent-button>` : null}
             </div>
           </li>`
         })

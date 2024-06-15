@@ -377,9 +377,6 @@ fluent-card {
     flex-direction: column;
     padding: 8px;
 
-
-    height: 104px;
-
     justify-content: space-between;
 }
 
@@ -406,8 +403,8 @@ fluent-card fluent-button {
 .content-bar img {
     border-radius: 8px;
     width: 210px;
+    height: 210px;
     margin: 10px;
-    cursor: pointer;
     box-shadow: 0px 2px 20px #0000004a;
 }
 
@@ -668,7 +665,7 @@ li.assistant {
         border: none;
     }
 
-    fluent-card fluent-button::part(control) {
+    fluent-card fluent-button::part(control), .open-image-button::part(control) {
         background: rgba(255, 255, 255, 0.06);
         border: none;
     }
@@ -797,6 +794,10 @@ li.assistant {
         left: 20vw;
         right: 0px;
         margin-top: 0;
+    }
+
+    #image-viewer-drawer::part(panel) {
+        --size: 100vw;
     }
 
     #suggested {
