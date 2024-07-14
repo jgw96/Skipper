@@ -73,7 +73,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
-    // https://gpt-server-two-qsqckaz7va-uc.a.run.app
+    // https://gpt-server-two-qsqckaz7va-uc.a.run.app/
 
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
@@ -107,12 +107,12 @@ export async function makeAIRequestWithImage(base64data: string, prompt: string,
 
     // add instruction to format response as HTML
     prompt = prompt + ". " + extraPrompt;
-    // https://gpt-server-two-qsqckaz7va-uc.a.run.app
+    // https://gpt-server-two-qsqckaz7va-uc.a.run.app/
 
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export async function makeAIRequestStreaming(base64data: string, prompt: string,
     // so I'm going to convert it to a string
     const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
-    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatstreaming?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
+    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchatstreaming?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
     return evtSource;
 }
 
@@ -154,7 +154,7 @@ export const requestGPT = async (prompt: string) => {
         image: currentBase64Data
     })
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchat?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&key=${GPTKey}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -180,7 +180,7 @@ export const requestGPT = async (prompt: string) => {
 };
 
 export const makeTitleRequest = async (prompt: string) => {
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/createtitle?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//createtitle?prompt=${prompt}&key=${GPTKey}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -192,7 +192,7 @@ export const makeTitleRequest = async (prompt: string) => {
 }
 
 export async function generateImage(prompt: string) {
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/generateimage?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//generateimage?prompt=${prompt}&key=${GPTKey}`, {
         method: "GET",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -204,7 +204,6 @@ export async function generateImage(prompt: string) {
 
     return data.data[0].url;
 }
-
 
 export async function doTextToSpeech(script: string) {
     return new Promise(async (resolve) => {
@@ -218,6 +217,22 @@ export async function doTextToSpeech(script: string) {
             resolve(script);
         }
         else {
+            // const { textToSpeech } = await import("web-ai-toolkit");
+            // const data: Float32Array = (await textToSpeech(script) as Float32Array);
+            // const audioCtx = new AudioContext();
+
+            // const myArrayBuffer = audioCtx.createBuffer(1, data.length, 16000);
+            // myArrayBuffer.copyToChannel(data, 0);
+
+            // const source = audioCtx.createBufferSource();
+            // source.buffer = myArrayBuffer;
+
+            // // Connect to the audio output
+            // source.connect(audioCtx.destination);
+
+            // // Start playback
+            // source.start();
+
             const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
                 method: "POST",
                 headers: new Headers({
@@ -237,6 +252,7 @@ export async function doTextToSpeech(script: string) {
             }
 
             audio.play();
+
         }
     });
 }
@@ -247,7 +263,7 @@ export async function doSpeechToText(audioFile: File) {
         goodData.append("file", audioFile, audioFile.name);
 
         try {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}`, {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//speechtotext?key=${GPTKey}`, {
                 method: "POST",
                 body: goodData,
             });

@@ -147,7 +147,7 @@ export class AppDictate extends LitElement {
                 const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
                 const speechConfig = sdk.SpeechConfig.fromSubscription(
                     import.meta.env.VITE_SPEECH_SUB,
-                    "westus"
+                    "centralus"
                 );
 
                 speechConfig.speechRecognitionLanguage = "en-us";
