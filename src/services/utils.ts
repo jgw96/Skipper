@@ -58,3 +58,20 @@ export async function handleShareTargetFile() {
         }
     }))
 }
+
+export async function deviceCheck() {
+    return new Promise(async (resolve) => {
+        // checking device specs to the best of our ability
+
+        const device = navigator.userAgent;
+        const isMobile = /Mobi/.test(device);
+
+        const gpuCheck = await checkGPUSupport();
+        // @ts-ignore
+        const memoryCheck = navigator.deviceMemory ? navigator.deviceMemory > 4 : false;
+        const cpuCheck = navigator.hardwareConcurrency ? navigator.hardwareConcurrency > 4 : false;
+
+        const canHandleLocal = memoryCheck && cpuCheck && gpuCheck && !isMobile;
+        resolve(canHandleLocal);
+    })
+}

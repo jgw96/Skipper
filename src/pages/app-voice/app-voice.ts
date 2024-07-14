@@ -73,7 +73,7 @@ export class AppVoice extends LitElement {
     console.log("this.sdk", this.sdk);
 
     this.audioConfig = this.sdk.AudioConfig.fromDefaultMicrophoneInput();
-    this.speechConfig = this.sdk.SpeechConfig.fromSubscription('a3484733425e4929ae1da1f90a5f0a16', 'eastus');
+    this.speechConfig = this.sdk.SpeechConfig.fromSubscription(import.meta.env.VITE_SPEECH_SUB, 'centralus');
 
     this.speechConfig!.speechRecognitionLanguage = 'en-US';
     this.speechConfig!.enableDictation();

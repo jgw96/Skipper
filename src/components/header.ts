@@ -251,6 +251,9 @@ export class AppHeader extends LitElement {
 
         <div id="header-actions">
           <app-login></app-login>
+
+          <!-- add new notes button -->
+
           ${
             !this.enableBack ? html`
               <fluent-anchor href="/voice">
