@@ -424,7 +424,6 @@ main {
     -webkit-backdrop-filter: blur(40px);
     padding: 8px;
     animation: slideStart 0.3s ease;
-    contain: strict;
 
     margin-left: 8px;
     margin-bottom: 7px;
@@ -820,6 +819,7 @@ li.assistant {
         min-width: max-content;
         min-height: fit-content;
         font-size: 14px;
+        height: 36px;
     }
 
     #now {
@@ -938,8 +938,7 @@ li.assistant {
 
     #suggested {
         margin-bottom: 52px;
-        width: 100%;
-        max-height: 20vh;
+        width: 90%;
     }
 
     #open-camera-button {

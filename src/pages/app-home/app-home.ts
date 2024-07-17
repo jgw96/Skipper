@@ -20,6 +20,7 @@ import "../../components/right-click";
 import "../../components/web-search";
 import "../../components/message-skeleton";
 import "../../components/screen-sharing";
+import "../../components/app-search";
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -818,7 +819,8 @@ export class AppHome extends LitElement {
       <main>
 
       <div id="saved">
-        <fluent-search @change="${this.handleSearch}"></fluent-search>
+        <!-- <fluent-search @change="${this.handleSearch}"></fluent-search> -->
+        ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search .savedConvos=${this.savedConvos}></app-search>` : null}
 
         ${this.savedConvos.length > 0 ? html`
           <ul>
@@ -930,7 +932,7 @@ export class AppHome extends LitElement {
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
-            <!-- <ul id="suggested">
+            <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
@@ -949,32 +951,11 @@ export class AppHome extends LitElement {
         }
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
-            </ul> -->
+            </ul>
           </div>
        `}
 
        <div id="input-block">
-       ${this.previousMessages.length === 0 ? html`<ul id="suggested">
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
-                  <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
-                  <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
-                  <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
-                  <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
-                  <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
-                ` : null
-        }
-              <!-- ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null} -->
-              <!-- ${this.quickActions.map((action: any) => {
-          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
-        })
-        } -->
-              <!-- <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li> -->
-            </ul>` : null}
 
         <div id="extra-actions">
           <div id="inner-extra-actions">
