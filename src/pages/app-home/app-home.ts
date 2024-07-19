@@ -812,16 +812,15 @@ export class AppHome extends LitElement {
       }
        </div>
 
-       <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search>
+       <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
+       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
        <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
       </sl-drawer>
 
       <main>
 
       <div id="saved">
-        <!-- <fluent-search @change="${this.handleSearch}"></fluent-search> -->
-        ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search .savedConvos=${this.savedConvos}></app-search>` : null}
-
+      ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
         ${this.savedConvos.length > 0 ? html`
           <ul>
             ${this.savedConvos.map((convo) => {

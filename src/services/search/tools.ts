@@ -8,13 +8,15 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 import { createRetrievalChain } from "langchain/chains/retrieval";
+import { getOpenAIKey } from "../keys";
 
+const key = await getOpenAIKey();
 
 const llm = new ChatOpenAI({
-  model: "gpt-3.5-turbo",
+  model: "gpt-4o-mini",
   temperature: 0,
-  openAIApiKey: "sk-proj-tdLVPM8pXsab6F0LIlxTT3BlbkFJAZv18F7bSoqKt4j5q9xf",
-  apiKey: "sk-proj-tdLVPM8pXsab6F0LIlxTT3BlbkFJAZv18F7bSoqKt4j5q9xf",
+  openAIApiKey: key,
+  apiKey: key,
 });
 
 
@@ -28,8 +30,8 @@ export async function setupLoader(docsData: Document[]) {
   const vectorstore = await MemoryVectorStore.fromDocuments(
     docs,
     new OpenAIEmbeddings({
-      openAIApiKey: "sk-proj-tdLVPM8pXsab6F0LIlxTT3BlbkFJAZv18F7bSoqKt4j5q9xf",
-      apiKey: "sk-proj-tdLVPM8pXsab6F0LIlxTT3BlbkFJAZv18F7bSoqKt4j5q9xf",
+      openAIApiKey: key,
+      apiKey: key,
     })
   );
 

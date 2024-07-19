@@ -12,11 +12,13 @@ export class AppSearch extends LitElement {
 
     @state() retrievalChain: any;
     @state() answer: string = "";
+    @state() foundConvo: any;
 
     static styles = [
         css`
             :host {
                 display: block;
+
             }
 
             fluent-button,
@@ -31,6 +33,7 @@ export class AppSearch extends LitElement {
                 --accent-stroke-control-active: #8769dc;
                 --accent-fill-hover: #8769dc;
                 --accent-stroke-control-hover: #8769dc;
+
             }
 
             fluent-search {
@@ -38,7 +41,7 @@ export class AppSearch extends LitElement {
                 --neutral-fill-input-hover: #2d2d2d;
                 --neutral-fill-input-active: #2d2d2d;
                 --neutral-fill-input-focus: #2d2d2d;
-                background: #2d2d2d;
+                background: rgba(255, 255, 255, 0.06);
                 border: none;
                 margin-bottom: 10px;
 
@@ -65,10 +68,61 @@ export class AppSearch extends LitElement {
                 gap: 15px;
 
                 box-shadow: 0px 2px 20px #0000004a;
+
+                animation: slideDownFromTop 0.3s;
+
+            }
+
+            #dropdown span {
+                text-align: start;
             }
 
             fluent-button::part(control) {
                 background: #8769dc;
+            }
+
+            @media(max-width: 860px) {
+              #dropdown {
+                top: unset;
+
+                width: left:10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                bottom: 92px;
+
+                animation: slideUpFromBottom 0.3s;
+              }
+
+              fluent-search {
+                width: 100%;
+              }
+
+              fluent-search::part(root) {
+                height: 3em;
+              }
+            }
+
+            @keyframes slideDownFromTop {
+                0% {
+                    transform: translateY(-30px);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideUpFromBottom {
+                0% {
+                    transform: translateY(30px);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
             }
         `
     ];
@@ -79,7 +133,6 @@ export class AppSearch extends LitElement {
             const docs: Document[] = [];
 
             this.savedConvos.forEach((convo) => {
-                console.log("convo search", convo)
                 const joinedContent = convo.content.map((content: any) => content.content).join(" ");
                 const doc = new Document({ pageContent: joinedContent });
                 docs.push(doc);
@@ -92,21 +145,24 @@ export class AppSearch extends LitElement {
 
     async handleSearch(e: any) {
         const searchTerm = e.target.value;
-        const result = await this.retrievalChain.invoke({
-            input: searchTerm,
-        });
-        console.log(result);
 
-        this.answer = result.answer;
+        if (searchTerm && searchTerm.length > 0) {
+            const result = await this.retrievalChain.invoke({
+                input: searchTerm,
+            });
+            console.log(result);
 
-        const fullContext = result.context[0].pageContent;
-        await this.findInSavedConvos(fullContext);
+            this.answer = result.answer;
 
-        document.addEventListener('click', (e) => {
-            if (!this.shadowRoot?.getElementById('dropdown')?.contains(e.target as Node)) {
-                this.answer = "";
-            }
-        });
+            const fullContext = result.context[0].pageContent;
+            await this.findInSavedConvos(fullContext);
+
+            document.addEventListener('click', (e) => {
+                if (!this.shadowRoot?.getElementById('dropdown')?.contains(e.target as Node)) {
+                    this.answer = "";
+                }
+            });
+        }
     }
 
     async findInSavedConvos(searchTerm: string) {
@@ -118,9 +174,22 @@ export class AppSearch extends LitElement {
             return joinedContent.includes(searchTerm);
         });
 
-        console.log("searchResults", searchResults);
+        const goodResult = searchResults[0];
 
+        if (goodResult) {
+            this.foundConvo = goodResult;
+        }
 
+    }
+
+    openChat() {
+        // fire custom event
+        const event = new CustomEvent('open-convo', {
+            detail: {
+                convo: this.foundConvo
+            }
+        });
+        this.dispatchEvent(event);
     }
 
     render() {
@@ -131,7 +200,7 @@ export class AppSearch extends LitElement {
               <div id="dropdown">
                 <span>${this.answer}</span>
 
-                <fluent-button>Open Chat</fluent-button>
+                <fluent-button @click="${this.openChat}">Open Chat</fluent-button>
               </div>
             ` : null
             }
