@@ -167,7 +167,7 @@ export class AppIndex extends LitElement {
     console.log("model changed", $event.detail.model);
     const appHome: any = this.shadowRoot?.querySelector('app-home');
     if (appHome) {
-      appHome.handleModelChange($event.detail.model);
+      // appHome.handleModelChange($event.detail.model);
     }
   }
 

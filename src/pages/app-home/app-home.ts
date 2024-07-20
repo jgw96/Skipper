@@ -16,6 +16,7 @@ import { styles } from '../../styles/shared-styles';
 import cssModule from './app-home.css?inline';
 
 import "../../components/app-dictate";
+import "../../components/local-dictate";
 import "../../components/right-click";
 import "../../components/web-search";
 import "../../components/message-skeleton";
@@ -40,6 +41,7 @@ export class AppHome extends LitElement {
   @state() inPhotoConvo: boolean = false;
 
   @state() modelLoading = false;
+  @state() localModelLoaded = false;
   @state() sayIT: boolean = false;
   @state() sharingScreen: boolean = false;
 
@@ -106,12 +108,6 @@ export class AppHome extends LitElement {
     // handle drag and drop
     this.addImageWithDragDrop();
 
-    if (chosenModelShipper === "phi3") {
-      console.log("loading phi3");
-
-      this.modelLoading = true;
-    }
-
     // check if we are deeplinked into a convo
     const queryParams = new URLSearchParams(window.location.search);
     const title = queryParams.get('title');
@@ -156,8 +152,11 @@ export class AppHome extends LitElement {
       );
 
       this.phiWorker.onmessage = (event: any) => {
+        console.log("Message received from worker: ", event.data);
         if (event.data.type === "loaded") {
           this.modelLoading = false;
+
+          this.localModelLoaded = true;
         }
       }
 
@@ -407,6 +406,10 @@ export class AppHome extends LitElement {
           resolve();
         }
         else if (modelShipper === "phi3") {
+          if (this.localModelLoaded === false) {
+            await this.handleModelChange("phi3");
+          }
+
           this.handleScroll(list);
 
           this.previousMessages = [
@@ -971,7 +974,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
-          <app-dictate @got-text=${this.handleDictate}></app-dictate>
+          ${this.modelShipper === "phi3" ? html`<local-dictate></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">

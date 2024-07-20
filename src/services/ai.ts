@@ -217,42 +217,48 @@ export async function doTextToSpeech(script: string) {
             resolve(script);
         }
         else {
-            // const { textToSpeech } = await import("web-ai-toolkit");
-            // const data: Float32Array = (await textToSpeech(script) as Float32Array);
-            // const audioCtx = new AudioContext();
+            if (chosenModelShipper === "phi3") {
+                const { textToSpeech } = await import("web-ai-toolkit");
+                const data: Float32Array = (await textToSpeech(script) as Float32Array);
+                const audioCtx = new AudioContext();
 
-            // const myArrayBuffer = audioCtx.createBuffer(1, data.length, 16000);
-            // myArrayBuffer.copyToChannel(data, 0);
+                const myArrayBuffer = audioCtx.createBuffer(1, data.length, 16000);
+                myArrayBuffer.copyToChannel(data, 0);
 
-            // const source = audioCtx.createBufferSource();
-            // source.buffer = myArrayBuffer;
+                const source = audioCtx.createBufferSource();
+                source.buffer = myArrayBuffer;
 
-            // // Connect to the audio output
-            // source.connect(audioCtx.destination);
+                // Connect to the audio output
+                source.connect(audioCtx.destination);
 
-            // // Start playback
-            // source.start();
+                source.onended = () => {
+                    resolve(script);
+                }
 
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
-                method: "POST",
-                headers: new Headers({
-                    "Content-Type": "application/json",
-                }),
-                body: JSON.stringify({
-                    previousMessages,
-                    key: GPTKey
-                })
-            });
-            const data = await response.blob();
-
-            const audio = new Audio(URL.createObjectURL(data));
-
-            audio.onended = () => {
-                resolve(script);
+                // Start playback
+                source.start();
             }
+            else {
+                const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
+                    method: "POST",
+                    headers: new Headers({
+                        "Content-Type": "application/json",
+                    }),
+                    body: JSON.stringify({
+                        previousMessages,
+                        key: GPTKey
+                    })
+                });
+                const data = await response.blob();
 
-            audio.play();
+                const audio = new Audio(URL.createObjectURL(data));
 
+                audio.onended = () => {
+                    resolve(script);
+                }
+
+                audio.play();
+            }
         }
     });
 }
@@ -263,7 +269,7 @@ export async function doSpeechToText(audioFile: File) {
         goodData.append("file", audioFile, audioFile.name);
 
         try {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//speechtotext?key=${GPTKey}`, {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}`, {
                 method: "POST",
                 body: goodData,
             });

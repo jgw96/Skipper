@@ -35,7 +35,7 @@ function getConfig() {
     const query = '';
     let config: any = {
         model: "phi3",
-        provider: "webgpu",
+        provider: (navigator as any).ml ? "webnn" : "webgpu",
         profiler: 0,
         verbose: 0,
         threads: 1,
