@@ -138,30 +138,33 @@ export class AppHome extends LitElement {
     }
   }
 
-  public async handleModelChange(model: string) {
-    this.modelShipper = model;
+  public async handleModelChange(model: string): Promise<void> {
+    return new Promise(async (resolve) => {
+      this.modelShipper = model;
 
-    const { chosenModelShipper } = await import('../../services/ai');
+      const { chosenModelShipper } = await import('../../services/ai');
 
-    if (chosenModelShipper === "phi3") {
-      this.modelLoading = true;
+      if (chosenModelShipper === "phi3") {
+        this.modelLoading = true;
 
-      this.phiWorker = new Worker(
-        new URL('../../services/phi.ts', import.meta.url),
-        { type: 'module' }
-      );
+        this.phiWorker = new Worker(
+          new URL('../../services/phi.ts', import.meta.url),
+          { type: 'module' }
+        );
 
-      this.phiWorker.onmessage = (event: any) => {
-        console.log("Message received from worker: ", event.data);
-        if (event.data.type === "loaded") {
-          this.modelLoading = false;
+        this.phiWorker.onmessage = (event: any) => {
+          console.log("Message received from worker: ", event.data);
+          if (event.data.type === "loaded") {
+            this.modelLoading = false;
 
-          this.localModelLoaded = true;
+            this.localModelLoaded = true;
+            resolve();
+          }
         }
-      }
 
-      this.phiWorker.postMessage({ type: "Init" });
-    }
+        this.phiWorker.postMessage({ type: "Init" });
+      }
+    });
   }
 
   async addImageWithDragDrop() {
@@ -406,6 +409,7 @@ export class AppHome extends LitElement {
           resolve();
         }
         else if (modelShipper === "phi3") {
+          console.log("phi3 model", this.localModelLoaded);
           if (this.localModelLoaded === false) {
             await this.handleModelChange("phi3");
           }

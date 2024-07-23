@@ -248,7 +248,7 @@ export class AppSettings extends LitElement {
                 </fluent-switch>
 
                 <p>
-                    Local model is slower in some cases, uses more battery on devices without a dedicated NPU, and currently does not support actions, but ensures your data never leaves your device.
+                    Local mode is slower in some cases, uses more battery on devices without a dedicated NPU, and currently does not support actions. It does however ensure your data never leaves your device.
             </div>` : null}
 
             <!-- <div class="setting">

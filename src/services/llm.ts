@@ -1,5 +1,5 @@
 // @ts-ignore
-import * as ort from 'onnxruntime-web/webgpu';
+import * as ort from 'onnxruntime-web/experimental';
 
 
 ort.env.wasm.numThreads = 1;
