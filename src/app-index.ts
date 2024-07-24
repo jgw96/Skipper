@@ -118,7 +118,7 @@ export class AppIndex extends LitElement {
 
       @media (horizontal-viewport-segments: 2) {
         sl-drawer::part(panel) {
-          width: 49vw;
+          width: env(viewport-segment-width 1 0);
         }
      }
     `;

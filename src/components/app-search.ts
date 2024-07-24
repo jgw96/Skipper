@@ -46,6 +46,8 @@ export class AppSearch extends LitElement {
                 margin-bottom: 10px;
 
                 border-radius: 8px;
+
+                width: 100%;
             }
 
             fluent-search::part(root) {
