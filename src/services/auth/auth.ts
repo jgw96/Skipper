@@ -26,7 +26,6 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
         msalInstance.acquireTokenSilent(request).then(async (tokenResponse) => {
             // Do something with the tokenResponse
-            console.log("tokenResponse", tokenResponse.accessToken);
             const profile = await getUserProfile(tokenResponse.accessToken);
             console.log("profile", profile);
 
@@ -88,7 +87,7 @@ export const getUserProfile = (accessToken: string) => {
         const headers = new Headers();
         const bearer = "Bearer " + accessToken;
         headers.append("Authorization", bearer);
-        var options = {
+        const options = {
             method: "GET",
             headers: headers
         };
@@ -98,6 +97,25 @@ export const getUserProfile = (accessToken: string) => {
             .then(resp => {
                 //do something with response
                 resolve(resp.json());
+            });
+    })
+}
+
+export const getUserPhoto = (accessToken: string): Promise<Blob> => {
+    return new Promise((resolve) => {
+        const headers = new Headers();
+        const bearer = "Bearer " + accessToken;
+        headers.append("Authorization", bearer);
+        const options = {
+            method: "GET",
+            headers: headers
+        };
+        const graphEndpoint = "https://graph.microsoft.com/v1.0/me/photo/$value";
+
+        fetch(graphEndpoint, options)
+            .then(resp => {
+                //do something with response
+                resolve(resp.blob());
             });
     })
 }
