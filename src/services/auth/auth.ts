@@ -10,6 +10,8 @@ const msalConfig = {
 const msalInstance = new PublicClientApplication(msalConfig);
 await msalInstance.initialize();
 
+export let currentUser: any = localStorage.getItem("currentUser") ? JSON.parse(localStorage.getItem("currentUser")!) : null;
+
 msalInstance.handleRedirectPromise().then((tokenResponse) => {
     // Check if the tokenResponse is null
     // If the tokenResponse !== null, then you are coming back from a successful authentication redirect.
@@ -20,7 +22,7 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
         msalInstance.setActiveAccount(myAccounts[0]);
 
-        var request = {
+        const request = {
             scopes: ["User.Read", "Mail.ReadWrite", "Mail.Send", "Tasks.ReadWrite"],
         };
 
@@ -28,6 +30,11 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
             // Do something with the tokenResponse
             const profile = await getUserProfile(tokenResponse.accessToken);
             console.log("profile", profile);
+
+            if (currentUser === null) {
+                currentUser = profile;
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            }
 
             localStorage.setItem("accessToken", tokenResponse.accessToken);
 
@@ -43,6 +50,11 @@ msalInstance.handleRedirectPromise().then((tokenResponse) => {
 
                 const profile = await getUserProfile(tokenResponse.accessToken);
                 console.log("profile", profile);
+
+                if (currentUser === null) {
+                    currentUser = profile;
+                    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                }
 
                 await checkForDefaultListFirst(tokenResponse.accessToken);
             }
@@ -95,8 +107,15 @@ export const getUserProfile = (accessToken: string) => {
 
         fetch(graphEndpoint, options)
             .then(resp => {
-                //do something with response
-                resolve(resp.json());
+                resp.json().then((data) => {
+                    //do something with response
+                    if (currentUser === null) {
+                        currentUser = data;
+                        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                    }
+
+                    resolve(data);
+                });
             });
     })
 }

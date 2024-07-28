@@ -87,7 +87,7 @@ export class AppLogin extends LitElement {
     ];
 
     async firstUpdated() {
-        setTimeout(async () => {
+        // setTimeout(async () => {
             const token = localStorage.getItem('accessToken');
 
             if (token) {
@@ -113,7 +113,7 @@ export class AppLogin extends LitElement {
                     }
                 }
             }
-        }, 1000);
+        // }, 1000);
     }
 
     async doSignIn() {

@@ -2,6 +2,8 @@
 
 import { FileWithHandle } from "browser-fs-access";
 import { get, set } from "idb-keyval";
+import { currentUser } from "./auth/auth";
+import { getConvosFromCloud } from "./cloud-storage";
 
 const root = await navigator.storage.getDirectory();
 
@@ -11,14 +13,32 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export async function saveConversation(name: string, convo: any[]): Promise<void> {
     return new Promise(async (resolve) => {
+        console.log("saving...", name, convo, currentUser);
         if (isSafari) {
             await saveUsingIDB(name, convo);
-            resolve();
+
+            if (currentUser) {
+                const { saveConvoToCloud } = await import("./cloud-storage");
+                saveConvoToCloud(name, convo);
+
+                resolve();
+            }
+            else {
+                resolve();
+            }
         }
         else {
-            saveWorker.onmessage = (e) => {
+            saveWorker.onmessage = async (e) => {
                 if (e.data.type === 'saved') {
-                    resolve();
+                    if (currentUser) {
+                        const { saveConvoToCloud } = await import("./cloud-storage");
+                        saveConvoToCloud(name, convo);
+
+                        resolve();
+                    }
+                    else {
+                        resolve();
+                    }
                 }
             }
 
@@ -105,12 +125,34 @@ export async function getConversations(): Promise<any> {
         const { addDocsToSearch } = await import("./local-search")
         addDocsToSearch(readyToGo);
 
+        let cloudConvosParsed: any[] = [];
+        const cloudConvos = await getConvosFromCloud();
+        cloudConvos.forEach((convo: any) => {
+            cloudConvosParsed.push({
+                name: convo.name,
+                content: JSON.parse(convo.convo),
+                date: new Date().getTime(),
+                id: generateRandoID()
+            });
+        });
+
+        console.log("cloudConvos", cloudConvosParsed);
+
+        const allConvos = [...readyToGo, ...cloudConvosParsed];
+
+        // remove duplicates
+        const uniqueConvos = allConvos.filter((convo, index, self) =>
+            index === self.findIndex((t) => (
+                t.name === convo.name
+            ))
+        );
+
         // sort by date, which is a timestamp
-        readyToGo.sort((a, b) => {
+        uniqueConvos.sort((a, b) => {
             return b.date - a.date;
         });
 
-        return readyToGo;
+        return uniqueConvos;
     }
 }
 
