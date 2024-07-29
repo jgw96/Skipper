@@ -595,10 +595,10 @@ export class AppHome extends LitElement {
     this.currentPhoto = undefined;
     this.inPhotoConvo = false;
 
-    if (this.modelShipper === "redpajama") {
-      const { resetLocal } = await import('../../services/local-ai');
-      await resetLocal();
-    }
+    // if (this.modelShipper === "redpajama") {
+    //   const { resetLocal } = await import('../../services/local-ai');
+    //   await resetLocal();
+    // }
 
     await this.updated;
 

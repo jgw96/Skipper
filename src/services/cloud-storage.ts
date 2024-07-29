@@ -24,6 +24,7 @@ export async function saveConvoToCloud(convo: any) {
 }
 
 export async function deleteConvoFromCloud(name: string, convo: any) {
+    console.log(convo);
     if (currentUser) {
         await deleteDoc(doc(db, `users/${currentUser.userPrincipalName}/convos/saved/${name}`));
     }

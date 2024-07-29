@@ -71,7 +71,7 @@ export class WebSearch extends LitElement {
     }
   }
 
-  async attributeChangedCallback(name: string, _old: string | null, value: string | null) {
+  async attributeChangedCallback() {
     // console.log("name", name, "value", value)
     // super.attributeChangedCallback(name, _old, value);
     // if (name === 'search-term') {
