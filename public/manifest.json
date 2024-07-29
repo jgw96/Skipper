@@ -155,5 +155,31 @@
       "protocol": "web+pwa",
       "url": "/?title=%s"
     }
+  ],
+  "widgets": [
+    {
+      "name": "Skipper",
+      "description": "widget to control the Skipper AI assistant",
+      "tag": "skipper",
+      "template": "skipper-template",
+      "ms_ac_template": "widgets/skipper-template.json",
+      "data": "widgets/skipper-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "./screenshot-widget.png",
+          "sizes": "600x400",
+          "label": "Skipper"
+        }
+      ],
+      "icons": [
+        {
+          "src": "./favicon-16.png",
+          "sizes": "16x16"
+        }
+      ],
+      "auth": false,
+      "update": 86400
+    }
   ]
 }
