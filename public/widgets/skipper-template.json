@@ -3,16 +3,24 @@
     "body": [
         {
             "type": "TextBlock",
-            "size": "Medium",
-            "text": "Now playing...",
-            "horizontalAlignment": "Center"
+            "size": "ExtraLarge",
+            "weight": "Bolder",
+            "text": "Skipper",
+            "horizontalAlignment": "Center",
+            "spacing": "None",
+            "style": "heading"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "Start Chatting",
+            "url": "${chatUrl}"
         },
         {
-            "type": "TextBlock",
-            "spacing": "Large",
-            "weight": "Bolder",
-            "horizontalAlignment": "Center",
-            "text": "${song}, by ${artist}"
+            "type": "Action.OpenUrl",
+            "title": "Start Voice Chat",
+            "url": "${voiceUrl}"
         }
     ],
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

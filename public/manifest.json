@@ -162,7 +162,7 @@
   "widgets": [
     {
       "name": "Skipper",
-      "description": "widget to control the Skipper AI assistant",
+      "description": "Widget for the Skipper AI assistant",
       "tag": "skipper",
       "template": "skipper-template",
       "ms_ac_template": "widgets/skipper-template.json",
@@ -170,15 +170,9 @@
       "type": "application/json",
       "screenshots": [
         {
-          "src": "./screenshot-widget.png",
-          "sizes": "600x400",
+          "src": "assets/screenshots/widget-screenshot.png",
+          "sizes": "682x676",
           "label": "Skipper"
-        }
-      ],
-      "icons": [
-        {
-          "src": "./favicon-16.png",
-          "sizes": "16x16"
         }
       ],
       "auth": false,
