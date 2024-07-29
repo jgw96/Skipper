@@ -156,6 +156,9 @@
       "url": "/?title=%s"
     }
   ],
+  "edge_side_panel": {
+    "preferred_width": 380
+  },
   "widgets": [
     {
       "name": "Skipper",
