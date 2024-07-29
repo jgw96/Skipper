@@ -72,14 +72,14 @@ export class WebSearch extends LitElement {
   }
 
   async attributeChangedCallback(name: string, _old: string | null, value: string | null) {
-    console.log("name", name, "value", value)
-    super.attributeChangedCallback(name, _old, value);
-    if (name === 'search-term') {
-      const data = await searchBing(this.searchTerm!);
-      console.log(data);
+    // console.log("name", name, "value", value)
+    // super.attributeChangedCallback(name, _old, value);
+    // if (name === 'search-term') {
+    //   const data = await searchBing(this.searchTerm!);
+    //   console.log(data);
 
-      this.webPages = data.webPages.value;
-    }
+    //   this.webPages = data.webPages.value;
+    // }
   }
 
   render() {

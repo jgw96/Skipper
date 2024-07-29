@@ -2,7 +2,7 @@ let root: FileSystemDirectoryHandle | null = null;
 
 onmessage = (e) => {
     if (e.data.type === 'save') {
-        saveConversation(e.data.name, e.data.convo).then(() => {
+        saveConversation(e.data.name, e.data.convo, e.data.id, e.data.date).then(() => {
             postMessage({ type: 'saved' });
         });
     }
@@ -15,7 +15,7 @@ onmessage = (e) => {
 }
 
 
-async function saveConversation(name: string, convo: string): Promise<void> {
+async function saveConversation(name: string, convo: string, id: string, date: string): Promise<void> {
     return new Promise(async (resolve) => {
         if (!root) {
             root = await navigator.storage.getDirectory();
@@ -41,9 +41,16 @@ async function saveConversation(name: string, convo: string): Promise<void> {
         const readBuffer = new ArrayBuffer(fileSize);
         const readSize = accessHandle.read(readBuffer, { "at": 0 });
 
+        const convoToSave = JSON.stringify({
+            id,
+            name,
+            date,
+            convo
+        });
+
         // Write a sentence to the end of the file.
         const encoder = new TextEncoder();
-        const writeBuffer = encoder.encode(convo);
+        const writeBuffer = encoder.encode(convoToSave);
         accessHandle.write(writeBuffer, { "at": readSize });
         // Persist changes to disk.
         accessHandle.flush();
@@ -67,12 +74,8 @@ async function getConversations() {
             continue;
         }
         conversations.push(entry.getFile().then((file: any) => {
-            return file.text().then((text: string) => {
-                return {
-                    name: file.name,
-                    content: JSON.parse(text),
-                    date: file.lastModified
-                }
+            return file.text().then((convo: string) => {
+                return JSON.parse(convo);
             })
         }));
     }

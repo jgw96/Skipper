@@ -10,21 +10,15 @@ const firebaseConfig = {
     messagingSenderId: "",
     appId: ""
 };
+
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-export async function saveConvoToCloud(name: string, convo: any) {
+export async function saveConvoToCloud(convo: any) {
     if (currentUser) {
-        const convoObject = {
-            name,
-            convo: JSON.stringify(convo)
-        };
-
-        console.log("convoObject", convoObject);
-
-        const docRef = await addDoc(collection(db, `users/${currentUser.userPrincipalName}/convos/`), convoObject);
-
+        convo.convo = JSON.stringify(convo.convo);
+        const docRef = await addDoc(collection(db, `users/${currentUser.userPrincipalName}/convos/`), convo);
         console.log("Document written with ID: ", docRef.id);
     }
 }
@@ -42,9 +36,9 @@ export async function getConvosFromCloud() {
 
         const querySnapshot = await getDocs(collection(db, `users/${currentUser.userPrincipalName}/convos/`));
         querySnapshot.forEach(async (doc) => {
-            console.log(`${doc.id} => ${doc.data()}`);
+            console.log(`${doc.id} => ${doc.data().convo}`);
 
-            doc.data().convo = JSON.parse(doc.data().convo);
+            // doc.data().convo = JSON.parse(doc.data().convo);
 
             cloudConvos.push(doc.data());
         });

@@ -557,17 +557,19 @@ export class AppHome extends LitElement {
   async startConvo(convo: any) {
     this.previousMessages = [];
 
-    console.log("convoContent", convo.content)
+    if (typeof convo.convo === "string") {
+      convo.convo = JSON.parse(convo.convo);
+    }
 
-    if (convo.content[0].image && convo.content[0].image.length > 0) {
-      this.currentPhoto = convo.content[0].image;
+    if (convo.convo[0].image && convo.convo[0].image.length > 0) {
+      this.currentPhoto = convo.convo[0].image;
     }
     else {
       this.currentPhoto = "";
       this.inPhotoConvo = false;
     }
 
-    this.previousMessages = convo.content;
+    this.previousMessages = convo.convo;
     this.convoName = undefined;
     await this.requestUpdate();
 

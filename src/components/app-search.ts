@@ -135,7 +135,7 @@ export class AppSearch extends LitElement {
             const docs: Document[] = [];
 
             this.savedConvos.forEach((convo) => {
-                const joinedContent = convo.content.map((content: any) => content.content).join(" ");
+                const joinedContent = convo.convo.map((content: any) => content.content).join(" ");
                 const doc = new Document({ pageContent: joinedContent });
                 docs.push(doc);
             });
@@ -172,7 +172,7 @@ export class AppSearch extends LitElement {
         const savedConvos = await getConversations();
 
         const searchResults = savedConvos.filter((convo: any) => {
-            const joinedContent = convo.content.map((content: any) => content.content).join(" ");
+            const joinedContent = convo.convo.map((content: any) => content.content).join(" ");
             return joinedContent.includes(searchTerm);
         });
 
