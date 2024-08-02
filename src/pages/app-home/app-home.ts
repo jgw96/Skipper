@@ -484,17 +484,24 @@ export class AppHome extends LitElement {
         else {
           this.previousMessages = [
             ...this.previousMessages,
-            {
-              role: "assistant",
-              content: "<message-skeleton></message-skeleton>"
-            }
+            // {
+            //   role: "assistant",
+            //   content: "<message-skeleton></message-skeleton>"
+            // }
           ];
 
           const { makeAIRequest } = await import('../../services/ai');
           const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
           const { marked } = await import('marked');
-          this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+          // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+          this.previousMessages = [
+            ...this.previousMessages,
+            {
+              role: "assistant",
+              content: await marked.parse(data.choices[0].message.content)
+            }
+          ]
 
           this.doSayIt(data.choices[0].message.content);
 
