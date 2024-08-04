@@ -1,4 +1,4 @@
-import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest,  ChatCompletionTool } from "@mlc-ai/web-llm";
+import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest } from "@mlc-ai/web-llm";
 
 let engine: MLCEngineInterface;
 
