@@ -2,6 +2,8 @@
 
 import { FileWithHandle } from "browser-fs-access";
 import { get, set } from "idb-keyval";
+import { currentUser } from "./auth/auth";
+import { getConvosFromCloud } from "./cloud-storage";
 
 const root = await navigator.storage.getDirectory();
 
@@ -11,28 +13,66 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export async function saveConversation(name: string, convo: any[]): Promise<void> {
     return new Promise(async (resolve) => {
+        console.log("saving...", name, convo, currentUser);
         if (isSafari) {
             await saveUsingIDB(name, convo);
-            resolve();
+
+            if (currentUser) {
+                const { saveConvoToCloud } = await import("./cloud-storage");
+                saveConvoToCloud(convo);
+
+                resolve();
+            }
+            else {
+                resolve();
+            }
         }
         else {
-            saveWorker.onmessage = (e) => {
+
+            const noteID = generateRandoID();
+            const noteDate = new Date().getTime();
+
+            const noteObject = {
+                name,
+                convo,
+                date: noteDate,
+                id: noteID
+            };
+
+            saveWorker.onmessage = async (e) => {
                 if (e.data.type === 'saved') {
-                    resolve();
+                    if (currentUser) {
+                        const { saveConvoToCloud } = await import("./cloud-storage");
+                        saveConvoToCloud(noteObject);
+
+                        resolve();
+                    }
+                    else {
+                        resolve();
+                    }
                 }
             }
 
-            saveWorker.postMessage({ type: 'save', name, convo: JSON.stringify(convo) });
+            saveWorker.postMessage({
+                type: 'save',
+                ...noteObject
+            });
         }
     })
 }
 
 async function saveUsingIDB(name: string, convo: any[]) {
     const currentConversations = await get('convos');
+
+    const noteID = generateRandoID();
+    const noteDate = new Date().getTime();
+
     if (!currentConversations) {
         const newConvo = {
             name: name,
-            content: JSON.stringify(convo)
+            content: JSON.stringify(convo),
+            date: noteDate,
+            id: noteID
         };
 
         await set('convos', [newConvo]);
@@ -40,7 +80,9 @@ async function saveUsingIDB(name: string, convo: any[]) {
     else {
         const newConvo = {
             name: name,
-            content: JSON.stringify(convo)
+            content: JSON.stringify(convo),
+            date: noteDate,
+            id: noteID
         };
 
         await set('convos', [...currentConversations, newConvo]);
@@ -89,28 +131,55 @@ export async function getConversations(): Promise<any> {
             if (entry.kind !== 'file') {
                 continue;
             }
+
             conversations.push(entry.getFile().then((file: FileWithHandle) => {
                 return file.text().then((text: string) => {
-                    return {
-                        name: file.name,
-                        content: JSON.parse(text),
-                        date: file.lastModified,
-                        id: generateRandoID()
-                    }
+                    // return {
+                    //     name: file.name,
+                    //     content: JSON.parse(text),
+                    //     date: file.lastModified,
+                    //     id: generateRandoID()
+                    // }
+                    return JSON.parse(text);
                 })
             }));
         }
         const readyToGo = await Promise.all(conversations);
 
-        const { addDocsToSearch } = await import("./local-search")
-        addDocsToSearch(readyToGo);
+        // const { addDocsToSearch } = await import("./local-search")
+        // addDocsToSearch(readyToGo);
+
+        let cloudConvosParsed: any[] = [];
+        const cloudConvos = await getConvosFromCloud();
+        cloudConvos.forEach((convo: any) => {
+            console.log("cloud convo", convo);
+            convo.convo = JSON.parse(convo.convo);
+            // cloudConvosParsed.push({
+            //     name: convo.name,
+            //     content: JSON.parse(convo.convo),
+            //     // date: new Date().getTime(),
+            //     // id: generateRandoID()
+            // });
+            cloudConvosParsed.push(convo);
+        });
+
+        console.log("cloudConvos", cloudConvosParsed);
+
+        const allConvos = [...readyToGo, ...cloudConvosParsed];
+
+        // remove duplicates
+        const uniqueConvos = allConvos.filter((convo, index, self) =>
+            index === self.findIndex((t) => (
+                t.name === convo.name
+            ))
+        );
 
         // sort by date, which is a timestamp
-        readyToGo.sort((a, b) => {
+        uniqueConvos.sort((a, b) => {
             return b.date - a.date;
         });
 
-        return readyToGo;
+        return uniqueConvos;
     }
 }
 
@@ -127,8 +196,8 @@ export async function getConversationsIDB() {
             formattedConversations.push({
                 name: convo.name,
                 content: JSON.parse(convo.content),
-                date: new Date().getTime(),
-                id: generateRandoID()
+                // date: new Date().getTime(),
+                // id: generateRandoID()
             });
         });
 

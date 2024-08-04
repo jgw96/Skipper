@@ -12,6 +12,14 @@ fluent-search {
     --accent-stroke-control-hover: #8769dc;
 }
 
+#ai-source {
+    color: lightgray;
+    font-size: 12px;
+    background: #262626;
+    padding: 6px;
+    border-radius: 6px;
+}
+
 #app-camera::part(panel) {
     --size: 100vh;
     background: transparent;
@@ -424,7 +432,6 @@ main {
     -webkit-backdrop-filter: blur(40px);
     padding: 8px;
     animation: slideStart 0.3s ease;
-    contain: strict;
 
     margin-left: 8px;
     margin-bottom: 7px;
@@ -820,6 +827,7 @@ li.assistant {
         min-width: max-content;
         min-height: fit-content;
         font-size: 14px;
+        height: 36px;
     }
 
     #now {
@@ -831,7 +839,7 @@ li.assistant {
     }
 
     #no-messages {
-        margin-top: 12vh;
+        margin-top: 7vh;
     }
 
     li.user,
@@ -938,8 +946,7 @@ li.assistant {
 
     #suggested {
         margin-bottom: 52px;
-        width: 100%;
-        max-height: 20vh;
+        width: 90%;
     }
 
     #open-camera-button {
@@ -1045,8 +1052,8 @@ li.assistant {
 
 @media (horizontal-viewport-segments: 2) {
     main {
-        grid-template-columns: 49vw 49vw;
-        gap: 23px;
+        grid-template-columns: env(viewport-segment-right 0 0) env(viewport-segment-right 0 0);
+        gap: calc(env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0));
     }
 
     #saved {
@@ -1056,16 +1063,24 @@ li.assistant {
 
     #saved ul {
         display: grid;
-        grid-template-columns: 49% 49%;
+        grid-template-columns: 50% 50%;
     }
 
 
     sl-drawer::part(panel) {
-        width: 49vw;
+        width: env(viewport-segment-width 1 0);
     }
 
     #suggested {
-        display: grid;
+        width: fit-content;
+
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    #suggested li {
+        max-width: unset;
     }
 
 }

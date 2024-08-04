@@ -118,7 +118,7 @@ export class AppIndex extends LitElement {
 
       @media (horizontal-viewport-segments: 2) {
         sl-drawer::part(panel) {
-          width: 49vw;
+          width: env(viewport-segment-width 1 0);
         }
      }
     `;
@@ -167,7 +167,7 @@ export class AppIndex extends LitElement {
     console.log("model changed", $event.detail.model);
     const appHome: any = this.shadowRoot?.querySelector('app-home');
     if (appHome) {
-      appHome.handleModelChange($event.detail.model);
+      // appHome.handleModelChange($event.detail.model);
     }
   }
 

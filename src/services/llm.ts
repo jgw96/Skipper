@@ -1,12 +1,13 @@
 // @ts-ignore
-import * as ort from 'onnxruntime-web/webgpu';
+import * as ort from 'onnxruntime-web/experimental';
 
 
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.simd = true;
 
 // todo: set this with env variable for easier dev / prod builds
-ort.env.wasm.wasmPaths = "https://www.skipperai.app" + "/";
+// ort.env.wasm.wasmPaths = "https://www.skipperai.app" + "/";
+ort.env.wasm.wasmPaths = "/";
 
 //
 // load file from server or cache

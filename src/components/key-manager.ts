@@ -155,7 +155,7 @@ export class KeyManager extends LitElement {
 
             <div id="key-section">
                 <div class="label">
-                  <label for="gpt-api-key">GPT-4o API Key</label>
+                  <label for="gpt-api-key">OpenAI API Key</label>
                   <fluent-text-field @change="${this.handleGPTChange}" id="gpt-api-key" type="text"></fluent-text-field>
                 </div>
             </div>

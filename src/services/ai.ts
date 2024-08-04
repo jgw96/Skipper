@@ -67,7 +67,9 @@ export async function makeAIRequestWithGemini(base64data: string, prompt: string
     // }
 }
 
-export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {
+
+let localLLMInit = false;
+export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[], forceLocal: boolean = false) {
     console.log("makeAIRequest", base64data, prompt, previousMessages)
     currentBase64Data = base64data;
 
@@ -81,24 +83,76 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     const long = localStorage.getItem("long");
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
-        method: 'POST',
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        body: JSON.stringify({
-            image: currentBase64Data || base64data,
-            previousMessages: previousMessages,
-            key: GPTKey,
-            lat: lat,
-            long: long
-        })
-    });
+    // if there is an image, go to the cloud
+    // otherwise, lets try something
+    if (currentBase64Data && currentBase64Data.length > 0) {
+        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+            method: 'POST',
+            headers: new Headers({
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify({
+                image: currentBase64Data || base64data,
+                previousMessages: previousMessages,
+                key: GPTKey,
+                lat: lat,
+                long: long
+            })
+        });
 
-    const data = await response.json();
-    console.log(data.choices[0]);
+        const data = await response.json();
+        console.log(data.choices[0]);
 
-    return data;
+        return {
+            data,
+            source: "cloud"
+        };
+    }
+    else {
+        // will do device check
+        const { deviceCheck } = await import("../services/utils");
+        const deviceCheckFlag = await deviceCheck();
+
+        if (forceLocal || deviceCheckFlag) {
+            if (localLLMInit === false) {
+                localLLMInit = true;
+                const { init } = await import("../services/local-llm/local-llm");
+                await init();
+            }
+
+            const { makeLocalAIRequest } = await import("../services/local-llm/local-llm");
+            const data = await makeLocalAIRequest(previousMessages);
+            console.log(data);
+
+            return {
+                data,
+                source: "local"
+            };
+        }
+        else {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+                method: 'POST',
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                }),
+                body: JSON.stringify({
+                    image: currentBase64Data || base64data,
+                    previousMessages: previousMessages,
+                    key: GPTKey,
+                    lat: lat,
+                    long: long
+                })
+            });
+
+            const data = await response.json();
+            console.log(data.choices[0]);
+
+            return {
+                data,
+                source: "cloud"
+            };
+        }
+    }
 }
 
 export async function makeAIRequestWithImage(base64data: string, prompt: string, previousMessages: any[]) {
@@ -217,42 +271,48 @@ export async function doTextToSpeech(script: string) {
             resolve(script);
         }
         else {
-            // const { textToSpeech } = await import("web-ai-toolkit");
-            // const data: Float32Array = (await textToSpeech(script) as Float32Array);
-            // const audioCtx = new AudioContext();
+            if (chosenModelShipper === "phi3") {
+                const { textToSpeech } = await import("web-ai-toolkit");
+                const data: Float32Array = (await textToSpeech(script) as Float32Array);
+                const audioCtx = new AudioContext();
 
-            // const myArrayBuffer = audioCtx.createBuffer(1, data.length, 16000);
-            // myArrayBuffer.copyToChannel(data, 0);
+                const myArrayBuffer = audioCtx.createBuffer(1, data.length, 16000);
+                myArrayBuffer.copyToChannel(data, 0);
 
-            // const source = audioCtx.createBufferSource();
-            // source.buffer = myArrayBuffer;
+                const source = audioCtx.createBufferSource();
+                source.buffer = myArrayBuffer;
 
-            // // Connect to the audio output
-            // source.connect(audioCtx.destination);
+                // Connect to the audio output
+                source.connect(audioCtx.destination);
 
-            // // Start playback
-            // source.start();
+                source.onended = () => {
+                    resolve(script);
+                }
 
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
-                method: "POST",
-                headers: new Headers({
-                    "Content-Type": "application/json",
-                }),
-                body: JSON.stringify({
-                    previousMessages,
-                    key: GPTKey
-                })
-            });
-            const data = await response.blob();
-
-            const audio = new Audio(URL.createObjectURL(data));
-
-            audio.onended = () => {
-                resolve(script);
+                // Start playback
+                source.start();
             }
+            else {
+                const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
+                    method: "POST",
+                    headers: new Headers({
+                        "Content-Type": "application/json",
+                    }),
+                    body: JSON.stringify({
+                        previousMessages,
+                        key: GPTKey
+                    })
+                });
+                const data = await response.blob();
 
-            audio.play();
+                const audio = new Audio(URL.createObjectURL(data));
 
+                audio.onended = () => {
+                    resolve(script);
+                }
+
+                audio.play();
+            }
         }
     });
 }
@@ -263,7 +323,7 @@ export async function doSpeechToText(audioFile: File) {
         goodData.append("file", audioFile, audioFile.name);
 
         try {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//speechtotext?key=${GPTKey}`, {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}`, {
                 method: "POST",
                 body: goodData,
             });

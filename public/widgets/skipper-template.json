@@ -1,0 +1,28 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "ExtraLarge",
+            "weight": "Bolder",
+            "text": "Skipper",
+            "horizontalAlignment": "Center",
+            "spacing": "None",
+            "style": "heading"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "Start Chatting",
+            "url": "${chatUrl}"
+        },
+        {
+            "type": "Action.OpenUrl",
+            "title": "Start Voice Chat",
+            "url": "${voiceUrl}"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5"
+}

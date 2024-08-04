@@ -16,10 +16,12 @@ import { styles } from '../../styles/shared-styles';
 import cssModule from './app-home.css?inline';
 
 import "../../components/app-dictate";
+import "../../components/local-dictate";
 import "../../components/right-click";
 import "../../components/web-search";
 import "../../components/message-skeleton";
 import "../../components/screen-sharing";
+import "../../components/app-search";
 
 @customElement('app-home')
 export class AppHome extends LitElement {
@@ -39,6 +41,7 @@ export class AppHome extends LitElement {
   @state() inPhotoConvo: boolean = false;
 
   @state() modelLoading = false;
+  @state() localModelLoaded = false;
   @state() sayIT: boolean = false;
   @state() sharingScreen: boolean = false;
 
@@ -46,6 +49,8 @@ export class AppHome extends LitElement {
   @state() forecastString: string | undefined;
 
   @state() currentImageSrc: string | undefined;
+
+  @state() aiSource: string = "cloud";
 
   captureStream: any;
   modelShipper: string = "";
@@ -105,12 +110,6 @@ export class AppHome extends LitElement {
     // handle drag and drop
     this.addImageWithDragDrop();
 
-    if (chosenModelShipper === "phi3") {
-      console.log("loading phi3");
-
-      this.modelLoading = true;
-    }
-
     // check if we are deeplinked into a convo
     const queryParams = new URLSearchParams(window.location.search);
     const title = queryParams.get('title');
@@ -141,27 +140,33 @@ export class AppHome extends LitElement {
     }
   }
 
-  public async handleModelChange(model: string) {
-    this.modelShipper = model;
+  public async handleModelChange(model: string): Promise<void> {
+    return new Promise(async (resolve) => {
+      this.modelShipper = model;
 
-    const { chosenModelShipper } = await import('../../services/ai');
+      const { chosenModelShipper } = await import('../../services/ai');
 
-    if (chosenModelShipper === "phi3") {
-      this.modelLoading = true;
+      if (chosenModelShipper === "phi3") {
+        this.modelLoading = true;
 
-      this.phiWorker = new Worker(
-        new URL('../../services/phi.ts', import.meta.url),
-        { type: 'module' }
-      );
+        this.phiWorker = new Worker(
+          new URL('../../services/phi.ts', import.meta.url),
+          { type: 'module' }
+        );
 
-      this.phiWorker.onmessage = (event: any) => {
-        if (event.data.type === "loaded") {
-          this.modelLoading = false;
+        this.phiWorker.onmessage = (event: any) => {
+          console.log("Message received from worker: ", event.data);
+          if (event.data.type === "loaded") {
+            this.modelLoading = false;
+
+            this.localModelLoaded = true;
+            resolve();
+          }
         }
-      }
 
-      this.phiWorker.postMessage({ type: "Init" });
-    }
+        this.phiWorker.postMessage({ type: "Init" });
+      }
+    });
   }
 
   async addImageWithDragDrop() {
@@ -406,6 +411,12 @@ export class AppHome extends LitElement {
           resolve();
         }
         else if (modelShipper === "phi3") {
+          console.log("phi3 model", this.localModelLoaded);
+          this.aiSource = "local";
+          // if (this.localModelLoaded === false) {
+          //   await this.handleModelChange("phi3");
+          // }
+
           this.handleScroll(list);
 
           this.previousMessages = [
@@ -416,34 +427,60 @@ export class AppHome extends LitElement {
             }
           ];
 
-          let completeMessage = "";
+          // let completeMessage = "";
 
-          this.phiWorker!.onmessage = async (event: any) => {
-            if (event.data.type === "done") {
-              this.modelLoading = false;
-            }
-            else if (event.data.type === "response") {
-              console.log(event.data.response);
-              const message = event.data.response;
+          // this.phiWorker!.onmessage = async (event: any) => {
+          //   if (event.data.type === "done") {
+          //     this.modelLoading = false;
+          //   }
+          //   else if (event.data.type === "response") {
+          //     console.log(event.data.response);
+          //     const message = event.data.response;
 
-              console.log("Message received: ", message);
-              completeMessage = message;
+          //     console.log("Message received: ", message);
+          //     completeMessage = message;
 
-              const { marked } = await import('marked');
-              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+          //     const { marked } = await import('marked');
+          //     this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
 
-              this.previousMessages = this.previousMessages;
-              console.log("prev messages 3", this.previousMessages);
+          //     this.previousMessages = this.previousMessages;
+          //     console.log("prev messages 3", this.previousMessages);
+
+          //     this.requestUpdate();
+          //   }
+          // }
+
+          // this.phiWorker!.postMessage({
+          //   type: "Query",
+          //   continuation: false,
+          //   prompt: prompt
+          // });
+
+
+          const { makeAIRequest } = await import('../../services/ai');
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages, true);
+
+          const { marked } = await import('marked');
+          let message = "";
+
+          if (data.source === "local") {
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: ""
+              }
+            ]
+
+            for await (const chunk of data.data) {
+              console.log(chunk);
+              message += chunk.choices[0]?.delta?.content || "";
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
 
               this.requestUpdate();
             }
           }
 
-          this.phiWorker!.postMessage({
-            type: "Query",
-            continuation: false,
-            prompt: prompt
-          });
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
@@ -476,19 +513,60 @@ export class AppHome extends LitElement {
         else {
           this.previousMessages = [
             ...this.previousMessages,
-            {
-              role: "assistant",
-              content: "<message-skeleton></message-skeleton>"
-            }
+            // {
+            //   role: "assistant",
+            //   content: "<message-skeleton></message-skeleton>"
+            // }
           ];
 
           const { makeAIRequest } = await import('../../services/ai');
           const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
           const { marked } = await import('marked');
-          this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+          let message = "";
 
-          this.doSayIt(data.choices[0].message.content);
+          this.aiSource = data.source;
+
+          if (data.source === "local") {
+
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: ""
+              }
+            ]
+
+            for await (const chunk of data.data) {
+              console.log(chunk);
+              message += chunk.choices[0]?.delta?.content || "";
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+
+              this.requestUpdate();
+            }
+          }
+          else {
+            message = data.data.choices[0].message.content;
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: await marked.parse(data.data.choices[0].message.content)
+              }
+            ]
+          }
+
+          // const { marked } = await import('marked');
+          // // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "assistant",
+          //     content: await marked.parse(data.choices[0].message.content)
+          //   }
+          // ]
+
+          this.doSayIt(message);
 
           this.handleScroll(list);
 
@@ -549,17 +627,19 @@ export class AppHome extends LitElement {
   async startConvo(convo: any) {
     this.previousMessages = [];
 
-    console.log("convoContent", convo.content)
+    if (typeof convo.convo === "string") {
+      convo.convo = JSON.parse(convo.convo);
+    }
 
-    if (convo.content[0].image && convo.content[0].image.length > 0) {
-      this.currentPhoto = convo.content[0].image;
+    if (convo.convo[0].image && convo.convo[0].image.length > 0) {
+      this.currentPhoto = convo.convo[0].image;
     }
     else {
       this.currentPhoto = "";
       this.inPhotoConvo = false;
     }
 
-    this.previousMessages = convo.content;
+    this.previousMessages = convo.convo;
     this.convoName = undefined;
     await this.requestUpdate();
 
@@ -585,10 +665,10 @@ export class AppHome extends LitElement {
     this.currentPhoto = undefined;
     this.inPhotoConvo = false;
 
-    if (this.modelShipper === "redpajama") {
-      const { resetLocal } = await import('../../services/local-ai');
-      await resetLocal();
-    }
+    // if (this.modelShipper === "redpajama") {
+    //   const { resetLocal } = await import('../../services/local-ai');
+    //   await resetLocal();
+    // }
 
     await this.updated;
 
@@ -811,15 +891,15 @@ export class AppHome extends LitElement {
       }
        </div>
 
-       <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search>
+       <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
+       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
        <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
       </sl-drawer>
 
       <main>
 
       <div id="saved">
-        <fluent-search @change="${this.handleSearch}"></fluent-search>
-
+      ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
         ${this.savedConvos.length > 0 ? html`
           <ul>
             ${this.savedConvos.map((convo) => {
@@ -930,7 +1010,7 @@ export class AppHome extends LitElement {
             <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
-            <!-- <ul id="suggested">
+            <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
@@ -949,32 +1029,11 @@ export class AppHome extends LitElement {
         }
               <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
               <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
-            </ul> -->
+            </ul>
           </div>
        `}
 
        <div id="input-block">
-       ${this.previousMessages.length === 0 ? html`<ul id="suggested">
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
-                  <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
-                  <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
-                  <li @click="${() => this.preDefinedChat("Search my email")}">Search my email</li>
-                  <li @click="${() => this.preDefinedChat("Get my todos")}">Get my todos</li>
-                  <li @click="${() => this.preDefinedChat("Set a todo")}">Set a todo</li>
-                ` : null
-        }
-              <!-- ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null} -->
-              <!-- ${this.quickActions.map((action: any) => {
-          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
-        })
-        } -->
-              <!-- <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li> -->
-            </ul>` : null}
 
         <div id="extra-actions">
           <div id="inner-extra-actions">
@@ -991,7 +1050,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
-          <app-dictate @got-text=${this.handleDictate}></app-dictate>
+          ${this.modelShipper === "phi3" ? html`<local-dictate></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">
@@ -1006,6 +1065,11 @@ export class AppHome extends LitElement {
         </div>
 
         <div id="inner-extra-actions">
+
+          ${
+            this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
+          }
+
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
           </fluent-button>

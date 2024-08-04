@@ -1,4 +1,4 @@
-import MiniSearch from 'minisearch'
+import MiniSearch from 'minisearch';
 
 let miniSearch = new MiniSearch({
     fields: ['name', 'content', 'date'], // fields to index for full-text search

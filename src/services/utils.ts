@@ -3,7 +3,22 @@ export async function checkGPUSupport() {
         const gpu = await (navigator as any).gpu.requestAdapter();
         console.log("gpu", gpu);
         if (gpu !== null) {
-            return true;
+            if (gpu.info && gpu.info.vendor.toLowerCase() === "nvidia") {
+                return true;
+            }
+            else if ("requestAdapterInfo" in gpu) {
+                const gpuInfo = await gpu.requestAdapterInfo();
+
+                if (gpuInfo && gpuInfo.vendor.toLowerCase() === "nvidia") {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
         }
         else {
             return false;
@@ -68,10 +83,11 @@ export async function deviceCheck() {
 
         const gpuCheck = await checkGPUSupport();
         // @ts-ignore
-        const memoryCheck = navigator.deviceMemory ? navigator.deviceMemory > 4 : false;
-        const cpuCheck = navigator.hardwareConcurrency ? navigator.hardwareConcurrency > 4 : false;
+        const memoryCheck = navigator.deviceMemory ? navigator.deviceMemory >= 8 : false;
+        const cpuCheck = navigator.hardwareConcurrency ? navigator.hardwareConcurrency >= 8 : false;
 
         const canHandleLocal = memoryCheck && cpuCheck && gpuCheck && !isMobile;
+        // resolve(canHandleLocal);
         resolve(canHandleLocal);
     })
 }

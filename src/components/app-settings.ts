@@ -248,8 +248,7 @@ export class AppSettings extends LitElement {
                 </fluent-switch>
 
                 <p>
-                    Choose whether to use the local model on your device. The local model is slower in some cases, uses more battery and currently does not support actions, but ensures your data never leaves your device. This also means that you can use Skipper offline in Local Mode.
-                    Requires a device with a dedicated GPU for the best performance.
+                    Local mode is slower in some cases, uses more battery on devices without a dedicated NPU, and currently does not support actions. It does however ensure your data never leaves your device.
             </div>` : null}
 
             <!-- <div class="setting">
