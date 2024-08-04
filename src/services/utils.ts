@@ -71,7 +71,36 @@ export async function deviceCheck() {
         const memoryCheck = navigator.deviceMemory ? navigator.deviceMemory >= 8 : false;
         const cpuCheck = navigator.hardwareConcurrency ? navigator.hardwareConcurrency >= 8 : false;
 
-        const canHandleLocal = memoryCheck && cpuCheck && gpuCheck && !isMobile;
-        resolve(canHandleLocal);
+        const gpuInfo: string = getGPUInfo();
+        const gpuInfoCheck = gpuInfo ? gpuInfo.toUpperCase().includes("NVIDIA") || gpuInfo.toUpperCase().includes("AMD") : false;
+
+        const canHandleLocal = memoryCheck && cpuCheck && gpuCheck && !isMobile && gpuInfoCheck;
+        // resolve(canHandleLocal);
+        resolve(true);
     })
+}
+
+function getGPUInfo() {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+        // @ts-ignore
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+            // @ts-ignore
+            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            // @ts-ignore
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            console.log('GPU Vendor:', vendor);
+            console.log('GPU Renderer:', renderer);
+
+            return renderer;
+        } else {
+            console.log('WEBGL_debug_renderer_info extension not available');
+            return null;
+        }
+    } else {
+        console.log('WebGL not supported');
+        return null;
+    }
 }
