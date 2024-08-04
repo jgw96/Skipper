@@ -50,6 +50,8 @@ export class AppHome extends LitElement {
 
   @state() currentImageSrc: string | undefined;
 
+  @state() aiSource: string = "cloud";
+
   captureStream: any;
   modelShipper: string = "";
   @state() authToken: string | null = null;
@@ -410,9 +412,10 @@ export class AppHome extends LitElement {
         }
         else if (modelShipper === "phi3") {
           console.log("phi3 model", this.localModelLoaded);
-          if (this.localModelLoaded === false) {
-            await this.handleModelChange("phi3");
-          }
+          this.aiSource = "local";
+          // if (this.localModelLoaded === false) {
+          //   await this.handleModelChange("phi3");
+          // }
 
           this.handleScroll(list);
 
@@ -424,34 +427,60 @@ export class AppHome extends LitElement {
             }
           ];
 
-          let completeMessage = "";
+          // let completeMessage = "";
 
-          this.phiWorker!.onmessage = async (event: any) => {
-            if (event.data.type === "done") {
-              this.modelLoading = false;
-            }
-            else if (event.data.type === "response") {
-              console.log(event.data.response);
-              const message = event.data.response;
+          // this.phiWorker!.onmessage = async (event: any) => {
+          //   if (event.data.type === "done") {
+          //     this.modelLoading = false;
+          //   }
+          //   else if (event.data.type === "response") {
+          //     console.log(event.data.response);
+          //     const message = event.data.response;
 
-              console.log("Message received: ", message);
-              completeMessage = message;
+          //     console.log("Message received: ", message);
+          //     completeMessage = message;
 
-              const { marked } = await import('marked');
-              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
+          //     const { marked } = await import('marked');
+          //     this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(completeMessage);
 
-              this.previousMessages = this.previousMessages;
-              console.log("prev messages 3", this.previousMessages);
+          //     this.previousMessages = this.previousMessages;
+          //     console.log("prev messages 3", this.previousMessages);
+
+          //     this.requestUpdate();
+          //   }
+          // }
+
+          // this.phiWorker!.postMessage({
+          //   type: "Query",
+          //   continuation: false,
+          //   prompt: prompt
+          // });
+
+
+          const { makeAIRequest } = await import('../../services/ai');
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages, true);
+
+          const { marked } = await import('marked');
+          let message = "";
+
+          if (data.source === "local") {
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: ""
+              }
+            ]
+
+            for await (const chunk of data.data) {
+              console.log(chunk);
+              message += chunk.choices[0]?.delta?.content || "";
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
 
               this.requestUpdate();
             }
           }
 
-          this.phiWorker!.postMessage({
-            type: "Query",
-            continuation: false,
-            prompt: prompt
-          });
 
           if (this.previousMessages.length > 1) {
             const { marked } = await import('marked');
@@ -494,16 +523,50 @@ export class AppHome extends LitElement {
           const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
           const { marked } = await import('marked');
-          // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "assistant",
-              content: await marked.parse(data.choices[0].message.content)
-            }
-          ]
+          let message = "";
 
-          this.doSayIt(data.choices[0].message.content);
+          this.aiSource = data.source;
+
+          if (data.source === "local") {
+
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: ""
+              }
+            ]
+
+            for await (const chunk of data.data) {
+              console.log(chunk);
+              message += chunk.choices[0]?.delta?.content || "";
+              this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+
+              this.requestUpdate();
+            }
+          }
+          else {
+            message = data.data.choices[0].message.content;
+            this.previousMessages = [
+              ...this.previousMessages,
+              {
+                role: "assistant",
+                content: await marked.parse(data.data.choices[0].message.content)
+              }
+            ]
+          }
+
+          // const { marked } = await import('marked');
+          // // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "assistant",
+          //     content: await marked.parse(data.choices[0].message.content)
+          //   }
+          // ]
+
+          this.doSayIt(message);
 
           this.handleScroll(list);
 
@@ -1002,6 +1065,11 @@ export class AppHome extends LitElement {
         </div>
 
         <div id="inner-extra-actions">
+
+          ${
+            this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
+          }
+
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
           </fluent-button>

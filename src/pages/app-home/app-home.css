@@ -12,6 +12,14 @@ fluent-search {
     --accent-stroke-control-hover: #8769dc;
 }
 
+#ai-source {
+    color: lightgray;
+    font-size: 12px;
+    background: #262626;
+    padding: 6px;
+    border-radius: 6px;
+}
+
 #app-camera::part(panel) {
     --size: 100vh;
     background: transparent;

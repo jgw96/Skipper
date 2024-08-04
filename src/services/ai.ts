@@ -69,7 +69,7 @@ export async function makeAIRequestWithGemini(base64data: string, prompt: string
 
 
 let localLLMInit = false;
-export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[]) {
+export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[], forceLocal: boolean = false) {
     console.log("makeAIRequest", base64data, prompt, previousMessages)
     currentBase64Data = base64data;
 
@@ -103,14 +103,17 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         const data = await response.json();
         console.log(data.choices[0]);
 
-        return data;
+        return {
+            data,
+            source: "cloud"
+        };
     }
     else {
         // will do device check
         const { deviceCheck } = await import("../services/utils");
         const deviceCheckFlag = await deviceCheck();
 
-        if (deviceCheckFlag) {
+        if (forceLocal || deviceCheckFlag) {
             if (localLLMInit === false) {
                 localLLMInit = true;
                 const { init } = await import("../services/local-llm/local-llm");
@@ -121,7 +124,10 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             const data = await makeLocalAIRequest(previousMessages);
             console.log(data);
 
-            return data;
+            return {
+                data,
+                source: "local"
+            };
         }
         else {
             const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
@@ -141,7 +147,10 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             const data = await response.json();
             console.log(data.choices[0]);
 
-            return data;
+            return {
+                data,
+                source: "cloud"
+            };
         }
     }
 }
