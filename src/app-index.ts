@@ -27,6 +27,10 @@ export class AppIndex extends LitElement {
         --accent-stroke-control-hover: #8769dc;
       }
 
+      .settings-drawer::part(panel) {
+       --size: 100vw;
+      }
+
       #intro-image-block {
         height: 32em;
         display: flex;

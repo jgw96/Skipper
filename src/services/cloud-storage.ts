@@ -16,7 +16,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export async function saveConvoToCloud(convo: any) {
-    if (currentUser) {
+    const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
+    if (currentUser && syncFlag) {
         convo.convo = JSON.stringify(convo.convo);
         const docRef = await addDoc(collection(db, `users/${currentUser.userPrincipalName}/convos/`), convo);
         console.log("Document written with ID: ", docRef.id);
@@ -32,7 +33,8 @@ export async function deleteConvoFromCloud(name: string, convo: any) {
 
 export async function getConvosFromCloud() {
     console.log("currentUser", currentUser);
-    if (currentUser) {
+    const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
+    if (currentUser && syncFlag) {
         let cloudConvos: any[] = [];
 
         const querySnapshot = await getDocs(collection(db, `users/${currentUser.userPrincipalName}/convos/`));

@@ -48,6 +48,12 @@ export class AppLogin extends LitElement {
                 object-fit: cover;
                 border-radius: 50%;
                 cursor: pointer;
+
+                animation: fadeIn 0.3s;
+            }
+
+            sl-dropdown {
+              animation: fadeIn 0.8s;
             }
 
             #photo-block {
@@ -88,31 +94,33 @@ export class AppLogin extends LitElement {
 
     async firstUpdated() {
         // setTimeout(async () => {
-            const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem('accessToken');
 
-            if (token) {
-                const profile: any = await getUserProfile(token);
-                console.log("profile info", profile)
+        if (token) {
+            const profile: any = await getUserProfile(token);
+            console.log("profile info", profile)
 
-                if (profile) {
-                    this.displayName = profile.displayName;
+            if (profile) {
+                this.displayName = profile.displayName;
 
+                setTimeout(async () => {
                     const photo: Blob = await getUserPhoto(token);
                     console.log("photo", photo);
                     this.userPhoto = URL.createObjectURL(photo);
+                }, 800);
 
-                    await this.updateComplete;
+                await this.updateComplete;
 
-                    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-                    if (isDarkMode) {
-                        const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
-                        for (let i = 0; i < fluentMenu.length; i++) {
-                            baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
-                        }
+                if (isDarkMode) {
+                    const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
+                    for (let i = 0; i < fluentMenu.length; i++) {
+                        baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
                     }
                 }
             }
+        }
         // }, 1000);
     }
 

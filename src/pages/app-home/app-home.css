@@ -690,6 +690,11 @@ li.assistant {
         background: var(--theme-color);
     }
 
+    #ai-source {
+        background: white;
+        color: black;
+    }
+
     #model-loading {
         background: white;
     }
