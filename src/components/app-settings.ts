@@ -12,6 +12,7 @@ import {
     fluentSwitch
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
+import { currentUser } from "../services/auth/auth";
 
 provideFluentDesignSystem()
     .register(
@@ -26,6 +27,7 @@ export class AppSettings extends LitElement {
     @state() gpuCheck: boolean = false;
     @state() selectedModel: string = "openai";
     @state() highVoiceQuality: boolean = true;
+    @state() authed: boolean = false
 
     static get styles() {
         return css`
@@ -70,6 +72,7 @@ export class AppSettings extends LitElement {
 
         label {
             font-weight: bold;
+            margin-bottom: 8px;
         }
 
         @media(prefers-color-scheme: dark) {
@@ -81,7 +84,9 @@ export class AppSettings extends LitElement {
                 border: none;
               }
 
+
               fluent-switch {
+                --neutral-fill-input-alt-rest: #9b9b9b;
                 --neutral-foreground-rest: white;
               }
 
@@ -170,6 +175,22 @@ export class AppSettings extends LitElement {
             voiceQualityInput.setAttribute('checked', 'true');
             this.highVoiceQuality = true;
         }
+
+        const user = currentUser;
+        this.authed = user !== null;
+
+        await this.updateComplete;
+
+        const cloudSync = localStorage.getItem('cloudSync') === 'true' ? true : false;
+        const cloudSyncInput = this.shadowRoot?.querySelector('#sync') as any;
+        if (cloudSync) {
+            cloudSyncInput.checked = cloudSync === true;
+            cloudSyncInput.setAttribute('checked', cloudSync === true);
+        }
+        else {
+            cloudSyncInput.checked = false;
+            cloudSyncInput.setAttribute('checked', 'false');
+        }
     }
 
     chooseModel($event: any) {
@@ -209,6 +230,11 @@ export class AppSettings extends LitElement {
         }
     }
 
+    chooseCloudSync($event: any) {
+        localStorage.setItem('cloudSync', $event.target.checked ? 'true' : 'false');
+
+    }
+
     chooseVoiceQuality($event: any) {
         localStorage.setItem('voiceQuality', $event.target.checked ? 'high' : 'low');
 
@@ -239,6 +265,23 @@ export class AppSettings extends LitElement {
             <div class="setting">
                 <key-manager></key-manager>
             </div>
+
+            ${
+                this.authed ? html`
+                  <div class="setting">
+                    <label for="sync">Sync Conversations to the Cloud</label>
+                    <fluent-switch  @change="${this.chooseCloudSync}" id="sync" title="Sync Conversations to the Cloud">
+                        <span slot="checked-message">On</span>
+                        <span slot="unchecked-message">Off</span>
+                    </fluent-switch>
+
+                    <p>
+                        Sync your conversations to the cloud. This will allow you to access your conversations on any device.
+            </p>
+                  </div>
+                ` : null
+            }
+
 
            ${"gpu" in navigator ? html`<div class="setting">
                 <label for="local">Local Mode</label>

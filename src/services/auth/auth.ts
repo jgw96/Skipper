@@ -86,6 +86,11 @@ export const logOut = async () => {
         account: msalInstance.getActiveAccount()
     };
 
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("taskListID");
+    localStorage.removeItem("cloudSync");
+
     try {
         msalInstance.logoutRedirect(logoutRequest);
     } catch (err) {
