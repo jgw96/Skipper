@@ -1,12 +1,16 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getUserPhoto, getUserProfile, logOut, signIn } from '../services/auth/auth';
+// import { getUserPhoto, getUserProfile, logOut, signIn } from '../services/auth/auth';
 import { baseLayerLuminance } from '@fluentui/web-components';
+
+import "../services/auth/firebase-auth";
+import { getUserPhoto } from '../services/auth/auth';
 
 @customElement('app-login')
 export class AppLogin extends LitElement {
     @state() displayName: string = '';
-    @state() userPhoto: string = '/assets/icons/64-icon.png';
+    @state() userPhoto: string | null = null;
+    @state() currentUser: any;
 
     static styles = [
         css`
@@ -93,56 +97,107 @@ export class AppLogin extends LitElement {
     ];
 
     async firstUpdated() {
+
         // setTimeout(async () => {
-        const token = localStorage.getItem('accessToken');
+        const { currentUser } = await import('../services/auth/firebase-auth');
+        this.currentUser = currentUser;
 
-        if (token) {
-            const profile: any = await getUserProfile(token);
-            console.log("profile info", profile)
+        // fire custom event
+        this.dispatchEvent(new CustomEvent('auth-changed', {
+            detail: {
+                currentUser
+            }
+        }));
 
-            if (profile) {
-                this.displayName = profile.displayName;
+        this.requestUpdate();
 
-                setTimeout(async () => {
-                    const photo: Blob = await getUserPhoto(token);
-                    console.log("photo", photo);
-                    this.userPhoto = URL.createObjectURL(photo);
-                }, 800);
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-                await this.updateComplete;
-
-                const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                if (isDarkMode) {
-                    const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
-                    for (let i = 0; i < fluentMenu.length; i++) {
-                        baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
-                    }
-                }
+        if (isDarkMode) {
+            const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
+            for (let i = 0; i < fluentMenu.length; i++) {
+                baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
             }
         }
-        // }, 1000);
+
+        const token = localStorage.getItem('accessToken');
+        console.log('token', token);
+        if (token) {
+            const photo: Blob = await getUserPhoto(token);
+            console.log("photo", photo);
+            // this.userPhoto = URL.createObjectURL(photo);
+        }
+        // }, 3000);
     }
 
-    async doSignIn() {
-        console.log('Sign in with Microsoft');
-        await signIn();
-
+    async doLogin() {
+        const { login } = await import('../services/auth/firebase-auth');
+        await login();
     }
 
-    async doLogOut() {
-        console.log('Log out');
-        await logOut();
+    async doLoginMSFT() {
+        const { loginWithMicrosoft } = await import('../services/auth/firebase-auth');
+        await loginWithMicrosoft();
     }
+
+    async doLogout() {
+        this.currentUser = null;
+
+        const { logout } = await import('../services/auth/firebase-auth');
+        logout();
+    }
+
+    // async firstUpdated() {
+    //     // setTimeout(async () => {
+    //     const token = localStorage.getItem('accessToken');
+
+    //     if (token) {
+    //         const profile: any = await getUserProfile(token);
+    //         console.log("profile info", profile)
+
+    //         if (profile) {
+    //             this.displayName = profile.displayName;
+
+    //             setTimeout(async () => {
+    //                 const photo: Blob = await getUserPhoto(token);
+    //                 console.log("photo", photo);
+    //                 this.userPhoto = URL.createObjectURL(photo);
+    //             }, 800);
+
+    //             await this.updateComplete;
+
+    //             const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    //             if (isDarkMode) {
+    //                 const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
+    //                 for (let i = 0; i < fluentMenu.length; i++) {
+    //                     baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     // }, 1000);
+    // }
+
+    // async doSignIn() {
+    //     console.log('Sign in with Microsoft');
+    //     await signIn();
+
+    // }
+
+    // async doLogOut() {
+    //     console.log('Log out');
+    //     await logOut();
+    // }
 
     render() {
         return html`
           <div id="block">
-            ${this.displayName ? html`<div id="photo-block">
+            ${this.userPhoto ? html`<div id="photo-block">
                 <sl-dropdown hoist>
                     <img slot="trigger" caret src="${this.userPhoto}" alt="User photo" />
                     <sl-menu>
-                        <fluent-menu-item class="copy-button new-window-button" @click="${this.doLogOut}">
+                        <fluent-menu-item class="copy-button new-window-button" @click="${this.doLogout}">
 
                         Sign Out
                         </fluent-menu-item>
@@ -150,7 +205,7 @@ export class AppLogin extends LitElement {
 
                 </sl-dropdown>
             </div>` : html`
-            <fluent-button size="small" @click="${() => this.doSignIn()}"/>Sign in with Microsoft</fluent-button>
+            <fluent-button size="small" @click="${() => this.doLoginMSFT()}"/>Sign in with Microsoft</fluent-button>
             `
             }
     </div>
