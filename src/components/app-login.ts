@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-// import { getUserPhoto, getUserProfile, logOut, signIn } from '../services/auth/auth';
 import { baseLayerLuminance } from '@fluentui/web-components';
 
 import "../services/auth/firebase-auth";
@@ -97,8 +96,6 @@ export class AppLogin extends LitElement {
     ];
 
     async firstUpdated() {
-
-        // setTimeout(async () => {
         const { currentUser } = await import('../services/auth/firebase-auth');
         this.currentUser = currentUser;
 
@@ -111,23 +108,26 @@ export class AppLogin extends LitElement {
 
         this.requestUpdate();
 
-        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const token = localStorage.getItem('accessToken');
+        console.log('token for photo', token);
+        if (token) {
+            await this.setPhoto(token);
+        }
+    }
 
+    private async setPhoto(token: string) {
+        const photo: Blob = await getUserPhoto(token);
+        console.log("photo", photo);
+        this.userPhoto = URL.createObjectURL(photo);
+
+        // annoying temporary fix for dark mode
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (isDarkMode) {
             const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
             for (let i = 0; i < fluentMenu.length; i++) {
                 baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
             }
         }
-
-        const token = localStorage.getItem('accessToken');
-        console.log('token', token);
-        if (token) {
-            const photo: Blob = await getUserPhoto(token);
-            console.log("photo", photo);
-            // this.userPhoto = URL.createObjectURL(photo);
-        }
-        // }, 3000);
     }
 
     async doLogin() {
@@ -137,7 +137,11 @@ export class AppLogin extends LitElement {
 
     async doLoginMSFT() {
         const { loginWithMicrosoft } = await import('../services/auth/firebase-auth');
-        await loginWithMicrosoft();
+        const token = await loginWithMicrosoft();
+
+        if (token) {
+            await this.setPhoto(token);
+        }
     }
 
     async doLogout() {
@@ -146,49 +150,6 @@ export class AppLogin extends LitElement {
         const { logout } = await import('../services/auth/firebase-auth');
         logout();
     }
-
-    // async firstUpdated() {
-    //     // setTimeout(async () => {
-    //     const token = localStorage.getItem('accessToken');
-
-    //     if (token) {
-    //         const profile: any = await getUserProfile(token);
-    //         console.log("profile info", profile)
-
-    //         if (profile) {
-    //             this.displayName = profile.displayName;
-
-    //             setTimeout(async () => {
-    //                 const photo: Blob = await getUserPhoto(token);
-    //                 console.log("photo", photo);
-    //                 this.userPhoto = URL.createObjectURL(photo);
-    //             }, 800);
-
-    //             await this.updateComplete;
-
-    //             const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    //             if (isDarkMode) {
-    //                 const fluentMenu: any = this.shadowRoot?.querySelectorAll("sl-menu fluent-menu-item");
-    //                 for (let i = 0; i < fluentMenu.length; i++) {
-    //                     baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     // }, 1000);
-    // }
-
-    // async doSignIn() {
-    //     console.log('Sign in with Microsoft');
-    //     await signIn();
-
-    // }
-
-    // async doLogOut() {
-    //     console.log('Log out');
-    //     await logOut();
-    // }
 
     render() {
         return html`

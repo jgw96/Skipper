@@ -40,6 +40,7 @@ getRedirectResult(auth)
         // Get the OAuth access token and ID Token
         const credential = OAuthProvider.credentialFromResult(result);
         const accessToken = credential!.accessToken;
+        console.log("credential", credential);
 
         if (accessToken) {
             localStorage.setItem("accessToken", accessToken);
@@ -70,8 +71,19 @@ getRedirectResult(auth)
 export async function loginWithMicrosoft() {
     try {
         await setPersistence(auth, browserSessionPersistence);
-        const data = await signInWithRedirect(auth, msprovider);
+        const data = await signInWithPopup(auth, msprovider);
         console.log('data', data);
+
+        const credential = OAuthProvider.credentialFromResult(data);
+        const accessToken = credential!.accessToken;
+        console.log("credential", credential);
+
+        if (accessToken) {
+            localStorage.setItem("accessToken", accessToken);
+        }
+
+        return accessToken;
+
     }
     catch (error: any) {
         const errorCode = error.code;
@@ -79,6 +91,7 @@ export async function loginWithMicrosoft() {
 
         console.log('errorCode', errorCode);
         console.log('errorMessage', errorMessage);
+        return null;
     }
 }
 
