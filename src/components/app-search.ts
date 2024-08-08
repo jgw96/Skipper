@@ -3,8 +3,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 
 import { Document } from 'langchain/document';
 
-import { fluentSearch, provideFluentDesignSystem } from '@fluentui/web-components';
-provideFluentDesignSystem().register(fluentSearch());
+import { fluentSearch, fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
+provideFluentDesignSystem().register(fluentSearch(), fluentProgressRing());
 
 @customElement('app-search')
 export class AppSearch extends LitElement {
@@ -13,6 +13,7 @@ export class AppSearch extends LitElement {
     @state() retrievalChain: any;
     @state() answer: string = "";
     @state() foundConvo: any;
+    @state() loading: boolean = false;
 
     static styles = [
         css`
@@ -65,6 +66,9 @@ export class AppSearch extends LitElement {
                 width: 20vw;
                 top: 45px;
 
+                height: 14em;
+                overflow-y: auto;
+
                 display: flex;
                 flex-direction: column;
                 gap: 15px;
@@ -72,22 +76,37 @@ export class AppSearch extends LitElement {
                 box-shadow: 0px 2px 20px #0000004a;
 
                 animation: slideDownFromTop 0.3s;
-
             }
 
             #dropdown span {
                 text-align: start;
+                height: 14em;
+                overflow-y: auto;
+
+                animation: fadeIn 0.3s;
+            }
+
+            #dropdown fluent-button {
+                position: sticky;
+                bottom: 0px;
             }
 
             fluent-button::part(control) {
                 background: #8769dc;
             }
 
+            #loading-block {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                height: 14em;
+            }
+
             @media(max-width: 860px) {
               #dropdown {
                 top: unset;
 
-                width: left:10px;
                 right: 10px;
                 left: 10px;
                 width: auto;
@@ -126,6 +145,15 @@ export class AppSearch extends LitElement {
                     opacity: 1;
                 }
             }
+
+                @keyframes fadeIn {
+                   0% {
+                    opacity: 0;
+                   }
+                   100% {
+                    opacity: 1;
+                   }
+                }
         `
     ];
 
@@ -149,11 +177,14 @@ export class AppSearch extends LitElement {
         const searchTerm = e.target.value;
 
         if (searchTerm && searchTerm.length > 0) {
+            this.loading = true;
+
             const result = await this.retrievalChain.invoke({
                 input: searchTerm,
             });
             console.log(result);
 
+            this.loading = false;
             this.answer = result.answer;
 
             const fullContext = result.context[0].pageContent;
@@ -198,14 +229,21 @@ export class AppSearch extends LitElement {
         return html`
          <fluent-search @change="${this.handleSearch}"></fluent-search>
 
-         ${this.answer && this.answer.length > 0 ? html`
+         ${(this.answer && this.answer.length > 0) || this.loading === true ? html`
               <div id="dropdown">
-                <span>${this.answer}</span>
+                ${this.answer && this.answer.length > 0 ? html`<span>${this.answer}</span>` : null}
+
+                ${this.loading === true ? html`<div id="loading-block">
+                    ${this.loading ? html`
+                    <fluent-progress-ring></fluent-progress-ring>
+                    ` : null}
+                </div>` : null}
 
                 <fluent-button @click="${this.openChat}">Open Chat</fluent-button>
               </div>
             ` : null
             }
+
         `;
     }
 }

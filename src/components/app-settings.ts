@@ -12,7 +12,7 @@ import {
     fluentSwitch
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
-import { currentUser } from "../services/auth/auth";
+import { currentUser } from "../services/auth/firebase-auth";
 
 provideFluentDesignSystem()
     .register(
@@ -232,6 +232,12 @@ export class AppSettings extends LitElement {
 
     chooseCloudSync($event: any) {
         localStorage.setItem('cloudSync', $event.target.checked ? 'true' : 'false');
+
+        this.dispatchEvent(new CustomEvent("cloud-sync-changed", {
+            detail: {
+                cloudSync: $event.target.checked
+            }
+        }))
 
     }
 

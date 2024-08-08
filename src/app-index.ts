@@ -175,6 +175,13 @@ export class AppIndex extends LitElement {
     }
   }
 
+  cloudSyncChanged($event: CustomEvent) {
+    const appHome: any = this.shadowRoot?.querySelector("app-home");
+    if (appHome) {
+      appHome.handleCloudSync($event.detail.cloudSync)
+    }
+  }
+
   getStarted() {
     const dialog = this.shadowRoot?.querySelector('.dialog-overview');
     if (dialog) {
@@ -189,7 +196,7 @@ export class AppIndex extends LitElement {
     return html`
     <app-header @open-settings="${this.doOpenSettings}"></app-header>
     <sl-drawer label="Settings" class="settings-drawer">
-      <app-settings @mode-changed="${() => this.modelChanged}" @theme-changed="${this.modelChanged}"></app-settings>
+      <app-settings @mode-changed="${() => this.modelChanged}" @theme-changed="${this.modelChanged}" @cloud-sync-changed="${this.cloudSyncChanged}"></app-settings>
     </sl-drawer>
 
     <sl-dialog no-header label="Hello" class="dialog-overview">

@@ -118,7 +118,10 @@ export class AppLogin extends LitElement {
     private async setPhoto(token: string) {
         const photo: Blob = await getUserPhoto(token);
         console.log("photo", photo);
-        this.userPhoto = URL.createObjectURL(photo);
+
+        if (photo.type !== "application/json") {
+            this.userPhoto = URL.createObjectURL(photo);
+        }
 
         // annoying temporary fix for dark mode
         const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;

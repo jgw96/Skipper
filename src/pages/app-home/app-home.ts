@@ -260,6 +260,13 @@ export class AppHome extends LitElement {
     drawer.show();
   }
 
+  async handleCloudSync(flag: boolean) {
+    if (flag === true) {
+      const { getConversations } = await import('../../services/storage');
+      this.savedConvos = await getConversations();
+    }
+  }
+
   async copyConvoToClipboard() {
     let convo = "";
     this.previousMessages.forEach((message: any) => {
@@ -1066,9 +1073,8 @@ export class AppHome extends LitElement {
 
         <div id="inner-extra-actions">
 
-          ${
-            this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
-          }
+          ${this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
+      }
 
           <fluent-button appearance="accent" @click="${() => this.openMobileDrawer()}" size="large" circle id="mobile-menu">
             <img src="assets/menu-outline.svg" alt="menu" />
