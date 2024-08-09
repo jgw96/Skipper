@@ -15,6 +15,8 @@ export class AppSearch extends LitElement {
     @state() foundConvo: any;
     @state() loading: boolean = false;
 
+    private debounceTimer: any | null = null;
+
     static styles = [
         css`
             :host {
@@ -78,6 +80,10 @@ export class AppSearch extends LitElement {
                 animation: slideDownFromTop 0.3s;
             }
 
+            #close-button::part(control) {
+              background: transparent;
+            }
+
             #dropdown span {
                 text-align: start;
                 height: 14em;
@@ -107,12 +113,21 @@ export class AppSearch extends LitElement {
               #dropdown {
                 top: unset;
 
-                right: 10px;
-                left: 10px;
                 width: auto;
                 bottom: 92px;
 
+                box-shadow: 0px -8px 20px #0000004a;
+                height: 50vh;
+                left: 12px;
+                right: 12px;
+                padding: 14px;
+                font-size: 16px;
+
                 animation: slideUpFromBottom 0.3s;
+              }
+
+              #dropdown span, #loading-block {
+                height: 50vh;
               }
 
               fluent-search {
@@ -173,28 +188,69 @@ export class AppSearch extends LitElement {
         }
     }
 
-    async handleSearch(e: any) {
+    // async handleSearch(e: any) {
+    //     const searchTerm = e.target.value;
+
+    //     if (searchTerm && searchTerm.length > 0) {
+    //         this.loading = true;
+
+    //         const result = await this.retrievalChain.invoke({
+    //             input: searchTerm,
+    //         });
+    //         console.log(result);
+
+    //         this.loading = false;
+    //         this.answer = result.answer;
+
+    //         const fullContext = result.context[0].pageContent;
+    //         await this.findInSavedConvos(fullContext);
+
+    //         const searchInput: any = this.shadowRoot?.querySelector('fluent-search');
+    //         if (searchInput) {
+    //             searchInput.value = "";
+    //         }
+
+    //         document.addEventListener('click', (e) => {
+    //             if (!this.shadowRoot?.getElementById('dropdown')?.contains(e.target as Node)) {
+    //                 this.answer = "";
+    //             }
+    //         });
+    //     }
+    // }
+
+    async debouncedSearch(e: any) {
         const searchTerm = e.target.value;
 
         if (searchTerm && searchTerm.length > 0) {
             this.loading = true;
 
-            const result = await this.retrievalChain.invoke({
-                input: searchTerm,
-            });
-            console.log(result);
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+            }
 
-            this.loading = false;
-            this.answer = result.answer;
+            this.debounceTimer = setTimeout(async () => {
+                const result = await this.retrievalChain.invoke({
+                    input: searchTerm,
+                });
+                console.log(result);
 
-            const fullContext = result.context[0].pageContent;
-            await this.findInSavedConvos(fullContext);
+                this.loading = false;
+                this.answer = result.answer;
 
-            document.addEventListener('click', (e) => {
-                if (!this.shadowRoot?.getElementById('dropdown')?.contains(e.target as Node)) {
-                    this.answer = "";
+                const fullContext = result.context[0].pageContent;
+                await this.findInSavedConvos(fullContext);
+
+                const searchInput: any = this.shadowRoot?.querySelector('fluent-search');
+                if (searchInput) {
+                    searchInput.value = "";
                 }
-            });
+
+                document.addEventListener('click', (e) => {
+                    if (!this.shadowRoot?.getElementById('dropdown')?.contains(e.target as Node)) {
+                        this.answer = "";
+                    }
+                });
+            }, 300);
         }
     }
 
@@ -225,12 +281,25 @@ export class AppSearch extends LitElement {
         this.dispatchEvent(event);
     }
 
+    close() {
+        this.answer = "";
+        this.foundConvo = null;
+
+        const searchInput: any = this.shadowRoot?.querySelector('fluent-search');
+        if (searchInput) {
+            searchInput.value = "";
+        }
+    }
+
     render() {
         return html`
-         <fluent-search @change="${this.handleSearch}"></fluent-search>
+         <fluent-search @input="${this.debouncedSearch}"></fluent-search>
 
          ${(this.answer && this.answer.length > 0) || this.loading === true ? html`
               <div id="dropdown">
+                <div id="actions-bar">
+                    <fluent-button id="close-button" @click="${() => this.close()}">Close</fluent-button>
+                </div>
                 ${this.answer && this.answer.length > 0 ? html`<span>${this.answer}</span>` : null}
 
                 ${this.loading === true ? html`<div id="loading-block">
