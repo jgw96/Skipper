@@ -3,6 +3,7 @@
 ![Header Graphic](/public/assets/hero-graphic.png)
 
 [Launch the App](https://www.skipperai.app/)
+<br />
 [Install from the Microsoft Store](https://apps.microsoft.com/store/detail/9PLHTFMZ98Q5?cid=DevShareMCLPCS)
 
 ## Table of Contents
