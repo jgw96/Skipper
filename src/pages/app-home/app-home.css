@@ -12,6 +12,40 @@ fluent-search {
     --accent-stroke-control-hover: #8769dc;
 }
 
+fluent-progress-ring {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+}
+
+
+#loading-message {
+    align-items: center;
+    display: flex;
+    /* align-self: center; */
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    width: 8em;
+    /* background: #ffffff1c; */
+    background: #ffffff0f;
+    padding: 12px;
+    border-radius: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    animation-name: quickup;
+    animation-duration: 0.3s;
+    animation-timing-function: ease;
+}
+
+#loading-message fluent-progress-ring {
+    height: 16px;
+    width: 16px;
+}
+
 #ai-source {
     color: lightgray;
     font-size: 12px;
@@ -688,6 +722,10 @@ li.assistant {
     li.assistant {
         --theme-color: white;
         background: var(--theme-color);
+    }
+
+    #loading-message {
+        background: white;
     }
 
     #ai-source {

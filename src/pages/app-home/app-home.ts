@@ -56,6 +56,8 @@ export class AppHome extends LitElement {
   modelShipper: string = "";
   @state() authToken: string | null = null;
 
+  @state() showMessageLoader: boolean = false;
+
   phiWorker: Worker | undefined;
 
   quickActions = [
@@ -526,6 +528,8 @@ export class AppHome extends LitElement {
             // }
           ];
 
+          this.showMessageLoader = true;
+
           const { makeAIRequest } = await import('../../services/ai');
           const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
@@ -542,7 +546,9 @@ export class AppHome extends LitElement {
                 role: "assistant",
                 content: ""
               }
-            ]
+            ];
+
+            this.showMessageLoader = false;
 
             for await (const chunk of data.data) {
               console.log(chunk);
@@ -553,6 +559,8 @@ export class AppHome extends LitElement {
             }
           }
           else {
+            this.showMessageLoader = false;
+
             message = data.data.choices[0].message.content;
             this.previousMessages = [
               ...this.previousMessages,
@@ -887,6 +895,7 @@ export class AppHome extends LitElement {
               </div>
             </fluent-card>`
     }
+
     )}
           </ul>
           ` : html`
@@ -920,6 +929,7 @@ export class AppHome extends LitElement {
       }
       )}
       </ul>
+
     </div>
 
 <div id="toolbar">
@@ -1008,6 +1018,9 @@ export class AppHome extends LitElement {
             </div>
           </li>`
         })
+        }
+
+                  ${this.showMessageLoader === true ? html`<div id="loading-message">Generating... <fluent-progress-ring size="small"></fluent-progress-ring></div>` : null
         }
         </ul>
 
