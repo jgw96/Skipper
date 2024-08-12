@@ -156,6 +156,9 @@
       "url": "/?title=%s"
     }
   ],
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  },
   "edge_side_panel": {
     "preferred_width": 380
   },
