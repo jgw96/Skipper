@@ -1001,6 +1001,31 @@
     }
   </style>
 
+  <style>
+    #update-message {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: #8769dc;
+      border-radius: 6px;
+      padding: 8px;
+      animation: quickUp 0.3s ease-out;
+    }
+
+    @keyframes quickUp {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+
   <!-- <link rel="stylesheet" media="(prefers-color-scheme:dark)"
     href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.14.0/dist/themes/dark.css"
     onload="window.matchMedia('(prefers-color-scheme: dark)').matches ? document.documentElement.classList.add('sl-theme-dark') : null"> -->
@@ -1035,7 +1060,25 @@
 
   <script>
     window.onload = async () => {
-      navigator.serviceWorker.register('/sw.js');
+      const reg = navigator.serviceWorker.register('/sw.js');
+
+      // handle updates to the service worker
+      reg.then((registration) => {
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', async () => {
+            if (newWorker.state === 'activated') {
+              // A new service worker is available
+              const el = document.createElement('div');
+              el.id = 'update-message';
+              el.innerText = 'A new version of this app is available. Click to update.';
+              el.addEventListener('click', () => window.location.reload());
+
+              document.body.appendChild(el);
+            }
+          });
+        });
+      });
 
       if (location.search.includes('share-target')) {
         const keys = await caches.keys();

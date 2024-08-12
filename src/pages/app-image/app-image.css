@@ -15,6 +15,8 @@ fluent-progress-ring {
     --accent-stroke-control-hover: #8769dc;
 }
 
+
+
 main {
     margin-top: 30px;
 }
@@ -156,6 +158,11 @@ fluent-text-area::part(root) {
     animation: quickDown 0.5s ease;
 }
 
+#generating-spinner fluent-progress-ring {
+    width: 16px;
+    height: 16px;
+}
+
 #style-buttons {
     display: flex;
     gap: 4px;
@@ -178,6 +185,10 @@ fluent-text-area::part(root) {
         color: white;
         backdrop-filter: blur(40px);
         -webkit-backdrop-filter: blur(40px);
+    }
+
+    fluent-button img {
+        filter: invert(1);
     }
 }
 

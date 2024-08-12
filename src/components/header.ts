@@ -246,7 +246,7 @@ export class AppHeader extends LitElement {
 
           `
 
-           : null}
+        : null}
         </div>
 
         <div id="header-actions">
@@ -254,13 +254,18 @@ export class AppHeader extends LitElement {
 
           <!-- add new notes button -->
 
-          ${
-            !this.enableBack ? html`
+          ${!this.enableBack ? html`
+              <fluent-anchor href="/photo">
+                <img src="/assets/image-outline.svg">
+              </fluent-anchor>
+              ` : null
+      }
+          ${!this.enableBack ? html`
               <fluent-anchor href="/voice">
                 <img src="/assets/headset-outline.svg">
               </fluent-anchor>
               ` : null
-          }
+      }
           <fluent-button @click="${this.openSettings}">
             <img src="/assets/settings-outline.svg">
           </fluent-button>
