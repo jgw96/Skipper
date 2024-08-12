@@ -41,6 +41,22 @@ export function setUpDragDrop(dropElement: HTMLElement) {
                 }
             }));
         }
+        else if ((files.length > 0 && files[0].type.includes("text"))) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target?.result;
+                // const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+                // input.value = text;
+                window.dispatchEvent(new CustomEvent('text-dropped', {
+                    detail: {
+                        data: text
+                    }
+                }));
+            }
+
+            reader.readAsText(files[0]);
+
+        }
     });
 
 }
