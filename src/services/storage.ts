@@ -2,7 +2,7 @@
 
 import { FileWithHandle } from "browser-fs-access";
 import { get, set } from "idb-keyval";
-import { currentUser } from "./auth/auth";
+import { currentUser } from "./auth/firebase-auth";
 import { getConvosFromCloud } from "./cloud-storage";
 
 const root = await navigator.storage.getDirectory();

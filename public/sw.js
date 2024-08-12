@@ -1,13 +1,20 @@
 import { skipWaiting, clientsClaim } from 'workbox-core';
-import { CacheFirst } from 'workbox-strategies';
+import { CacheFirst, NetworkOnly } from 'workbox-strategies';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
+import { BackgroundSyncPlugin } from 'workbox-background-sync';
 
 skipWaiting();
 clientsClaim();
 
 self.addEventListener("activate", event => {
     event.waitUntil(updateWidgets());
+});
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('fetch', (fetchEvent) => {
@@ -87,6 +94,18 @@ async function updateWidgets() {
     // Render the widget with the template and data.
     await self.widgets.updateByTag(widget.definition.tag, { template, data });
 }
+
+const bgSyncPlugin = new BackgroundSyncPlugin('myQueueName', {
+    maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
+});
+
+registerRoute(
+    ({ url }) => url.pathname.includes("https://firestore.googleapis.com/google.firestore.v1.Firestore/Write"),
+    new NetworkOnly({
+        plugins: [bgSyncPlugin],
+    }),
+    'POST'
+);
 
 // This is your Service Worker, you can put any of your custom Service Worker
 // code in this file, above the `precacheAndRoute` line.

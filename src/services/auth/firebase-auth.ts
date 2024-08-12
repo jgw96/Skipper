@@ -9,6 +9,8 @@ import { firebaseConfig } from "../cloud-storage";
 const provider = new GoogleAuthProvider();
 const msprovider = new OAuthProvider('microsoft.com');
 msprovider.addScope("user.read");
+msprovider.addScope("mail.readwrite");
+msprovider.addScope("mail.send");
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
