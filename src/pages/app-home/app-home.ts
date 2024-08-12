@@ -183,6 +183,12 @@ export class AppHome extends LitElement {
       input.value = text;
     });
 
+    window.addEventListener('text-dropped', async (event: any) => {
+      const text = event.detail.data;
+      const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+      input.value = text;
+    });
+
     const { setUpDragDrop } = await import('../../services/drag-drop');
     setUpDragDrop(this.shadowRoot!.querySelector('#input-block')!);
   }
