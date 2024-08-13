@@ -4,12 +4,12 @@ import { auth } from "./auth/firebase-auth";
 // import { currentUser } from "./auth/firebase-auth";
 
 export const firebaseConfig = {
-    apiKey: "AIzaSyDj1Q61aEMhjcsEDU_R_G4ssygfiyZKM1U",
-    authDomain: "skipper-ef960.firebaseapp.com",
-    projectId: "skipper-ef960",
-    storageBucket: "skipper-ef960.appspot.com",
-    messagingSenderId: "820903332879",
-    appId: "1:820903332879:web:d494e07d11ca23163ca77a"
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
 };
 
 const app = initializeApp(firebaseConfig);
