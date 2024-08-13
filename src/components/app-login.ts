@@ -57,6 +57,7 @@ export class AppLogin extends LitElement {
 
             sl-dropdown {
               animation: fadeIn 0.8s;
+              app-region: no-drag;
             }
 
             #photo-block {
@@ -96,23 +97,20 @@ export class AppLogin extends LitElement {
     ];
 
     async firstUpdated() {
-        const { currentUser } = await import('../services/auth/firebase-auth');
-        this.currentUser = currentUser;
 
-        // fire custom event
-        this.dispatchEvent(new CustomEvent('auth-changed', {
-            detail: {
-                currentUser
+
+        window.addEventListener('auth-changed', async (e: any) => {
+            console.log("auth changed", e.detail.currentUser);
+            this.currentUser = e.detail.currentUser;
+
+            console.log("currentUser", this.currentUser);
+
+            const token = localStorage.getItem('accessToken');
+            console.log('token for photo', token);
+            if (token) {
+                await this.setPhoto(token);
             }
-        }));
-
-        this.requestUpdate();
-
-        const token = localStorage.getItem('accessToken');
-        console.log('token for photo', token);
-        if (token) {
-            await this.setPhoto(token);
-        }
+        });
     }
 
     private async setPhoto(token: string) {
