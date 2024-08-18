@@ -116,8 +116,18 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         if (forceLocal || deviceCheckFlag) {
             if (localLLMInit === false) {
                 localLLMInit = true;
+
+                window.addEventListener("init-progress", (e: any) => {
+                    console.log("init progress", e.detail);
+
+                    // emit custom event
+                    const event = new CustomEvent("model-loading", { detail: e.detail });
+                    window.dispatchEvent(event);
+                });
+
                 const { init } = await import("../services/local-llm/local-llm");
                 await init();
+                window.dispatchEvent(new CustomEvent("model-loaded"));
             }
 
             const { makeLocalAIRequest } = await import("../services/local-llm/local-llm");

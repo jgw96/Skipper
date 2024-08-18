@@ -6,9 +6,13 @@ export async function init(): Promise<MLCEngineInterface> {
     return new Promise(async (resolve) => {
         const initProgressCallback = (report: InitProgressReport) => {
             console.log("init progress", report);
+
+            // emit custom event
+            const event = new CustomEvent("init-progress", { detail: report });
+            window.dispatchEvent(event);
         };
 
-        const selectedModel = "Phi-3-mini-4k-instruct-q4f32_1-MLC";
+        const selectedModel = "gemma-2-2b-it-q4f16_1-MLC";
 
         const worker = new Worker(new URL("./local-llm-worker.ts", import.meta.url), { type: "module" });
         console.log("worker", worker);

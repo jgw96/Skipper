@@ -1,4 +1,4 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { LitElement, PropertyValues, html, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import cssModule from './app-image.css?inline';
@@ -16,6 +16,11 @@ export class AppImage extends LitElement {
     static styles = [
         unsafeCSS(cssModule)
     ];
+
+    protected firstUpdated(_changedProperties: PropertyValues): void {
+        super.firstUpdated(_changedProperties);
+        this.setupDraggable();
+    }
 
     async doGenerate() {
         const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
@@ -61,18 +66,85 @@ export class AppImage extends LitElement {
         this.doGenerate();
     }
 
+    setupDraggable() {
+        const dragItem = this.shadowRoot?.querySelector('#image-input-block');
+        const container = this.shadowRoot;
+
+        let active = false;
+        let currentX: number;
+        let currentY: number;
+        let initialX: number;
+        let initialY: number;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        container!.addEventListener("touchstart", dragStart, false);
+        container!.addEventListener("touchend", dragEnd, false);
+        container!.addEventListener("touchmove", drag, false);
+
+        container!.addEventListener("mousedown", dragStart, false);
+        container!.addEventListener("mouseup", dragEnd, false);
+        container!.addEventListener("mousemove", drag, false);
+
+        function dragStart(e: any) {
+            console.log("e.target", e.target, dragItem);
+            if (e.type === "touchstart") {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
+            } else {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+            }
+
+            // set active to true for dragItem and all children
+            if (dragItem?.contains(e.target)) {
+                active = true;
+            }
+        }
+
+        function dragEnd() {
+            initialX = currentX;
+            initialY = currentY;
+
+            active = false;
+        }
+
+        function drag(e: any) {
+            if (active) {
+
+                e.preventDefault();
+
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, dragItem!);
+            }
+        }
+
+        function setTranslate(xPos: number, yPos: number, el: any) {
+            el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        }
+    }
+
     render() {
         return html`
           <main>
 
-          ${
-            this.loading === true ? html`
+          ${this.loading === true ? html`
               <div id="generating-spinner">
                 <p>Generating Image...</p>
                 <fluent-progress-ring></fluent-progress-ring>
           </div>
             ` : null
-          }
+            }
 
           <div id="generated-buttons">
                   ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}

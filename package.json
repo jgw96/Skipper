@@ -37,7 +37,7 @@
     "onnxruntime-web": "^1.18.0",
     "speech-to-text-toolkit": "^0.0.7",
     "urlpattern-polyfill": "^10.0.0",
-    "web-ai-toolkit": "^0.1.6",
+    "web-ai-toolkit": "^0.1.7",
     "workbox-background-sync": "^6.5.4",
     "workbox-build": "^6.5.4",
     "workbox-core": "^6.5.2",

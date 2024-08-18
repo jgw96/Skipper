@@ -2,27 +2,37 @@
     "type": "AdaptiveCard",
     "body": [
         {
-            "type": "TextBlock",
-            "size": "ExtraLarge",
-            "weight": "Bolder",
-            "text": "Skipper",
+            "type": "ActionSet",
             "horizontalAlignment": "Center",
-            "spacing": "None",
-            "style": "heading"
-        }
-    ],
-    "actions": [
-        {
-            "type": "Action.OpenUrl",
-            "title": "Start Chatting",
-            "url": "${chatUrl}"
+            "actions": [
+                {
+                    "type": "Action.OpenUrl",
+                    "title": "Message Skipper",
+                    "url": "${chatUrl}",
+                    "iconUrl": "https://www.skipperai.app/assets/scan-outline.svg"
+                }
+            ]
         },
         {
-            "type": "Action.OpenUrl",
-            "title": "Start Voice Chat",
-            "url": "${voiceUrl}"
+            "type": "ActionSet",
+            "horizontalAlignment": "Center",
+            "actions": [
+                {
+                    "type": "Action.OpenUrl",
+                    "title": "Voice Chat",
+                    "url": "${voiceUrl}",
+                    "iconUrl": "https://www.skipperai.app/assets/headset-outline.svg"
+                },
+                {
+                    "type": "Action.OpenUrl",
+                    "title": "Create Images",
+                    "url": "${imageUrl}",
+                    "iconUrl": "https://www.skipperai.app/assets/image-outline.svg"
+                }
+            ]
         }
     ],
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.5"
+    "version": "1.5",
+    "verticalContentAlignment": "Center"
 }
