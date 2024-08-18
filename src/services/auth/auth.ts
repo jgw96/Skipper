@@ -140,7 +140,10 @@ export const getUserPhoto = (accessToken: string): Promise<Blob> => {
             .then(resp => {
                 //do something with response
                 resolve(resp.blob());
-            });
+            })
+            .catch((error) => {
+                console.error("Error fetching photo", error);
+            })
     })
 }
 

@@ -2,8 +2,8 @@
 
 import { FileWithHandle } from "browser-fs-access";
 import { get, set } from "idb-keyval";
-import { currentUser } from "./auth/auth";
 import { getConvosFromCloud } from "./cloud-storage";
+import { auth } from "./auth/firebase-auth";
 
 const root = await navigator.storage.getDirectory();
 
@@ -13,7 +13,8 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export async function saveConversation(name: string, convo: any[]): Promise<void> {
     return new Promise(async (resolve) => {
-        console.log("saving...", name, convo, currentUser);
+        const currentUser = auth.currentUser;
+
         if (isSafari) {
             await saveUsingIDB(name, convo);
 
@@ -151,7 +152,7 @@ export async function getConversations(): Promise<any> {
 
         let cloudConvosParsed: any[] = [];
         const cloudConvos = await getConvosFromCloud();
-        cloudConvos.forEach((convo: any) => {
+        (cloudConvos || []).forEach((convo: any) => {
             console.log("cloud convo", convo);
             convo.convo = JSON.parse(convo.convo);
             // cloudConvosParsed.push({

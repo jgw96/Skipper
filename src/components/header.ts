@@ -5,6 +5,7 @@ import './app-login';
 
 
 import { fluentAnchor, provideFluentDesignSystem } from '@fluentui/web-components';
+import { router } from '../router';
 
 provideFluentDesignSystem().register(fluentAnchor());
 
@@ -58,6 +59,12 @@ export class AppHeader extends LitElement {
 
         animation: quickSlideFromRight 0.3s;
       }
+
+      #home-icon {
+        app-region: no-drag;
+        cursor: pointer;
+      }
+
 
       fluent-button img, fluent-anchor img {
         height: 20px;
@@ -230,6 +237,10 @@ export class AppHeader extends LitElement {
     }));
   }
 
+  goHome() {
+    router.navigate('/');
+  }
+
   render() {
     return html`
       <header>
@@ -240,13 +251,13 @@ export class AppHeader extends LitElement {
           </fluent-anchor>` : null}
 
           ${!this.enableBack ? html`
-          <img src="/assets/icons/64-icon.png" alt="app icon">
+          <img @click="${this.goHome}" id="home-icon" src="/assets/icons/64-icon.png" alt="app icon">
 
           <h1>${this.title}</h1>
 
           `
 
-           : null}
+        : null}
         </div>
 
         <div id="header-actions">
@@ -254,13 +265,18 @@ export class AppHeader extends LitElement {
 
           <!-- add new notes button -->
 
-          ${
-            !this.enableBack ? html`
+          ${!this.enableBack ? html`
+              <fluent-anchor href="/photo">
+                <img src="/assets/image-outline.svg">
+              </fluent-anchor>
+              ` : null
+      }
+          ${!this.enableBack ? html`
               <fluent-anchor href="/voice">
                 <img src="/assets/headset-outline.svg">
               </fluent-anchor>
               ` : null
-          }
+      }
           <fluent-button @click="${this.openSettings}">
             <img src="/assets/settings-outline.svg">
           </fluent-button>

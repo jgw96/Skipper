@@ -1,6 +1,9 @@
 {
   "id": "/",
   "scope": "/",
+  "dir": "ltr",
+  "lang": "en-US",
+  "iarc_rating_id": "2aff502e-db22-468a-a81b-f1726ba2a035",
   "name": "Skipper",
   "display": "standalone",
   "start_url": "/",
@@ -156,6 +159,9 @@
       "url": "/?title=%s"
     }
   ],
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  },
   "edge_side_panel": {
     "preferred_width": 380
   },

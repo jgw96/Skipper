@@ -12,7 +12,7 @@ import {
     fluentSwitch
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
-import { currentUser } from "../services/auth/firebase-auth";
+import { auth } from "../services/auth/firebase-auth";
 
 provideFluentDesignSystem()
     .register(
@@ -176,20 +176,49 @@ export class AppSettings extends LitElement {
             this.highVoiceQuality = true;
         }
 
-        const user = currentUser;
-        this.authed = user !== null;
+        // const user = auth.currentUser;
+        // this.authed = user !== null;
+        let user = auth.currentUser;
+        if (!user) {
+            window.addEventListener('auth-changed', async (e: any) => {
+                console.log("auth changed", e.detail.currentUser);
+                user = e.detail.currentUser;
 
-        await this.updateComplete;
+                console.log("currentUser", user);
 
-        const cloudSync = localStorage.getItem('cloudSync') === 'true' ? true : false;
-        const cloudSyncInput = this.shadowRoot?.querySelector('#sync') as any;
-        if (cloudSync) {
-            cloudSyncInput.checked = cloudSync === true;
-            cloudSyncInput.setAttribute('checked', cloudSync === true);
+                this.authed = user !== null;
+
+                if (this.authed) {
+                    await this.updateComplete;
+
+                    const cloudSync = localStorage.getItem('cloudSync') === 'true' ? true : false;
+                    console.log("cloudSync", cloudSync);
+                    const cloudSyncInput = this.shadowRoot?.querySelector('#sync') as any;
+                    if (cloudSync) {
+                        cloudSyncInput.checked = cloudSync === true;
+                        cloudSyncInput.setAttribute('checked', cloudSync === true);
+                    }
+                    else {
+                        cloudSyncInput.checked = false;
+                        cloudSyncInput.setAttribute('checked', 'false');
+                    }
+                }
+            });
         }
         else {
-            cloudSyncInput.checked = false;
-            cloudSyncInput.setAttribute('checked', 'false');
+            await this.updateComplete;
+
+            const cloudSync = localStorage.getItem('cloudSync') === 'true' ? true : false;
+            console.log("cloudSync", cloudSync);
+            const cloudSyncInput = this.shadowRoot?.querySelector('#sync') as any;
+            if (cloudSync) {
+                cloudSyncInput.checked = cloudSync === true;
+                cloudSyncInput.setAttribute('checked', cloudSync === true);
+            }
+            else {
+                cloudSyncInput.checked = false;
+                cloudSyncInput.setAttribute('checked', 'false');
+            }
         }
     }
 
@@ -272,8 +301,7 @@ export class AppSettings extends LitElement {
                 <key-manager></key-manager>
             </div>
 
-            ${
-                this.authed ? html`
+            ${this.authed ? html`
                   <div class="setting">
                     <label for="sync">Sync Conversations to the Cloud</label>
                     <fluent-switch  @change="${this.chooseCloudSync}" id="sync" title="Sync Conversations to the Cloud">

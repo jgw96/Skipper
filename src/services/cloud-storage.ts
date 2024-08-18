@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "firebase/firestore";
-import { currentUser } from "./auth/auth";
+import { auth } from "./auth/firebase-auth";
+// import { currentUser } from "./auth/firebase-auth";
 
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: "",
     authDomain: "",
     projectId: "",
@@ -17,38 +18,89 @@ const db = getFirestore(app);
 
 export async function saveConvoToCloud(convo: any) {
     const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
-    if (currentUser && syncFlag) {
+    let currentUser = auth.currentUser;
+
+    if (!currentUser) {
+        window.addEventListener('auth-changed', async (e: any) => {
+            console.log("auth changed", e.detail.currentUser);
+            currentUser = e.detail.currentUser;
+
+            if (currentUser && syncFlag) {
+                convo.convo = JSON.stringify(convo.convo);
+                const docRef = await addDoc(collection(db, `users/${currentUser.email || currentUser.displayName}/convos/`), convo);
+                console.log("Document written with ID: ", docRef.id);
+            }
+        });
+    }
+    else if (currentUser && syncFlag) {
         convo.convo = JSON.stringify(convo.convo);
-        const docRef = await addDoc(collection(db, `users/${currentUser.userPrincipalName}/convos/`), convo);
+        const docRef = await addDoc(collection(db, `users/${currentUser.email || currentUser.displayName}/convos/`), convo);
         console.log("Document written with ID: ", docRef.id);
+    }
+    else {
+        return;
     }
 }
 
 export async function deleteConvoFromCloud(name: string, convo: any) {
     console.log(convo);
+    const currentUser = auth.currentUser;
     if (currentUser) {
-        await deleteDoc(doc(db, `users/${currentUser.userPrincipalName}/convos/saved/${name}`));
+        await deleteDoc(doc(db, `users/${currentUser.email || currentUser.displayName}/convos/saved/${name}`));
     }
 }
 
 export async function getConvosFromCloud() {
-    console.log("currentUser", currentUser);
-    const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
-    if (currentUser && syncFlag) {
-        let cloudConvos: any[] = [];
+    let currentUser = auth.currentUser;
 
-        const querySnapshot = await getDocs(collection(db, `users/${currentUser.userPrincipalName}/convos/`));
-        querySnapshot.forEach(async (doc) => {
-            console.log(`${doc.id} => ${doc.data().convo}`);
+    if (!currentUser) {
+        window.addEventListener('auth-changed', async (e: any) => {
+            console.log("auth changed", e.detail.currentUser);
+            currentUser = e.detail.currentUser;
 
-            // doc.data().convo = JSON.parse(doc.data().convo);
+            console.log("currentUser", currentUser);
+            const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
+            if (currentUser && syncFlag) {
+                let cloudConvos: any[] = [];
 
-            cloudConvos.push(doc.data());
+                const querySnapshot = await getDocs(collection(db, `users/${currentUser.email || currentUser.displayName}/convos/`));
+                querySnapshot.forEach(async (doc) => {
+                    console.log(`${doc.id} => ${doc.data().convo}`);
+
+                    // doc.data().convo = JSON.parse(doc.data().convo);
+
+                    cloudConvos.push(doc.data());
+                });
+
+                return cloudConvos;
+            }
+            else {
+                return [];
+            }
         });
-
-        return cloudConvos;
     }
     else {
-        return [];
+        console.log("currentUser", currentUser);
+        const syncFlag = localStorage.getItem("cloudSync") === "true" ? true : false;
+        if (currentUser && syncFlag) {
+            let cloudConvos: any[] = [];
+
+            const querySnapshot = await getDocs(collection(db, `users/${currentUser.email || currentUser.displayName}/convos/`));
+            querySnapshot.forEach(async (doc) => {
+                console.log(`${doc.id} => ${doc.data().convo}`);
+
+                // doc.data().convo = JSON.parse(doc.data().convo);
+
+                cloudConvos.push(doc.data());
+            });
+
+            return cloudConvos;
+        }
+        else {
+            return [];
+        }
     }
+
+    // Add a return statement here
+    return [];
 }

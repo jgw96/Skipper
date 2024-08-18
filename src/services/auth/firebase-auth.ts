@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 
-import { getAuth, getRedirectResult, onAuthStateChanged, setPersistence, browserSessionPersistence, signInWithRedirect, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, getRedirectResult, onAuthStateChanged, setPersistence, signInWithRedirect, GoogleAuthProvider, OAuthProvider, signInWithPopup, browserLocalPersistence } from "firebase/auth";
 import { firebaseConfig } from "../cloud-storage";
 
 // https://firebasestorage.googleapis.com/v0/b/memos-ai.appspot.com/o/notes%2F2614300090?alt=media&token=1244f5cd-2e44-4439-b2af-157f854a4ce3
@@ -9,11 +9,13 @@ import { firebaseConfig } from "../cloud-storage";
 const provider = new GoogleAuthProvider();
 const msprovider = new OAuthProvider('microsoft.com');
 msprovider.addScope("user.read");
+msprovider.addScope("mail.readwrite");
+msprovider.addScope("mail.send");
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 
-const auth = getAuth();
+export const auth = getAuth();
 
 export let currentUser: any;
 
@@ -23,7 +25,11 @@ onAuthStateChanged(auth, (user) => {
         currentUser = user;
         console.log("currentUser state changed", currentUser);
 
-
+        window.dispatchEvent(new CustomEvent('auth-changed', {
+            detail: {
+                currentUser
+            }
+        }));
     } else {
         currentUser = undefined;
         console.log("user", user);
@@ -70,9 +76,17 @@ getRedirectResult(auth)
 
 export async function loginWithMicrosoft() {
     try {
-        await setPersistence(auth, browserSessionPersistence);
+        await setPersistence(auth, browserLocalPersistence);
         const data = await signInWithPopup(auth, msprovider);
         console.log('data', data);
+
+        currentUser = data.user;
+
+        window.dispatchEvent(new CustomEvent('auth-changed', {
+            detail: {
+                currentUser
+            }
+        }));
 
         const credential = OAuthProvider.credentialFromResult(data);
         const accessToken = credential!.accessToken;
@@ -97,7 +111,7 @@ export async function loginWithMicrosoft() {
 
 export async function loginWithPopup() {
     try {
-        await setPersistence(auth, browserSessionPersistence);
+        await setPersistence(auth, browserLocalPersistence);
         const data = await signInWithPopup(auth, provider);
 
         const user = data.user;
@@ -121,7 +135,7 @@ export async function loginWithPopup() {
 
 export async function login() {
     try {
-        await setPersistence(auth, browserSessionPersistence);
+        await setPersistence(auth, browserLocalPersistence);
         const data = await signInWithRedirect(auth, provider);
         console.log('data', data);
     }

@@ -19,7 +19,7 @@
   <!-- These meta tags are Apple-specific, and set the web application to run in full-screen mode with a black status bar. Learn more at https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Skipper" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- This tag is used by the gpt-client CLI to identify template projects. Don't remove if you are using the CLI. -->
   <meta name="pwa-starter-template-identity" content="pwa-starter" />
@@ -1001,6 +1001,31 @@
     }
   </style>
 
+  <style>
+    #update-message {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: #8769dc;
+      border-radius: 6px;
+      padding: 8px;
+      animation: quickUp 0.3s ease-out;
+    }
+
+    @keyframes quickUp {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+
   <!-- <link rel="stylesheet" media="(prefers-color-scheme:dark)"
     href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.14.0/dist/themes/dark.css"
     onload="window.matchMedia('(prefers-color-scheme: dark)').matches ? document.documentElement.classList.add('sl-theme-dark') : null"> -->
@@ -1034,8 +1059,49 @@
   <script type="module" src="/src/app-index.ts"></script>
 
   <script>
+    function updateServiceWorker() {
+      const registration = navigator.serviceWorker.getRegistration();
+      if (registration) {
+        registration.then(reg => {
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            reg.waiting.addEventListener('statechange', e => {
+              if (e.target.state === 'activated') {
+                window.location.reload();
+              }
+            });
+          }
+        });
+      }
+    }
+
     window.onload = async () => {
-      navigator.serviceWorker.register('/sw.js');
+      navigator.serviceWorker.getRegistration().then(registration => {
+        if (registration && registration.active) {
+          console.log('Service worker is already active');
+        } else {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            registration.onupdatefound = () => {
+              const installingWorker = registration.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    const el = document.createElement('div');
+                    el.id = 'update-message';
+                    el.innerText = 'A new version of this app is available. Click to update.';
+                    el.addEventListener('click', () => updateServiceWorker());
+
+                    document.body.appendChild(el);
+                  }
+                }
+              };
+            };
+          }).catch(error => {
+            console.error('ServiceWorker registration failed: ', error);
+          });
+        }
+      });
 
       if (location.search.includes('share-target')) {
         const keys = await caches.keys();

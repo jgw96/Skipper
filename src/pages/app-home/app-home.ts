@@ -140,6 +140,16 @@ export class AppHome extends LitElement {
         baseLayerLuminance.setValueFor(fluentMenu[i], 0.1)
       }
     }
+
+    // handle custom model loading
+    window.addEventListener('model-loading', async () => {
+      this.modelLoading = true;
+    });
+
+    window.addEventListener('model-loaded', async () => {
+      this.modelLoading = false;
+      this.localModelLoaded = true;
+    })
   }
 
   public async handleModelChange(model: string): Promise<void> {
@@ -434,13 +444,13 @@ export class AppHome extends LitElement {
 
           this.handleScroll(list);
 
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "assistant",
-              content: ""
-            }
-          ];
+          // this.previousMessages = [
+          //   ...this.previousMessages,
+          //   {
+          //     role: "assistant",
+          //     content: ""
+          //   }
+          // ];
 
           // let completeMessage = "";
 
