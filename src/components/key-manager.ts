@@ -129,7 +129,6 @@ export class KeyManager extends LitElement {
             }
         }));
 
-        this.keyUpdated = true;
     }
 
     save() {
@@ -160,7 +159,7 @@ export class KeyManager extends LitElement {
                 </div>
             </div>
 
-            ${this.keyUpdated ? html`<fluent-button appearance="accent">Updated</fluent-button>` : html`<fluent-button appearance="accent" @click="${this.save}">Update</fluent-button>`}
+            <fluent-button appearance="accent" @click="${this.save}">Add Key</fluent-button>
           </div>
         `;
     }
