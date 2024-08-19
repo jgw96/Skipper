@@ -2,6 +2,12 @@
 
 ![Header Graphic](/public/assets/hero-graphic.png)
 
+Introducing Skipper, your versatile assistant app that's here to make your life easier, no matter what device you're using. Skipper supports both Dark and Light modes, so you can chat comfortably anytime. Whether you want a conversation with an on-device model for privacy or need to add more context with images, Skipper has you covered. You can even drag and drop images directly into the chat.
+
+Need help with something on your screen? Just share it with Skipper. It can also read responses back to you with natural, lifelike voices and offers speech-to-text for hands-free chatting.
+
+In addition to chatting, Skipper can generate images and help you with day-to-day tasks like checking the weather or staying updated with the latest news. It’s a handy, all-in-one app designed to assist you wherever you are.
+
 [Launch the App](https://www.skipperai.app/)
 <br />
 [Install from the Microsoft Store](https://apps.microsoft.com/store/detail/9PLHTFMZ98Q5?cid=DevShareMCLPCS)
