@@ -1059,12 +1059,6 @@ export class AppHome extends LitElement {
                 ` : null
         }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${this.quickActions.map((action: any) => {
-          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
-        })
-        }
-              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
             </ul>
           </div>
        `}
@@ -1097,6 +1091,33 @@ export class AppHome extends LitElement {
               <img src="/assets/volume-mute-outline.svg" alt="mic icon">
             </fluent-button>
           `}
+
+          <fluent-tooltip anchor="modes-button-anchor"><span>Choose a Mode, such as Math Teacher</span></fluent-tooltip>
+
+          <sl-dropdown hoist id="modes-button">
+              <fluent-button id="modes-button-anchor" class="copy-button" slot="trigger" caret>
+                <img src="/assets/build-outline.svg" alt="menu" />
+              </fluent-button>
+
+              <sl-menu>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat("I want you to act as a note-taking assistant for a lecture. Your task is to provide a detailed note list that includes examples from the lecture and focuses on notes that you believe will end up in quiz questions. Additionally, please make a separate list for notes that have numbers and data in them and another separated list for the examples that included in this lecture. The notes should be concise and easy to read.")}">
+                  <span class="prompt-title">Note Taking Assistant</span>
+                  <span class="prompt-desc">I want you to act as a note-taking assistant for a lecture. Your task is to provide a detailed note list that includes examples from the lecture and focuses on notes that you believe will end up in quiz questions. Additionally, please make a separate list for notes that have numbers and data in them and another separated list for the examples that included in this lecture. The notes should be concise and easy to read.</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as a math teacher. I will provide some mathematical equations or concepts, and it will be your job to explain them in easy-to-understand terms. This could include providing step-by-step instructions for solving a problem, demonstrating various techniques with visuals or suggesting online resources for further study. My first request is "I need help understanding how probability works."')}">
+                  <span class="prompt-title">Math Teacher</span>
+                  <span class="prompt-desc">I want you to act as a math teacher. I will provide some mathematical equations or concepts, and it will be your job to explain them in easy-to-understand terms. This could include providing step-by-step instructions for solving a problem, demonstrating various techniques with visuals or suggesting online resources for further study. My first request is "I need help understanding how probability works."</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as my personal chef. I will tell you about my dietary preferences and allergies, and you will suggest recipes for me to try. You should only reply with the recipes you recommend, and nothing else. Do not write explanations. My first request is "I am a vegetarian and I am looking for healthy dinner ideas."')}">
+                  <span class="prompt-title">Personal Chef</span>
+                  <span class="prompt-desc">I want you to act as my personal chef. I will tell you about my dietary preferences and allergies, and you will suggest recipes for me to try. You should only reply with the recipes you recommend, and nothing else. Do not write explanations. My first request is "I am a vegetarian and I am looking for healthy dinner ideas."</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. Start by asking me what the position is, and then start the interview.')}">
+                  <span class="prompt-title">Interviewer</span>
+                  <span class="prompt-desc">I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. Start by asking me what the position is, and then start the interview.</span>
+                </sl-menu-item>
+              </sl-menu>
+            </sl-dropdown>
 
         </div>
 

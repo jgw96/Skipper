@@ -21,6 +21,24 @@ fluent-progress-ring {
     --accent-stroke-control-hover: #8769dc;
 }
 
+.prompt-title {
+    font-weight: bold;
+}
+
+.prompt-desc {
+    max-width: 20em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#modes-button sl-menu-item::part(label) {
+    display: flex;
+    flex-direction: column;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 #loading-message {
     align-items: center;
@@ -706,7 +724,8 @@ li.assistant {
         border: none;
     }
 
-    fluent-card fluent-button::part(control), .open-image-button::part(control) {
+    fluent-card fluent-button::part(control),
+    .open-image-button::part(control) {
         background: rgba(255, 255, 255, 0.06);
         border: none;
     }
