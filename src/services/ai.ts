@@ -140,27 +140,41 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             };
         }
         else {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
-                method: 'POST',
-                headers: new Headers({
-                    "Content-Type": "application/json",
-                }),
-                body: JSON.stringify({
-                    image: currentBase64Data || base64data,
-                    previousMessages: previousMessages,
-                    key: GPTKey,
-                    lat: lat,
-                    long: long
-                })
-            });
+            // const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+            //     method: 'POST',
+            //     headers: new Headers({
+            //         "Content-Type": "application/json",
+            //     }),
+            //     body: JSON.stringify({
+            //         image: currentBase64Data || base64data,
+            //         previousMessages: previousMessages,
+            //         key: GPTKey,
+            //         lat: lat,
+            //         long: long
+            //     })
+            // });
 
-            const data = await response.json();
-            console.log(data.choices[0]);
+            // const data = await response.json();
+            // console.log(data.choices[0]);
 
+            const stringifiedPreviousMessages = JSON.stringify(previousMessages);
+
+            const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
+            console.log("evtSource", evtSource);
+
+            // evtSource.onmessage = (e) => {
+            //     console.log("e", e.data);
+            // };
             return {
-                data,
+                data: evtSource,
                 source: "cloud"
-            };
+            }
+
+
+            // return {
+            //     data,
+            //     source: "cloud"
+            // };
         }
     }
 }

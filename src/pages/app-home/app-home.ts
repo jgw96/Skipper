@@ -544,6 +544,8 @@ export class AppHome extends LitElement {
             // }
           ];
 
+          console.log("function called");
+
           this.showMessageLoader = true;
 
           const { makeAIRequest } = await import('../../services/ai');
@@ -573,18 +575,108 @@ export class AppHome extends LitElement {
 
               this.requestUpdate();
             }
+
+            this.doSayIt(message);
+
+            this.handleScroll(list);
+
+            if (this.previousMessages.length > 1) {
+              console.log("look here", this.convoName, this.previousMessages);
+
+              const goodMessages = this.previousMessages;
+
+              console.log("goodMessages", goodMessages)
+
+              const { saveConversation } = await import('../../services/storage');
+              await saveConversation(this.convoName as string, goodMessages);
+
+              const { getConversations } = await import('../../services/storage');
+              this.savedConvos = await getConversations();
+
+              console.log("this.savedConvos", this.savedConvos)
+
+              this.loading = false;
+
+              this.handleScroll(list);
+
+              resolve();
+            }
+            else {
+              this.loading = false;
+
+              this.handleScroll(list);
+
+              resolve();
+            }
           }
           else {
             this.showMessageLoader = false;
 
-            message = data.data.choices[0].message.content;
             this.previousMessages = [
               ...this.previousMessages,
               {
                 role: "assistant",
-                content: await marked.parse(data.data.choices[0].message.content)
+                content: ""
               }
-            ]
+            ];
+
+            data.data.onmessage = async (event: any) => {
+              console.log("event.data", event.data);
+              if (event.data.includes("Chat Completed")) {
+                data.data.close();
+                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                // this.requestUpdate();
+
+                this.doSayIt(message);
+
+                this.handleScroll(list);
+
+                if (this.previousMessages.length > 1) {
+                  console.log("look here", this.convoName, this.previousMessages);
+
+                  const goodMessages = this.previousMessages;
+
+                  console.log("goodMessages", goodMessages)
+
+                  const { saveConversation } = await import('../../services/storage');
+                  await saveConversation(this.convoName as string, goodMessages);
+
+                  const { getConversations } = await import('../../services/storage');
+                  this.savedConvos = await getConversations();
+
+                  console.log("this.savedConvos", this.savedConvos)
+
+                  this.loading = false;
+
+                  this.handleScroll(list);
+
+                  resolve();
+                }
+                else {
+                  this.loading = false;
+
+                  this.handleScroll(list);
+
+                  resolve();
+                }
+              }
+              else {
+                console.log("event", message, marked);
+                message += marked.parseInline(event.data) || "";
+                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+
+                this.requestUpdate();
+              }
+            };
+
+            // message = data.data.choices[0].message.content;
+            // this.previousMessages = [
+            //   ...this.previousMessages,
+            //   {
+            //     role: "assistant",
+            //     content: await marked.parse(data.data.choices[0].message.content)
+            //   }
+            // ]
           }
 
           // const { marked } = await import('marked');
@@ -596,38 +688,6 @@ export class AppHome extends LitElement {
           //     content: await marked.parse(data.choices[0].message.content)
           //   }
           // ]
-
-          this.doSayIt(message);
-
-          this.handleScroll(list);
-
-          if (this.previousMessages.length > 1) {
-            console.log("look here", this.convoName, this.previousMessages);
-
-            const goodMessages = this.previousMessages;
-
-            console.log("goodMessages", goodMessages)
-
-            const { saveConversation } = await import('../../services/storage');
-            await saveConversation(this.convoName as string, goodMessages);
-
-            const { getConversations } = await import('../../services/storage');
-            this.savedConvos = await getConversations();
-
-            console.log("this.savedConvos", this.savedConvos)
-
-            this.loading = false;
-
-            this.handleScroll(list);
-
-            resolve();
-          }
-
-          this.loading = false;
-
-          this.handleScroll(list);
-
-          resolve();
 
         }
 
