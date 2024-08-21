@@ -624,6 +624,7 @@ export class AppHome extends LitElement {
               console.log("event.data", event.data);
               if (event.data.includes("Chat Completed")) {
                 data.data.close();
+                // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
                 this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
                 // this.requestUpdate();
 
@@ -662,7 +663,7 @@ export class AppHome extends LitElement {
               }
               else {
                 console.log("event", message, marked);
-                message += marked.parseInline(event.data) || "";
+                message += event.data || "";
                 this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
 
                 this.requestUpdate();
@@ -774,11 +775,16 @@ export class AppHome extends LitElement {
     await drawer?.show();
   }
 
-  async copyButton(content: string) {
+  async copyButton(content: string, target: HTMLImageElement) {
     const regex = /(<([^>]+)>)/ig;
     const result = content.replace(regex, "");
 
     await navigator.clipboard.writeText(result);
+
+    if (target.parentElement) {
+      target.parentElement.classList.add("copied");
+      (target.parentElement as HTMLButtonElement).disabled = true;
+    }
   }
 
   async shareButton(content: string) {
@@ -1068,7 +1074,8 @@ export class AppHome extends LitElement {
         </div>
         <ul id="convo-list">
           ${this.previousMessages.map((message) => {
-          return html`<li class="${message.role}">
+          if (message.role !== "system") {
+            return html`<li class="${message.role}">
             <div class="item-toolbar">
                 ${message.role === "assistant" ? html`<img class="robot-icon" src="/assets/icons/64-icon.png" />` : html`<div></div>`}
                 <div>
@@ -1076,7 +1083,7 @@ export class AppHome extends LitElement {
                   <img src="/assets/share-social-outline.svg" alt="share" />
                 </sl-button>
 
-                <sl-button @click="${() => this.copyButton(message.content)}" circle size="small" class="copy-button">
+                <sl-button @click="${($event: any) => this.copyButton(message.content, $event.target)}" circle size="small" class="copy-button">
                   <img src="/assets/copy-outline.svg" alt="copy" />
                 </sl-button>
 
@@ -1093,6 +1100,10 @@ export class AppHome extends LitElement {
               ${message.content.includes("<img") ? html`<fluent-button class="open-image-button" @click="${() => this.openInViewer(message.content)}" size="small">Open Image</fluent-button>` : null}
             </div>
           </li>`
+          }
+          else {
+            return null
+          }
         })
         }
 

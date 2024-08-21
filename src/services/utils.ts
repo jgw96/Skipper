@@ -91,3 +91,11 @@ export async function deviceCheck() {
         resolve(canHandleLocal);
     })
 }
+
+export async function checkIfOnline(): Promise<boolean> {
+    return new Promise((resolve) => {
+        const online = navigator.onLine;
+        resolve(online);
+    })
+}
+

@@ -25,6 +25,10 @@ fluent-progress-ring {
     font-weight: bold;
 }
 
+.copy-button.copied img {
+    filter: grayscale();
+}
+
 .prompt-desc {
     max-width: 20em;
     white-space: nowrap;

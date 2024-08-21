@@ -9,6 +9,8 @@ export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "ge
 
 let GPTKey = await getOpenAIKey();
 
+const systemPrompt = "You're Skipper, a helpful, creative, and accurate AI assistant. Your primary goal is to assist users with their queries and tasks in a concise and efficient manner. You should always strive to provide accurate information, thoughtful suggestions, and innovative solutions. Your responses should be clear and to the point, ensuring the user gets the information they need without unnecessary elaboration. Remember, your personality should be friendly and supportive, making every interaction pleasant and productive. Finally, remember that your answers should always be in well formatted markdown.";
+
 // @ts-ignore
 window.addEventListener("gpt-key-changed", (e: CustomEvent) => {
     GPTKey = e.detail.key;
@@ -77,6 +79,16 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     prompt = prompt + ". " + extraPrompt;
     // https://gpt-server-two-qsqckaz7va-uc.a.run.app/
 
+    // check for system prompt in previous messages
+    // if not there, add it using systemPrompt
+    const systemPromptIndex = previousMessages.findIndex((message) => message.role === "system");
+    if (systemPromptIndex === -1) {
+        previousMessages.unshift({
+            role: "system",
+            content: systemPrompt
+        });
+    }
+
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
     const lat = localStorage.getItem("lat");
@@ -113,7 +125,10 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         const { deviceCheck } = await import("../services/utils");
         const deviceCheckFlag = await deviceCheck();
 
-        if (forceLocal || deviceCheckFlag) {
+        const { checkIfOnline } = await import('../services/utils');
+        const isOnline = await checkIfOnline();
+
+        if (forceLocal || (isOnline === false) || deviceCheckFlag) {
             if (localLLMInit === false) {
                 localLLMInit = true;
 

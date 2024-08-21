@@ -1,4 +1,4 @@
-import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest } from "@mlc-ai/web-llm";
+import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest, prebuiltAppConfig } from "@mlc-ai/web-llm";
 
 let engine: MLCEngineInterface;
 
@@ -12,7 +12,10 @@ export async function init(): Promise<MLCEngineInterface> {
             window.dispatchEvent(event);
         };
 
-        const selectedModel = "gemma-2-2b-it-q4f16_1-MLC";
+        const appConfig = prebuiltAppConfig;
+        appConfig.useIndexedDBCache = true;
+
+        const selectedModel = "gemma-2-2b-it-q4f32_1-MLC";
 
         const worker = new Worker(new URL("./local-llm-worker.ts", import.meta.url), { type: "module" });
         console.log("worker", worker);
