@@ -726,7 +726,9 @@ export class AppHome extends LitElement {
     this.previousMessages = [];
 
     if (typeof convo.convo === "string") {
-      convo.convo = JSON.parse(convo.convo);
+      const { decryptConvo } = await import('../../services/storage');
+      const decrypted = await decryptConvo(convo);
+      convo.convo = decrypted.convo;
     }
 
     if (convo.convo[0].image && convo.convo[0].image.length > 0) {

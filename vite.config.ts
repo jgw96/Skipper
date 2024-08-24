@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     sourcemap: false,
     assetsDir: "code",
-    minify: "terser",
+    minify: "esbuild",
     cssMinify: true,
     target: ["esnext"],
     lib: false,
