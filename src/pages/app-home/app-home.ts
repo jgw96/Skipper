@@ -144,12 +144,18 @@ export class AppHome extends LitElement {
     // handle custom model loading
     window.addEventListener('model-loading', async () => {
       this.modelLoading = true;
+      this.aiSource = "local";
     });
 
     window.addEventListener('model-loaded', async () => {
       this.modelLoading = false;
       this.localModelLoaded = true;
     })
+
+    if (this.modelShipper === "phi3") {
+      const { loadAndSetupLocal} = await import('../../services/ai');
+      loadAndSetupLocal();
+    }
   }
 
   public async handleModelChange(model: string): Promise<void> {

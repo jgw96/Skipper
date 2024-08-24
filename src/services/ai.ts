@@ -195,6 +195,7 @@ export async function loadAndSetupLocal() {
 
     const { init } = await import("../services/local-llm/local-llm");
     await init();
+    localLLMInit = true;
     window.dispatchEvent(new CustomEvent("model-loaded"));
 }
 
