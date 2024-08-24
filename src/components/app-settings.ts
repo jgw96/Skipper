@@ -4,6 +4,7 @@ import { customElement, state } from "lit/decorators.js";
 
 import "./key-manager";
 import "./app-actions";
+import "./app-account";
 
 import {
     provideFluentDesignSystem,
@@ -35,6 +36,8 @@ export class AppSettings extends LitElement {
             display: flex;
             flex-direction: column;
             gap: 12px;
+
+            overflow: hidden;
         }
 
         .setting {
@@ -176,6 +179,17 @@ export class AppSettings extends LitElement {
             this.highVoiceQuality = true;
         }
 
+        const offlineready = localStorage.getItem('offlineready');
+        const offlinereadyInput = this.shadowRoot?.querySelector('#offlineReady') as any;
+        if (offlineready) {
+            offlinereadyInput.checked = offlineready === 'true';
+            offlinereadyInput.setAttribute('checked', offlineready === 'true');
+        }
+        else {
+            offlinereadyInput.checked = false;
+            offlinereadyInput.setAttribute('checked', 'false');
+        }
+
         // const user = auth.currentUser;
         // this.authed = user !== null;
         let user = auth.currentUser;
@@ -285,17 +299,23 @@ export class AppSettings extends LitElement {
         await exportAllConversations();
     }
 
+    async prepareForOffline(event: any) {
+        if (event?.target.checked) {
+            localStorage.setItem('offlineready', 'true');
+            const { loadAndSetupLocal } = await import('../services/ai');
+            await loadAndSetupLocal();
+        }
+        else {
+            localStorage.removeItem('offlineready');
+        }
+    }
+
     render() {
         return html`
-            <div class="setting">
-                <h3>About Skipper</h3>
 
-                <p>
-                    Skipper is a powerful multi-modal AI assistant.
-                    Skipper can work with you how you want. Want to interact with your voice? You can.
-                    Need Skipper to see something? Give it an image! Simply want text chat? That works too.
-                </p>
-            </div>
+        <div class="setting">
+            <app-account></app-account>
+    </div>
 
             <div class="setting">
                 <key-manager></key-manager>
@@ -346,6 +366,23 @@ export class AppSettings extends LitElement {
             </div> -->
 
             <div class="setting">
+                <label for="offlineReady">Load model for offline</label>
+                <fluent-switch .checked="${this.highVoiceQuality}" @change="${this.prepareForOffline}" id="offlineReady" title="Load model for offline">
+                    <span slot="checked-message">Ready</span>
+                    <span slot="unchecked-message">Not Ready</span>
+                </fluent-switch>
+
+                <p>
+                    If you expect to use Skipper offline in the future, you can load and cache the model while you are online.
+                    Once the model is cached, the local model will be automatically used if Skipper detects it is offline. Note, this does not
+                    automatically start using the local model, it just prepares it for offline use.
+
+                    To only use the local model, turn on Local Mode.
+                </p>
+            </div>
+
+
+            <div class="setting">
                 <label for="voiceQuality">Voice Quality</label>
                 <fluent-switch .checked="${this.highVoiceQuality}" @change="${this.chooseVoiceQuality}" id="voiceQuality" title="Voice Quality">
                     <span slot="checked-message">High</span>
@@ -365,6 +402,16 @@ export class AppSettings extends LitElement {
             <div class="setting">
                 <label for="export">Export Data</label>
                 <fluent-button id="export" @click="${this.exportData}">Export</fluent-button>
+            </div>
+
+            <div class="setting">
+                <h3>About Skipper</h3>
+
+                <p>
+                    Skipper is a powerful multi-modal AI assistant.
+                    Skipper can work with you how you want. Want to interact with your voice? You can.
+                    Need Skipper to see something? Give it an image! Simply want text chat? That works too.
+                </p>
             </div>
     `;
     }

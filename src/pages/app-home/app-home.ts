@@ -1086,10 +1086,6 @@ export class AppHome extends LitElement {
                 <sl-button @click="${($event: any) => this.copyButton(message.content, $event.target)}" circle size="small" class="copy-button">
                   <img src="/assets/copy-outline.svg" alt="copy" />
                 </sl-button>
-
-                <sl-button @click="${() => this.speakIt(message.content)}" circle size="small" class="copy-button">
-                  <img src="/assets/volume-high-outline.svg" alt="copy" />
-                </sl-button>
                 </div>
             </div>
 
