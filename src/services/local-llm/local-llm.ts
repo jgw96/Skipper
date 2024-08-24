@@ -1,9 +1,9 @@
-import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest } from "@mlc-ai/web-llm";
+import { MLCEngineInterface, CreateWebWorkerMLCEngine, InitProgressReport, ChatCompletionRequest, prebuiltAppConfig, hasModelInCache } from "@mlc-ai/web-llm";
 
 let engine: MLCEngineInterface;
 
 export async function init(): Promise<MLCEngineInterface> {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
         const initProgressCallback = (report: InitProgressReport) => {
             console.log("init progress", report);
 
@@ -12,11 +12,25 @@ export async function init(): Promise<MLCEngineInterface> {
             window.dispatchEvent(event);
         };
 
-        const selectedModel = "gemma-2-2b-it-q4f16_1-MLC";
+        const appConfig = prebuiltAppConfig;
+
+        const FP16 = await checkFP16Support();
+
+        const selectedModel = FP16 ? "SmolLM-1.7B-Instruct-q4f16_1-MLC" : "SmolLM-1.7B-Instruct-q4f32_1-MLC";
+
+        let modelCached = await hasModelInCache(selectedModel, appConfig);
+        console.log("hasModelInCache: ", modelCached);
+
+        // check if online
+        const networkFlag = navigator.onLine;
+
+        if (!modelCached && !networkFlag) {
+            console.error("Model not cached and no network connection");
+            reject("Model not cached and no network connection");
+        }
 
         const worker = new Worker(new URL("./local-llm-worker.ts", import.meta.url), { type: "module" });
         console.log("worker", worker);
-
 
         engine =
             await CreateWebWorkerMLCEngine(
@@ -36,9 +50,6 @@ export async function makeLocalAIRequest(previousMessages: any[]): Promise<any> 
             const request: ChatCompletionRequest = {
                 stream: true,
                 messages: previousMessages,
-                n: 1,
-                temperature: 1.5,
-                max_tokens: 256,
             };
 
             // const reply0 = await engine.chat.completions.create(request);
@@ -53,3 +64,25 @@ export async function makeLocalAIRequest(previousMessages: any[]): Promise<any> 
         }
     });
 }
+
+async function checkFP16Support() {
+    //@ts-ignore
+    if (!navigator.gpu) {
+      throw Error("WebGPU not supported.");
+    }
+
+    //@ts-ignore
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      throw Error("Couldn't request WebGPU adapter.");
+    }
+
+    const adapterFeatures = adapter.features;
+    if (adapterFeatures.has("shader-f16")) {
+      console.log("FP16 support is available.");
+      return true;
+    } else {
+      console.log("FP16 support is not available.");
+      return false;
+    }
+  }

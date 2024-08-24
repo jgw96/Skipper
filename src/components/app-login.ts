@@ -20,11 +20,6 @@ export class AppLogin extends LitElement {
             fluent-button {
                 animation: quickSlideFromLeft 0.3s;
                 app-region: no-drag;
-                height: 90%;
-            }
-
-            fluent-button::part(control) {
-                background: #ffffff0f;
             }
 
             fluent-button img {
@@ -33,21 +28,8 @@ export class AppLogin extends LitElement {
                 height: 24px;
             }
 
-            fluent-button {
-                font-size: 12px;
-            }
-
-            #block p {
-                background: #ffffff0f;
-                padding: 8px;
-                border-radius: 8px;
-                font-size: 12px;
-                width: max-content;
-            }
-
             img {
-                height: 20px;
-                margin-top: 8px;
+                height: 24px;
                 object-fit: cover;
                 border-radius: 50%;
                 cursor: pointer;
@@ -81,6 +63,26 @@ export class AppLogin extends LitElement {
                 animation-timing-function: ease-in-out;
                 transform-origin: top left;
             }
+
+               fluent-button, fluent-text-field, fluent-listbox, fluent-card, fluent-tooltip {
+                --accent-fill-rest: #8769dc;
+                --accent-stroke-control-rest: #8769dc;
+                --accent-fill-active: #8769dc;
+                --accent-stroke-control-active: #8769dc;
+                --accent-fill-hover: #8769dc;
+                --accent-stroke-control-hover: #8769dc;
+              }
+
+                #accountDropdownBlock {
+                    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 7em;
+    gap: 8px;
+    margin-right: 6em;
+
+                }
+
 
             @keyframes fadeIn {
                 from {
@@ -157,17 +159,20 @@ export class AppLogin extends LitElement {
           <div id="block">
             ${this.userPhoto ? html`<div id="photo-block">
                 <sl-dropdown hoist>
-                    <img slot="trigger" caret src="${this.userPhoto}" alt="User photo" />
+                    <div id="accountDropdownBlock" slot="trigger" caret>
+                      <img src="${this.userPhoto}" alt="User photo" />
+                      ${this.currentUser ? html`<p>${this.currentUser.displayName}</p>` : null}
+            </div>
                     <sl-menu>
-                        <fluent-menu-item class="copy-button new-window-button" @click="${this.doLogout}">
+                        <sl-menu-item class="copy-button new-window-button" @click="${this.doLogout}">
 
                         Sign Out
-                        </fluent-menu-item>
+                        </sl-menu-item>
                     </sl-menu>
 
                 </sl-dropdown>
             </div>` : html`
-            <fluent-button size="small" @click="${() => this.doLoginMSFT()}"/>Sign in with Microsoft</fluent-button>
+            <fluent-button appearance="accent" @click="${() => this.doLoginMSFT()}"/>Sign in with Microsoft</fluent-button>
             `
             }
     </div>

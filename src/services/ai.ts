@@ -9,6 +9,8 @@ export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "ge
 
 let GPTKey = await getOpenAIKey();
 
+const systemPrompt = "You're Skipper, a helpful, creative, and accurate AI assistant. Your primary goal is to assist users with their queries and tasks in a concise and efficient manner. You should always strive to provide accurate information, thoughtful suggestions, and innovative solutions. Your responses should be clear and to the point, ensuring the user gets the information they need without unnecessary elaboration. Remember, your personality should be friendly and supportive, making every interaction pleasant and productive. Finally, remember that your answers should always be in well formatted markdown.";
+
 // @ts-ignore
 window.addEventListener("gpt-key-changed", (e: CustomEvent) => {
     GPTKey = e.detail.key;
@@ -77,6 +79,16 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     prompt = prompt + ". " + extraPrompt;
     // https://gpt-server-two-qsqckaz7va-uc.a.run.app/
 
+    // check for system prompt in previous messages
+    // if not there, add it using systemPrompt
+    const systemPromptIndex = previousMessages.findIndex((message) => message.role === "system");
+    if (systemPromptIndex === -1) {
+        previousMessages.unshift({
+            role: "system",
+            content: systemPrompt
+        });
+    }
+
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
     const lat = localStorage.getItem("lat");
@@ -113,21 +125,14 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
         const { deviceCheck } = await import("../services/utils");
         const deviceCheckFlag = await deviceCheck();
 
-        if (forceLocal || deviceCheckFlag) {
+        const { checkIfOnline } = await import('../services/utils');
+        const isOnline = await checkIfOnline();
+
+        if (forceLocal || (isOnline === false) || deviceCheckFlag) {
             if (localLLMInit === false) {
                 localLLMInit = true;
 
-                window.addEventListener("init-progress", (e: any) => {
-                    console.log("init progress", e.detail);
-
-                    // emit custom event
-                    const event = new CustomEvent("model-loading", { detail: e.detail });
-                    window.dispatchEvent(event);
-                });
-
-                const { init } = await import("../services/local-llm/local-llm");
-                await init();
-                window.dispatchEvent(new CustomEvent("model-loaded"));
+                await loadAndSetupLocal();
             }
 
             const { makeLocalAIRequest } = await import("../services/local-llm/local-llm");
@@ -140,29 +145,57 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             };
         }
         else {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
-                method: 'POST',
-                headers: new Headers({
-                    "Content-Type": "application/json",
-                }),
-                body: JSON.stringify({
-                    image: currentBase64Data || base64data,
-                    previousMessages: previousMessages,
-                    key: GPTKey,
-                    lat: lat,
-                    long: long
-                })
-            });
+            // const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+            //     method: 'POST',
+            //     headers: new Headers({
+            //         "Content-Type": "application/json",
+            //     }),
+            //     body: JSON.stringify({
+            //         image: currentBase64Data || base64data,
+            //         previousMessages: previousMessages,
+            //         key: GPTKey,
+            //         lat: lat,
+            //         long: long
+            //     })
+            // });
 
-            const data = await response.json();
-            console.log(data.choices[0]);
+            // const data = await response.json();
+            // console.log(data.choices[0]);
 
+            const stringifiedPreviousMessages = JSON.stringify(previousMessages);
+
+            const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
+            console.log("evtSource", evtSource);
+
+            // evtSource.onmessage = (e) => {
+            //     console.log("e", e.data);
+            // };
             return {
-                data,
+                data: evtSource,
                 source: "cloud"
-            };
+            }
+
+
+            // return {
+            //     data,
+            //     source: "cloud"
+            // };
         }
     }
+}
+
+export async function loadAndSetupLocal() {
+    window.addEventListener("init-progress", (e: any) => {
+        console.log("init progress", e.detail);
+
+        // emit custom event
+        const event = new CustomEvent("model-loading", { detail: e.detail });
+        window.dispatchEvent(event);
+    });
+
+    const { init } = await import("../services/local-llm/local-llm");
+    await init();
+    window.dispatchEvent(new CustomEvent("model-loaded"));
 }
 
 export async function makeAIRequestWithImage(base64data: string, prompt: string, previousMessages: any[]) {

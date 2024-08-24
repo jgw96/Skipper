@@ -131,7 +131,7 @@ export class KeyManager extends LitElement {
 
     }
 
-    save() {
+    async save() {
         const gptInput = this.shadowRoot?.querySelector('#gpt-api-key') as any
 
         if (gptInput.value && gptInput.value.length > 0) {
@@ -143,6 +143,14 @@ export class KeyManager extends LitElement {
                 }
             });
             this.dispatchEvent(event);
+        }
+
+        const { setChosenModelShipper } = await import('../services/ai');
+        const existingModel = localStorage.getItem('model');
+
+        if (existingModel && existingModel === "phi3") {
+            localStorage.setItem("model", "openai");
+            setChosenModelShipper("openai");
         }
     }
 

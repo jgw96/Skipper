@@ -544,6 +544,8 @@ export class AppHome extends LitElement {
             // }
           ];
 
+          console.log("function called");
+
           this.showMessageLoader = true;
 
           const { makeAIRequest } = await import('../../services/ai');
@@ -573,18 +575,109 @@ export class AppHome extends LitElement {
 
               this.requestUpdate();
             }
+
+            this.doSayIt(message);
+
+            this.handleScroll(list);
+
+            if (this.previousMessages.length > 1) {
+              console.log("look here", this.convoName, this.previousMessages);
+
+              const goodMessages = this.previousMessages;
+
+              console.log("goodMessages", goodMessages)
+
+              const { saveConversation } = await import('../../services/storage');
+              await saveConversation(this.convoName as string, goodMessages);
+
+              const { getConversations } = await import('../../services/storage');
+              this.savedConvos = await getConversations();
+
+              console.log("this.savedConvos", this.savedConvos)
+
+              this.loading = false;
+
+              this.handleScroll(list);
+
+              resolve();
+            }
+            else {
+              this.loading = false;
+
+              this.handleScroll(list);
+
+              resolve();
+            }
           }
           else {
             this.showMessageLoader = false;
 
-            message = data.data.choices[0].message.content;
             this.previousMessages = [
               ...this.previousMessages,
               {
                 role: "assistant",
-                content: await marked.parse(data.data.choices[0].message.content)
+                content: ""
               }
-            ]
+            ];
+
+            data.data.onmessage = async (event: any) => {
+              console.log("event.data", event.data);
+              if (event.data.includes("Chat Completed")) {
+                data.data.close();
+                // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                // this.requestUpdate();
+
+                this.doSayIt(message);
+
+                this.handleScroll(list);
+
+                if (this.previousMessages.length > 1) {
+                  console.log("look here", this.convoName, this.previousMessages);
+
+                  const goodMessages = this.previousMessages;
+
+                  console.log("goodMessages", goodMessages)
+
+                  const { saveConversation } = await import('../../services/storage');
+                  await saveConversation(this.convoName as string, goodMessages);
+
+                  const { getConversations } = await import('../../services/storage');
+                  this.savedConvos = await getConversations();
+
+                  console.log("this.savedConvos", this.savedConvos)
+
+                  this.loading = false;
+
+                  this.handleScroll(list);
+
+                  resolve();
+                }
+                else {
+                  this.loading = false;
+
+                  this.handleScroll(list);
+
+                  resolve();
+                }
+              }
+              else {
+                console.log("event", message, marked);
+                message += event.data || "";
+                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+
+                this.requestUpdate();
+              }
+            };
+
+            // message = data.data.choices[0].message.content;
+            // this.previousMessages = [
+            //   ...this.previousMessages,
+            //   {
+            //     role: "assistant",
+            //     content: await marked.parse(data.data.choices[0].message.content)
+            //   }
+            // ]
           }
 
           // const { marked } = await import('marked');
@@ -596,38 +689,6 @@ export class AppHome extends LitElement {
           //     content: await marked.parse(data.choices[0].message.content)
           //   }
           // ]
-
-          this.doSayIt(message);
-
-          this.handleScroll(list);
-
-          if (this.previousMessages.length > 1) {
-            console.log("look here", this.convoName, this.previousMessages);
-
-            const goodMessages = this.previousMessages;
-
-            console.log("goodMessages", goodMessages)
-
-            const { saveConversation } = await import('../../services/storage');
-            await saveConversation(this.convoName as string, goodMessages);
-
-            const { getConversations } = await import('../../services/storage');
-            this.savedConvos = await getConversations();
-
-            console.log("this.savedConvos", this.savedConvos)
-
-            this.loading = false;
-
-            this.handleScroll(list);
-
-            resolve();
-          }
-
-          this.loading = false;
-
-          this.handleScroll(list);
-
-          resolve();
 
         }
 
@@ -714,11 +775,16 @@ export class AppHome extends LitElement {
     await drawer?.show();
   }
 
-  async copyButton(content: string) {
+  async copyButton(content: string, target: HTMLImageElement) {
     const regex = /(<([^>]+)>)/ig;
     const result = content.replace(regex, "");
 
     await navigator.clipboard.writeText(result);
+
+    if (target.parentElement) {
+      target.parentElement.classList.add("copied");
+      (target.parentElement as HTMLButtonElement).disabled = true;
+    }
   }
 
   async shareButton(content: string) {
@@ -1008,7 +1074,8 @@ export class AppHome extends LitElement {
         </div>
         <ul id="convo-list">
           ${this.previousMessages.map((message) => {
-          return html`<li class="${message.role}">
+          if (message.role !== "system") {
+            return html`<li class="${message.role}">
             <div class="item-toolbar">
                 ${message.role === "assistant" ? html`<img class="robot-icon" src="/assets/icons/64-icon.png" />` : html`<div></div>`}
                 <div>
@@ -1016,12 +1083,8 @@ export class AppHome extends LitElement {
                   <img src="/assets/share-social-outline.svg" alt="share" />
                 </sl-button>
 
-                <sl-button @click="${() => this.copyButton(message.content)}" circle size="small" class="copy-button">
+                <sl-button @click="${($event: any) => this.copyButton(message.content, $event.target)}" circle size="small" class="copy-button">
                   <img src="/assets/copy-outline.svg" alt="copy" />
-                </sl-button>
-
-                <sl-button @click="${() => this.speakIt(message.content)}" circle size="small" class="copy-button">
-                  <img src="/assets/volume-high-outline.svg" alt="copy" />
                 </sl-button>
                 </div>
             </div>
@@ -1033,6 +1096,10 @@ export class AppHome extends LitElement {
               ${message.content.includes("<img") ? html`<fluent-button class="open-image-button" @click="${() => this.openInViewer(message.content)}" size="small">Open Image</fluent-button>` : null}
             </div>
           </li>`
+          }
+          else {
+            return null
+          }
         })
         }
 
@@ -1059,12 +1126,6 @@ export class AppHome extends LitElement {
                 ` : null
         }
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Generate an image of a Unicorn")}">Generate an image of a Unicorn</li>` : null}
-              ${this.quickActions.map((action: any) => {
-          return html`<li @click="${() => this.preDefinedChat(action)}">${action}</li>`
-        })
-        }
-              <li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>
-              <li @click="${() => this.preDefinedChat("Give me a recipe for a chocolate cake")}">Give me a recipe for a chocolate cake</li>
             </ul>
           </div>
        `}
@@ -1097,6 +1158,33 @@ export class AppHome extends LitElement {
               <img src="/assets/volume-mute-outline.svg" alt="mic icon">
             </fluent-button>
           `}
+
+          <fluent-tooltip anchor="modes-button-anchor"><span>Choose a Mode, such as Math Teacher</span></fluent-tooltip>
+
+          <sl-dropdown hoist id="modes-button">
+              <fluent-button id="modes-button-anchor" class="copy-button" slot="trigger" caret>
+                <img src="/assets/build-outline.svg" alt="menu" />
+              </fluent-button>
+
+              <sl-menu>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat("I want you to act as a note-taking assistant for a lecture. Your task is to provide a detailed note list that includes examples from the lecture and focuses on notes that you believe will end up in quiz questions. Additionally, please make a separate list for notes that have numbers and data in them and another separated list for the examples that included in this lecture. The notes should be concise and easy to read.")}">
+                  <span class="prompt-title">Note Taking Assistant</span>
+                  <span class="prompt-desc">I want you to act as a note-taking assistant for a lecture. Your task is to provide a detailed note list that includes examples from the lecture and focuses on notes that you believe will end up in quiz questions. Additionally, please make a separate list for notes that have numbers and data in them and another separated list for the examples that included in this lecture. The notes should be concise and easy to read.</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as a math teacher. I will provide some mathematical equations or concepts, and it will be your job to explain them in easy-to-understand terms. This could include providing step-by-step instructions for solving a problem, demonstrating various techniques with visuals or suggesting online resources for further study. My first request is "I need help understanding how probability works."')}">
+                  <span class="prompt-title">Math Teacher</span>
+                  <span class="prompt-desc">I want you to act as a math teacher. I will provide some mathematical equations or concepts, and it will be your job to explain them in easy-to-understand terms. This could include providing step-by-step instructions for solving a problem, demonstrating various techniques with visuals or suggesting online resources for further study. My first request is "I need help understanding how probability works."</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as my personal chef. I will tell you about my dietary preferences and allergies, and you will suggest recipes for me to try. You should only reply with the recipes you recommend, and nothing else. Do not write explanations. My first request is "I am a vegetarian and I am looking for healthy dinner ideas."')}">
+                  <span class="prompt-title">Personal Chef</span>
+                  <span class="prompt-desc">I want you to act as my personal chef. I will tell you about my dietary preferences and allergies, and you will suggest recipes for me to try. You should only reply with the recipes you recommend, and nothing else. Do not write explanations. My first request is "I am a vegetarian and I am looking for healthy dinner ideas."</span>
+                </sl-menu-item>
+                <sl-menu-item class="copy-button" @click="${() => this.preDefinedChat('I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. Start by asking me what the position is, and then start the interview.')}">
+                  <span class="prompt-title">Interviewer</span>
+                  <span class="prompt-desc">I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. Start by asking me what the position is, and then start the interview.</span>
+                </sl-menu-item>
+              </sl-menu>
+            </sl-dropdown>
 
         </div>
 

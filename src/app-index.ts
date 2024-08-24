@@ -27,12 +27,8 @@ export class AppIndex extends LitElement {
         --accent-stroke-control-hover: #8769dc;
       }
 
-      .settings-drawer::part(panel) {
-       --size: 100vw;
-      }
-
       #intro-image-block {
-        height: 32em;
+        height: 38em;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -85,6 +81,26 @@ export class AppIndex extends LitElement {
 
       .dialog-overview p {
         font-size: 14px;
+      }
+
+      .dialog-overview ol {
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 14px;
+        padding-left: 17px;
+      }
+
+      .dialog-overview #intro-actions {
+        display: flex;
+        gap: 8px;
+        flex-direction: column;
+      }
+
+      .dialog-overview #intro-actions fluent-button {
+        align-self: flex-end;
+        margin-top: 12px;
       }
 
       .dialog-overview::part(body) {
@@ -182,7 +198,20 @@ export class AppIndex extends LitElement {
     }
   }
 
-  getStarted() {
+  async getStarted(type: "cloud" | "local") {
+    if (type === "local") {
+      const { setChosenModelShipper } = await import('./services/ai');
+      setChosenModelShipper("phi3");
+
+      localStorage.setItem('model', 'phi3');
+
+      this.dispatchEvent(new CustomEvent('theme-changed', {
+        detail: {
+          model: 'phi3'
+        }
+      }));
+    }
+
     const dialog = this.shadowRoot?.querySelector('.dialog-overview');
     if (dialog) {
       // @ts-ignore
@@ -206,17 +235,34 @@ export class AppIndex extends LitElement {
       <div id="intro-content-block">
         <h1>Hello!</h1>
         <p>
-          Skipper is a powerful multi-modal AI assistant.
-          Skipper can work with you how you want. Want to interact with your voice? You can.
-          Need Skipper to see something? Give it an image! Simply want text chat? That works too.
+          Meet Skipper, your all-in-one chat app for any device.
+          Enjoy Dark and Light modes, private on-device conversations, and easy image integration.
+          Share your screen for instant help and have responses read back with lifelike voices.
+          Skipper also supports speech-to-text and lets you generate images or check the weather and news.
+          It's designed to make your life simpler, wherever you are.
         </p>
 
+        <h3>Get Started</h3>
+
         <p>
-          To get started, you need to set up your API key for the OpenAI GPT-4o model, which powers Skipper.
-          Start <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">here to learn how to get an OpenAI Key</a>.
-          Once you have your key, enter it below, and click Update.
+            You have two options:
         </p>
-        <key-manager @keys-saved="${() => this.getStarted()}"></key-manager>
+
+        <ol>
+          <li>Enter Your OpenAI Key: Gain access to advanced features and capabilities by entering your OpenAI key .
+            <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">Click here to learn how to get an OpenAI Key</a>
+          </li>
+
+          <li>
+            Use a Local AI Model: Start right away using a local AI model with limited functionality.
+            Make your choice below to begin your journey!
+          </li>
+        </ol>
+
+        <div id="intro-actions">
+          <key-manager @keys-saved="${() => this.getStarted("cloud")}"></key-manager>
+          <fluent-button appearance="accent" @click="${() => this.getStarted("local")}">Get Started with a Local AI Model</fluent-button>
+        </div>
       </div>
     </sl-dialog>
 

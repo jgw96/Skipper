@@ -1,9 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { property, state, customElement } from 'lit/decorators.js';
 
-import './app-login';
-
-
 import { fluentAnchor, provideFluentDesignSystem } from '@fluentui/web-components';
 import { router } from '../router';
 
@@ -261,7 +258,6 @@ export class AppHeader extends LitElement {
         </div>
 
         <div id="header-actions">
-          <app-login></app-login>
 
           <!-- add new notes button -->
 
