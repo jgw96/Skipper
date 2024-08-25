@@ -15,8 +15,16 @@ export async function init(): Promise<MLCEngineInterface> {
         const appConfig = prebuiltAppConfig;
 
         const FP16 = await checkFP16Support();
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        const selectedModel = FP16 ? "SmolLM-1.7B-Instruct-q4f16_1-MLC" : "SmolLM-1.7B-Instruct-q4f32_1-MLC";
+        let selectedModel;
+        // const selectedModel = FP16 ? "SmolLM-1.7B-Instruct-q4f16_1-MLC" : "SmolLM-1.7B-Instruct-q4f32_1-MLC";
+        if (isMobile) {
+            selectedModel = FP16 ? "SmolLM-1.7B-Instruct-q4f16_1-MLC" : "SmolLM-1.7B-Instruct-q4f32_1-MLC";
+        }
+        else {
+            selectedModel = FP16 ? "Phi-3.5-mini-instruct-q4f16_1-MLC-1k" : "Phi-3.5-mini-instruct-q4f32_1-MLC-1k";
+        }
 
         let modelCached = await hasModelInCache(selectedModel, appConfig);
         console.log("hasModelInCache: ", modelCached);

@@ -65,6 +65,14 @@ export class LocalDictate extends LitElement {
                 --progress-ring-foreground: #0078d4;
             }
 
+            #stop::part(content) {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 12px;
+            }
+
             @media(max-width: 600px) {
                 :host {
                     position: fixed;
@@ -142,7 +150,7 @@ export class LocalDictate extends LitElement {
             await (navigator as any).setAppBadge();
         }
 
-        // record audio using mediaRecorer api
+        // record audio using mediaRecorder api
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         this.mediaRecorder = new MediaRecorder(stream);
 
@@ -228,6 +236,7 @@ export class LocalDictate extends LitElement {
                 : html`
             <fluent-button id="stop" @click="${() => this.stop()}">
               <fluent-progress-ring></fluent-progress-ring>
+              Click when done to stop
             </fluent-button>
           `}
         `;

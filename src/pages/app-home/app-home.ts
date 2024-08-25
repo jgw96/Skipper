@@ -838,7 +838,14 @@ export class AppHome extends LitElement {
 
   async handleDictate(event: any) {
     console.log("handle dictate", event.detail.messageData)
-    const text = event.detail.messageData[0];
+    // const text = event.detail.messageData[0] || event.detail.text.transcription;
+    let text;
+    if (event.detail.messageData) {
+      text = event.detail.messageData;
+    }
+    else {
+      text = event.detail.text.transcription;
+    }
 
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = text;
@@ -846,10 +853,10 @@ export class AppHome extends LitElement {
     await this.send();
     console.log("sent");
 
-    if (this.sayIT === false) {
-      const dictate: any = this.shadowRoot?.querySelector('app-dictate');
-      dictate.dictate();
-    }
+    // if (this.sayIT === false) {
+    //   const dictate: any = this.shadowRoot?.querySelector('app-dictate');
+    //   dictate.dictate();
+    // }
   }
 
   handleContinuiousDictate(event: any) {
@@ -1155,6 +1162,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
+          <!-- ${this.modelShipper === "phi3" ? html`<local-dictate @got-text=${this.handleDictate}></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`} -->
           ${this.modelShipper === "phi3" ? html`<local-dictate></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
