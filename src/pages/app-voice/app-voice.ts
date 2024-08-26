@@ -69,6 +69,19 @@ export class AppVoice extends LitElement {
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
     console.log('This is your home page');
 
+    const { checkPlusSub } = await import('../../services/settings');
+    const proFlag = await checkPlusSub();
+    console.log("proFlag", proFlag);
+    if (!proFlag) {
+      const dialog: any = this.shadowRoot?.querySelector('.upgrade-dialog');
+      console.log("dialog", dialog);
+      dialog.addEventListener('sl-request-close', (event: any) => {
+        event.preventDefault();
+      });
+
+      await dialog.show();
+    }
+
     this.sdk = await import("microsoft-cognitiveservices-speech-sdk");
     console.log("this.sdk", this.sdk);
 
@@ -472,6 +485,14 @@ export class AppVoice extends LitElement {
   render() {
     return html`
       <!-- <app-header></app-header> -->
+
+      <sl-dialog class="upgrade-dialog" label="Upgrade to Skipper Pro" modal no-header>
+        <h2>Upgrade to Skipper Pro</h2>
+        <p>This feature is only available to Skipper Pro users. Upgrade now to get access to this feature and much more!</p>
+
+        <fluent-anchor id="upgrade-link" href="/pro" appearance="accent">Upgrade Now</fluent-anchor>
+        <fluent-anchor id="cancel-link" href="/" appearance="light">Go Back Home</fluent-anchor>
+      </sl-dialog>
 
       <div id="extra-tools">
         <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>

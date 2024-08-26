@@ -28,6 +28,23 @@
     animation: quickFadeIn 0.5s ease;
 }
 
+#upgrade-link {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+}
+
+#cancel-link {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.upgrade-dialog h2 {
+    margin-top: 0;
+}
+
 .stop-button::part(control) {
     background: red;
     color: white;

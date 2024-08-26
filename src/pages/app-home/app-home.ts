@@ -1162,8 +1162,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
-          <!-- ${this.modelShipper === "phi3" ? html`<local-dictate @got-text=${this.handleDictate}></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`} -->
-          ${this.modelShipper === "phi3" ? html`<local-dictate></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
+          ${this.modelShipper === "phi3" ? html`<local-dictate @got-text=${this.handleDictate}></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">

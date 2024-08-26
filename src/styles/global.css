@@ -91,4 +91,8 @@ html::-webkit-scrollbar {
     --neutral-foreground-rest: white;
   }
 
+  :root {
+    --sl-panel-background-color: white;
+  }
+
 }

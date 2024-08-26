@@ -1,4 +1,5 @@
 import { getOpenAIKey } from "./keys";
+import { checkPlusSub } from "./settings";
 
 let previousMessages: any[] = [];
 let currentBase64Data: string = "";
@@ -8,6 +9,7 @@ const extraPrompt = "";
 export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "gemma" | "phi3" = "openai";
 
 let GPTKey = await getOpenAIKey();
+const proFlag = await checkPlusSub();
 
 const systemPrompt = "You're Skipper, a helpful, creative, and accurate AI assistant. Your primary goal is to assist users with their queries and tasks in a concise and efficient manner. You should always strive to provide accurate information, thoughtful suggestions, and innovative solutions. Your responses should be clear and to the point, ensuring the user gets the information they need without unnecessary elaboration. Remember, your personality should be friendly and supportive, making every interaction pleasant and productive. Finally, remember that your answers should always be in well formatted markdown.";
 
@@ -98,7 +100,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
     // if there is an image, go to the cloud
     // otherwise, lets try something
     if (currentBase64Data && currentBase64Data.length > 0) {
-        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
             method: 'POST',
             headers: new Headers({
                 "Content-Type": "application/json",
@@ -164,7 +166,7 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
 
             const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
-            const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
+            const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
             console.log("evtSource", evtSource);
 
             // evtSource.onmessage = (e) => {
@@ -210,7 +212,7 @@ export async function makeAIRequestWithImage(base64data: string, prompt: string,
     const authToken = localStorage.getItem("accessToken");
     const taskListID = localStorage.getItem("taskListID");
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}"`, {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
@@ -238,7 +240,7 @@ export async function makeAIRequestStreaming(base64data: string, prompt: string,
     // so I'm going to convert it to a string
     const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
-    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchatstreaming?prompt=${prompt}&key=${GPTKey}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
+    const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchatstreaming?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}`);
     return evtSource;
 }
 
@@ -252,7 +254,7 @@ export const requestGPT = async (prompt: string) => {
         image: currentBase64Data
     })
 
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//sendchat?prompt=${prompt}&pro=${proFlag}&key=${GPTKey}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -278,7 +280,7 @@ export const requestGPT = async (prompt: string) => {
 };
 
 export const makeTitleRequest = async (prompt: string) => {
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//createtitle?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//createtitle?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}`, {
         method: "POST",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -290,7 +292,7 @@ export const makeTitleRequest = async (prompt: string) => {
 }
 
 export async function generateImage(prompt: string) {
-    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//generateimage?prompt=${prompt}&key=${GPTKey}`, {
+    const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app//generateimage?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}`, {
         method: "GET",
         headers: new Headers({
             "Content-Type": "application/json",
@@ -337,7 +339,7 @@ export async function doTextToSpeech(script: string) {
                 source.start();
             }
             else {
-                const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}`, {
+                const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/texttospeech?text=${script}&key=${GPTKey}&pro=${proFlag}`, {
                     method: "POST",
                     headers: new Headers({
                         "Content-Type": "application/json",
@@ -367,7 +369,7 @@ export async function doSpeechToText(audioFile: File) {
         goodData.append("file", audioFile, audioFile.name);
 
         try {
-            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}`, {
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/speechtotext?key=${GPTKey}&pro=${proFlag}`, {
                 method: "POST",
                 body: goodData,
             });

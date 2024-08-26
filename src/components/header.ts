@@ -18,6 +18,10 @@ export class AppHeader extends LitElement {
         --theme-color: transparent;
       }
 
+      #pro-link {
+        background: #ffffff0f;
+      }
+
       header {
         display: flex;
         justify-content: space-between;
@@ -138,8 +142,6 @@ export class AppHeader extends LitElement {
           background: var(--theme-color);
         }
 
-
-
         nav a {
           color: initial;
         }
@@ -147,6 +149,10 @@ export class AppHeader extends LitElement {
         fluent-anchor::part(control), fluent-button::part(control) {
           background: transparent;
           color: black;
+        }
+
+        fluent-anchor#pro-link {
+          background: #E7E7E7;
         }
       }
 
@@ -260,6 +266,9 @@ export class AppHeader extends LitElement {
         <div id="header-actions">
 
           <!-- add new notes button -->
+           ${!this.enableBack ? html`<fluent-anchor id="pro-link" href="/pro">
+              Get Skipper Pro
+            </fluent-anchor>` : null}
 
           ${!this.enableBack ? html`
               <fluent-anchor href="/photo">

@@ -14,6 +14,7 @@ import {
 } from "@fluentui/web-components";
 import { setChosenModelShipper } from "../services/ai";
 import { auth } from "../services/auth/firebase-auth";
+import { checkPlusSub } from "../services/settings";
 
 provideFluentDesignSystem()
     .register(
@@ -29,6 +30,7 @@ export class AppSettings extends LitElement {
     @state() selectedModel: string = "openai";
     @state() highVoiceQuality: boolean = true;
     @state() authed: boolean = false
+    @state() proFlag: boolean = false;
 
     static get styles() {
         return css`
@@ -150,6 +152,8 @@ export class AppSettings extends LitElement {
         //     modelInput.currentValue = 'openai';
         //     setChosenModelShipper('openai');
         // }
+        this.proFlag = await checkPlusSub();
+
         if (model) {
             this.selectedModel = model;
             this.requestUpdate(this.selectedModel);
@@ -317,9 +321,9 @@ export class AppSettings extends LitElement {
             <app-account></app-account>
     </div>
 
-            <div class="setting">
+            ${!this.proFlag ? html`<div class="setting">
                 <key-manager></key-manager>
-            </div>
+            </div>` : null}
 
             ${this.authed ? html`
                   <div class="setting">

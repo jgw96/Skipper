@@ -72,6 +72,10 @@ main {
     animation: quickup 0.3s ease;
 }
 
+#cancel-link {
+    background: #ffffff0f;
+}
+
 #image-input-block fluent-text-area {
     flex: 1;
 }
@@ -173,6 +177,19 @@ fluent-text-area::part(root) {
     border-radius: 8px;
     box-shadow: 0px 0px 10px 0px #202020;
     animation: fadein 0.3s ease-in-out;
+}
+
+#upgrade-link {
+    --accent-fill-rest: #8769dc;
+    --accent-stroke-control-rest: #8769dc;
+    --accent-fill-active: #8769dc;
+    --accent-stroke-control-active: #8769dc;
+    --accent-fill-hover: #8769dc;
+    --accent-stroke-control-hover: #8769dc;
+}
+
+.upgrade-dialog h2 {
+    margin-top: 0;
 }
 
 @media(prefers-color-scheme: dark) {

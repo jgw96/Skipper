@@ -50,6 +50,22 @@ export const router = new Router({
         render: () => html`<app-image></app-image>`
       },
       {
+        path: resolveRouterPath('pro'),
+        title: 'Pro',
+        plugins: [
+          lazy(() => import('./pages/app-pro/app-pro.js')),
+        ],
+        render: () => html`<app-pro></app-pro>`
+      },
+      {
+        path: resolveRouterPath('success'),
+        title: 'Success',
+        plugins: [
+          lazy(() => import('./pages/app-success.js')),
+        ],
+        render: () => html`<app-success></app-success>`
+      },
+      {
         path: resolveRouterPath('about'),
         title: 'About',
         plugins: [
