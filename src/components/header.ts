@@ -3,6 +3,7 @@ import { property, state, customElement } from 'lit/decorators.js';
 
 import { fluentAnchor, provideFluentDesignSystem } from '@fluentui/web-components';
 import { router } from '../router';
+import { checkPlusSub } from '../services/settings';
 
 provideFluentDesignSystem().register(fluentAnchor());
 
@@ -11,6 +12,7 @@ export class AppHeader extends LitElement {
   @property({ type: String }) title = 'Skipper AI';
 
   @state() enableBack: boolean = false;
+  @state() pro: boolean = false;
 
   static get styles() {
     return css`
@@ -229,6 +231,9 @@ export class AppHeader extends LitElement {
 
       console.log("enable back", this.enableBack)
     });
+
+    const proFlag = await checkPlusSub();
+    this.pro = proFlag;
     // this.enableBack = true;
   }
 
@@ -266,7 +271,7 @@ export class AppHeader extends LitElement {
         <div id="header-actions">
 
           <!-- add new notes button -->
-           ${!this.enableBack ? html`<fluent-anchor id="pro-link" href="/pro">
+           ${!this.enableBack && !this.pro ? html`<fluent-anchor id="pro-link" href="/pro">
               Get Skipper Pro
             </fluent-anchor>` : null}
 

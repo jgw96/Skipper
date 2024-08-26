@@ -42,6 +42,11 @@ export class AppSettings extends LitElement {
             overflow: hidden;
         }
 
+        fluent-anchor {
+              width: fit-content;
+    place-self: flex-end;
+        }
+
         .setting {
             display: flex;
             gap: 14px;
@@ -100,8 +105,8 @@ export class AppSettings extends LitElement {
                 color: white;
               }
 
-              fluent-button::part(control) {
-                background: #3f434e;
+              fluent-button::part(control), fluent-anchor::part(control) {
+                background: #8769dc;
                 border: none;
               }
         }
@@ -153,6 +158,7 @@ export class AppSettings extends LitElement {
         //     setChosenModelShipper('openai');
         // }
         this.proFlag = await checkPlusSub();
+        console.log("proFlag", this.proFlag);
 
         if (model) {
             this.selectedModel = model;
@@ -324,6 +330,21 @@ export class AppSettings extends LitElement {
             ${!this.proFlag ? html`<div class="setting">
                 <key-manager></key-manager>
             </div>` : null}
+
+            ${
+                this.proFlag ? html`
+                  <div class="setting">
+                    <h3>Manage Subscription</h3>
+
+                    <p>
+                        You are a Skipper Plus subscriber. Thank you for supporting Skipper!
+                    </p>
+
+                    <fluent-anchor href="/manage" id="manage-link">
+                        Manage Subscription
+                    </fluent-anchor>
+                ` : null
+            }
 
             ${this.authed ? html`
                   <div class="setting">

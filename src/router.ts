@@ -66,6 +66,14 @@ export const router = new Router({
         render: () => html`<app-success></app-success>`
       },
       {
+        path: resolveRouterPath('manage'),
+        title: 'Manage',
+        plugins: [
+          lazy(() => import('./pages/app-manage.js')),
+        ],
+        render: () => html`<app-manage></app-manage>`
+      },
+      {
         path: resolveRouterPath('about'),
         title: 'About',
         plugins: [
