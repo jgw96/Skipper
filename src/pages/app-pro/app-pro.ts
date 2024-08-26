@@ -108,7 +108,7 @@ export class AppPro extends LitElement {
                 <li>Unlock voice mode</li>
             </ul>
 
-            <form action="http://localhost:3000/create-checkout-session" method="post">
+            <form action="https://skipper-stripe-server-qsqckaz7va-uc.a.run.app/create-checkout-session" method="post">
                 <fluent-button appearance="accent" type="submit" size="large" id="checkout-button">Subscribe to Skipper AI Pro</fluent-button>
             </form>
            </main>
