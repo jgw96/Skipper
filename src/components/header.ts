@@ -41,14 +41,14 @@ export class AppHeader extends LitElement {
         padding-left: 10px;
         padding-right: 10px;
 
-        position: unset;
+        position: fixed;
         left: env(titlebar-area-x, 0);
         top: env(titlebar-area-y, 0);
         height: env(titlebar-area-height, 30px);
         width: calc(env(titlebar-area-width, 100%) - 18px);
         -webkit-app-region: drag;
 
-        z-index: 1
+        z-index: 1;
       }
 
       app-login {

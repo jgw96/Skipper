@@ -18,7 +18,8 @@ fluent-progress-ring {
 
 
 main {
-    margin-top: 30px;
+    height: calc(100vh - env(titlebar-area-height, 30px));
+    padding-top: env(titlebar-area-height, 30px);
 }
 
 #regen-button::part(control) {

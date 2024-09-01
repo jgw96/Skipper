@@ -476,6 +476,9 @@ fluent-card fluent-button {
 main {
     display: grid;
     grid-template-columns: 18vw 82vw;
+
+    height: calc(100vh - env(titlebar-area-height, 30px));
+    padding-top: env(titlebar-area-height, 30px);
 }
 
 #saved {
