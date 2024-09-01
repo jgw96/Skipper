@@ -728,7 +728,11 @@ export class AppHome extends LitElement {
   async startConvo(convo: any) {
     this.previousMessages = [];
 
-    if (typeof convo.convo === "string") {
+    if (!convo.convo) {
+      convo.convo = convo.content;
+    }
+
+    if (convo.convo && typeof convo.convo === "string") {
       const { decryptConvo } = await import('../../services/storage');
       const decrypted = await decryptConvo(convo);
       convo.convo = decrypted.convo;

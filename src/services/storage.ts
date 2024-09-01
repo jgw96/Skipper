@@ -10,7 +10,8 @@ const root = await navigator.storage.getDirectory();
 
 let saveWorker = new Worker(new URL('./storage-worker.ts', import.meta.url), { type: 'module' });
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || isFirefox;
 
 async function handleCypherKey() {
     const key = await get("cypherkey");
@@ -60,7 +61,7 @@ export async function saveConversation(name: string, convo: any[]): Promise<void
                 encrypted = await SimpleCrypto.encrypt(cryptoKey, JSON.stringify(convo));
                 console.log("encrypted", encrypted);
                 if (encrypted && encrypted.length > 0) {
-                  (convo as unknown as string) = encrypted;
+                    (convo as unknown as string) = encrypted;
                 }
             } catch (error) {
                 console.error("Error encrypting convo", error);
@@ -190,6 +191,10 @@ export async function getConversations(): Promise<any> {
         let cloudConvosParsed: any[] = [];
         const cloudConvos = await getConvosFromCloud();
         (cloudConvos || []).forEach(async (convo: any) => {
+            if (!convo.convo) {
+                convo.convo = convo.content;
+            }
+
             console.log("cloud convo", convo);
             convo.convo = JSON.parse(convo.convo);
 
