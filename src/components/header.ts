@@ -138,11 +138,25 @@ export class AppHeader extends LitElement {
         padding-top: 0;
       }
 
+      #pro-mode-activated {
+          color: #8c6ee0;
+    font-size: 12px;
+    background: #262626;
+    padding: 6px;
+    border-radius: 6px;
+    }
+
       @media(prefers-color-scheme: light) {
         header {
           color: black;
           background: var(--theme-color);
         }
+
+        #pro-mode-activated {
+          color: #8c6ee0;
+          background: #E7E7E7;
+        }
+
 
         nav a {
           color: initial;
@@ -189,6 +203,20 @@ export class AppHeader extends LitElement {
           display: none;
         }
       }
+
+      fluent-tooltip {
+                --neutral-layer-card-container: #8c6ee0;
+                --fill-color: #8c6ee0;
+                color: white;
+                border: none;
+                display: block;
+
+                animation: quickup 0.3s ease;
+              }
+
+              fluent-tooltip span {
+                color: white;
+              }
 
 
       @keyframes quickSlideFromleft {
@@ -273,7 +301,7 @@ export class AppHeader extends LitElement {
           <!-- add new notes button -->
            ${!this.enableBack && !this.pro ? html`<fluent-anchor id="pro-link" href="/pro">
               Get Skipper Pro
-            </fluent-anchor>` : null}
+            </fluent-anchor>` : html`<fluent-tooltip anchor="pro-mode-activated"><span>Skipper Pro Activated</span></fluent-tooltip> <div id="pro-mode-activated">Skipper Pro</div>`}
 
           ${!this.enableBack ? html`
               <fluent-anchor href="/photo">
