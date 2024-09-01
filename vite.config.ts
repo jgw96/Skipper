@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import minifyHTML from 'rollup-plugin-minify-html-literals';
+import strip from '@rollup/plugin-strip';
+import removeConsole from "vite-plugin-remove-console";
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
@@ -23,7 +25,12 @@ export default defineConfig({
       },
       plugins: [
         // @ts-ignore
-        minifyHTML(),
+        strip({
+          debugger: true,
+          functions: ['console.log', 'assert.*', 'debug', 'alert'],
+          labels: ['unittest'],
+          sourceMap: true
+        })
       ]
     }
   },
@@ -45,6 +52,11 @@ export default defineConfig({
         enabled: true
       },
     }),
+    removeConsole({
+      external: [
+        'src/services/simplecrypto.ts'
+      ]
+    })
     // basicSsl()
   ]
 })

@@ -50,11 +50,13 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
+    "@rollup/plugin-strip": "^3.0.4",
     "@types/node": "^20.12.12",
     "rollup-plugin-minify-html-literals": "^1.2.6",
     "typescript": "^5.3.3",
     "vite": "^5.1.0",
-    "vite-plugin-pwa": "^0.17.5"
+    "vite-plugin-pwa": "^0.17.5",
+    "vite-plugin-remove-console": "^2.2.0"
   },
   "prettier": {
     "tabWidth": 2,

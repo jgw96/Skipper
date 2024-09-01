@@ -639,13 +639,23 @@ li.assistant {
     position: unset;
     margin-left: 10px;
     margin-right: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 
     gap: 8px;
 
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border-radius: 6px;
+}
+
+#bottom {
+    position: fixed;
+    font-size: 10px;
+    bottom: 0px;
+    text-align: center;
+    left: 0;
+    right: 0;
+    color: grey;
 }
 
 #input-block fluent-text-area {

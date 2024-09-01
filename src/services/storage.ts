@@ -54,9 +54,17 @@ export async function saveConversation(name: string, convo: any[]): Promise<void
 
             const cryptoKey = await handleCypherKey();
 
-            const encrypted = await SimpleCrypto.encrypt(cryptoKey, JSON.stringify(convo));
-            console.log("encrypted", encrypted);
-            (convo as unknown as string) = encrypted;
+            let encrypted;
+
+            try {
+                encrypted = await SimpleCrypto.encrypt(cryptoKey, JSON.stringify(convo));
+                console.log("encrypted", encrypted);
+                if (encrypted && encrypted.length > 0) {
+                  (convo as unknown as string) = encrypted;
+                }
+            } catch (error) {
+                console.error("Error encrypting convo", error);
+            }
 
             const noteObject = {
                 name,

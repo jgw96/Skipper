@@ -616,7 +616,6 @@ export class AppHome extends LitElement {
             }
           }
           else {
-            this.showMessageLoader = false;
 
             this.previousMessages = [
               ...this.previousMessages,
@@ -627,6 +626,10 @@ export class AppHome extends LitElement {
             ];
 
             data.data.onmessage = async (event: any) => {
+              if (this.showMessageLoader === true) {
+                this.showMessageLoader = false;
+              }
+
               console.log("event.data", event.data);
               if (event.data.includes("Chat Completed")) {
                 data.data.close();
@@ -1225,6 +1228,8 @@ export class AppHome extends LitElement {
     </div>
       </div>
       </div>
+
+      <span id="bottom">Skipper AI can make mistakes. Check important info.</span>
       </main>
     `;
   }
