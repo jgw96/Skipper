@@ -336,10 +336,11 @@ ul {
     align-items: center;
     justify-content: flex-end;
     padding-right: 8px;
-
-    bottom: 0;
     top: initial;
     position: fixed;
+
+    width: 16vw;
+    bottom: 0px;
 
     animation: quickup 0.3s ease;
 }
@@ -887,24 +888,23 @@ li.assistant {
     }
 
     #suggested {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
         max-height: 38vh;
-
-        display: flex;
-        flex-direction: row;
-        width: 70vw;
 
         gap: 8px;
 
         margin: 0;
         padding: 0;
+
+        display: grid;
+        grid-template-columns: 26vw 26vw;
+        width: 56vw;
+        max-width: unset;
     }
 
     #suggested li {
         animation: quickup 0.3s ease;
-        min-width: max-content;
         min-height: fit-content;
+        max-width: unset;
         font-size: 14px;
         height: 36px;
     }

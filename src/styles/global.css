@@ -16,6 +16,8 @@
   --sl-color-primary-900: var(--sl-color-violet-900);
   --sl-color-primary-950: var(--sl-color-violet-950);
 
+  --main-color: #5e11fd;
+
   --accent-fill-rest: #5e11fd;
   --accent-stroke-control-rest: #5e11fd;
 
@@ -30,6 +32,8 @@ html, body {
   overflow: hidden;
 
   height: 100vh;
+
+  overflow-y: hidden;
 
   -webkit-tap-highlight-color: transparent;
 }
