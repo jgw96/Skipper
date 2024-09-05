@@ -1,0 +1,11 @@
+[
+    {
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.skipperai.twa",
+        "sha256_cert_fingerprints":
+          ["2D:B5:26:4D:4F:55:22:2E:52:91:AC:D8:F4:47:DD:A0:B9:F3:84:E9:04:B0:3B:C0:33:10:DA:FA:66:02:67:90"]
+      }
+    }
+  ]

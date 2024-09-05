@@ -290,12 +290,6 @@ fluent-card {
     color: white;
 }
 
-
-#input-block #extra-actions fluent-button img {
-    width: 20px;
-    height: 20px;
-}
-
 #input-block.drag-over {
     background: #8769dc42;
 }
@@ -512,7 +506,9 @@ main {
 
     contain: strict;
 
-    height: -webkit-fill-available;
+    /* height: 80vh; */
+    flex: 1;
+    padding-bottom: 123px;
 }
 
 #convo-list code {
@@ -639,7 +635,6 @@ li.assistant {
     display: flex;
     justify-content: space-between;
 
-    position: unset;
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 12px;
@@ -649,6 +644,11 @@ li.assistant {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border-radius: 6px;
+
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    left: 18vw;
 }
 
 #bottom {
@@ -1002,9 +1002,9 @@ li.assistant {
     }
 
     #input-block {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
         border-radius: 8px;
     }
 

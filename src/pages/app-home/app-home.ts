@@ -153,7 +153,7 @@ export class AppHome extends LitElement {
     })
 
     if (this.modelShipper === "phi3") {
-      const { loadAndSetupLocal} = await import('../../services/ai');
+      const { loadAndSetupLocal } = await import('../../services/ai');
       loadAndSetupLocal();
     }
   }
@@ -231,36 +231,80 @@ export class AppHome extends LitElement {
   }
 
   async addImageToConvo(base64data?: string | undefined) {
-    if (base64data) {
-      this.currentPhoto = base64data;
-      this.inPhotoConvo = true;
-      return;
-    }
 
     const { fileOpen } = await import('browser-fs-access');
 
-    const blob = await fileOpen({
-      mimeTypes: ['image/*'],
+    const file = await fileOpen({
+      mimeTypes: ['image/*', 'audio/*', 'text/*'],
+      multiple: false
     });
 
-    let blobFromFile = undefined;
+    // for (const file of files) {
+    if (file.type.includes("image")) {
+      if (base64data) {
+        this.currentPhoto = base64data;
+        this.inPhotoConvo = true;
+        return;
+      }
 
-    if (blob.handle) {
-      blobFromFile = await blob.handle.getFile();
-    }
-    else {
-      blobFromFile = blob;
-    }
+      let blobFromFile = undefined;
 
-    // turn blobFromFile to base64
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result;
-      this.currentPhoto = base64data as string;
-      this.inPhotoConvo = true;
-    }
+      if (file.handle) {
+        blobFromFile = await file.handle.getFile();
+      }
+      else {
+        blobFromFile = file;
+      }
 
-    reader.readAsDataURL(blobFromFile);
+      // turn blobFromFile to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        this.currentPhoto = base64data as string;
+        this.inPhotoConvo = true;
+      }
+
+      reader.readAsDataURL(blobFromFile);
+    }
+    else if ((file.type.includes("audio"))) {
+      const { doSpeechToText } = await import("../../services/ai");
+      const text = await doSpeechToText(file);
+
+      const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+      input.value = text;
+    }
+    else if ((file.type.includes("text"))) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result;
+
+        const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+        input.value = text;
+      }
+
+      reader.readAsText(file);
+
+    }
+    // }
+
+    // let blobFromFile = undefined;
+
+    // if (blob.handle) {
+    //   blobFromFile = await blob.handle.getFile();
+    // }
+    // else {
+    //   blobFromFile = blob;
+    // }
+
+    // // turn blobFromFile to base64
+    // const reader = new FileReader();
+    // reader.onloadend = () => {
+    //   const base64data = reader.result;
+    //   this.currentPhoto = base64data as string;
+    //   this.inPhotoConvo = true;
+    // }
+
+    // reader.readAsDataURL(blobFromFile);
   }
 
   async openCamera() {
@@ -1157,7 +1201,7 @@ export class AppHome extends LitElement {
         <div id="extra-actions">
           <div id="inner-extra-actions">
           ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" id="add-image-to-convo" size="small">
-          <img src="/assets/image-outline.svg" alt="image icon">
+          <img src="/assets/attach-outline.svg" alt="image icon">
           </fluent-button>
           <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
 
