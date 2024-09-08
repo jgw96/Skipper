@@ -290,12 +290,6 @@ fluent-card {
     color: white;
 }
 
-
-#input-block #extra-actions fluent-button img {
-    width: 20px;
-    height: 20px;
-}
-
 #input-block.drag-over {
     background: #8769dc42;
 }
@@ -342,10 +336,11 @@ ul {
     align-items: center;
     justify-content: flex-end;
     padding-right: 8px;
-
-    bottom: 0;
     top: initial;
     position: fixed;
+
+    width: 16vw;
+    bottom: 0px;
 
     animation: quickup 0.3s ease;
 }
@@ -476,6 +471,9 @@ fluent-card fluent-button {
 main {
     display: grid;
     grid-template-columns: 18vw 82vw;
+
+    height: calc(100vh - env(titlebar-area-height, 30px));
+    padding-top: env(titlebar-area-height, 30px);
 }
 
 #saved {
@@ -509,7 +507,9 @@ main {
 
     contain: strict;
 
-    height: -webkit-fill-available;
+    /* height: 80vh; */
+    flex: 1;
+    padding-bottom: 123px;
 }
 
 #convo-list code {
@@ -636,16 +636,30 @@ li.assistant {
     display: flex;
     justify-content: space-between;
 
-    position: unset;
     margin-left: 10px;
     margin-right: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 
     gap: 8px;
 
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border-radius: 6px;
+
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    left: 18vw;
+}
+
+#bottom {
+    position: fixed;
+    font-size: 10px;
+    bottom: 0px;
+    text-align: center;
+    left: 0;
+    right: 0;
+    color: grey;
 }
 
 #input-block fluent-text-area {
@@ -874,24 +888,23 @@ li.assistant {
     }
 
     #suggested {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
         max-height: 38vh;
-
-        display: flex;
-        flex-direction: row;
-        width: 70vw;
 
         gap: 8px;
 
         margin: 0;
         padding: 0;
+
+        display: grid;
+        grid-template-columns: 26vw 26vw;
+        width: 56vw;
+        max-width: unset;
     }
 
     #suggested li {
         animation: quickup 0.3s ease;
-        min-width: max-content;
         min-height: fit-content;
+        max-width: unset;
         font-size: 14px;
         height: 36px;
     }
@@ -989,9 +1002,9 @@ li.assistant {
     }
 
     #input-block {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
         border-radius: 8px;
     }
 

@@ -50,14 +50,21 @@ registerRoute(
     new CacheFirst({
         cacheName: 'cdn-cache',
     })
-)
+);
 
 registerRoute(
     ({ url }) => url.pathname.includes(".webp"),
     new CacheFirst({
         cacheName: 'webp-cache',
     })
-)
+);
+
+registerRoute(
+    ({ url }) => url.pathname.includes(".js"),
+    new CacheFirst({
+        cacheName: 'runtime-js-cache',
+    })
+);
 
 // widgets
 // Listen to the widgetinstall event.

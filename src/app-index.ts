@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 
 import './pages/app-home/app-home';
 import './components/header';
@@ -10,6 +10,8 @@ import { router } from './router';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
+  @state() gpuCheck: boolean = false;
+
   static get styles() {
     return css`
       sl-drawer::part(panel) {
@@ -158,6 +160,8 @@ export class AppIndex extends LitElement {
       }
     });
 
+    this.gpuCheck = "gpu" in navigator;
+
     const firstTimeCheck = localStorage.getItem('firstTime');
     if (!firstTimeCheck) {
       const dialog = this.shadowRoot?.querySelector('.dialog-overview');
@@ -236,7 +240,6 @@ export class AppIndex extends LitElement {
         <h1>Hello!</h1>
         <p>
           Meet Skipper, your all-in-one chat app for any device.
-          Enjoy Dark and Light modes, private on-device conversations, and easy image integration.
           Share your screen for instant help and have responses read back with lifelike voices.
           Skipper also supports speech-to-text and lets you generate images or check the weather and news.
           It's designed to make your life simpler, wherever you are.
@@ -253,15 +256,17 @@ export class AppIndex extends LitElement {
             <a href="https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/">Click here to learn how to get an OpenAI Key</a>
           </li>
 
-          <li>
+         ${this.gpuCheck ? html`<li>
             Use a Local AI Model: Start right away using a local AI model with limited functionality.
             Make your choice below to begin your journey!
-          </li>
+          </li>` : null}
         </ol>
 
         <div id="intro-actions">
           <key-manager @keys-saved="${() => this.getStarted("cloud")}"></key-manager>
-          <fluent-button appearance="accent" @click="${() => this.getStarted("local")}">Get Started with a Local AI Model</fluent-button>
+          ${this.gpuCheck ? html`
+               <fluent-button appearance="accent" @click="${() => this.getStarted("local")}">Get Started with a Local AI Model</fluent-button>
+            ` : null}
         </div>
       </div>
     </sl-dialog>

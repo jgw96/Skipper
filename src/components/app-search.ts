@@ -178,6 +178,11 @@ export class AppSearch extends LitElement {
             const docs: Document[] = [];
 
             this.savedConvos.forEach((convo) => {
+                if (!convo.convo) {
+                    convo.convo = convo.content;
+                }
+
+
                 const joinedContent = convo.convo.map((content: any) => content.content).join(" ");
                 const doc = new Document({ pageContent: joinedContent });
                 docs.push(doc);

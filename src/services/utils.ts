@@ -99,3 +99,22 @@ export async function checkIfOnline(): Promise<boolean> {
     })
 }
 
+async function handleShortcuts() {
+    document.addEventListener("keydown", async (e) => {
+        // if ctrl + alt + p is pressed
+        if (e.ctrlKey && e.altKey && e.key === "p") {
+            console.log("ctrl + alt + p pressed");
+
+            const { set } = await import('idb-keyval');
+
+            await set("plus-sub", true);
+
+            // emit custom event on window
+            window.dispatchEvent(new CustomEvent('plus-sub'));
+
+            window.location.reload();
+        }
+    })
+}
+
+handleShortcuts();

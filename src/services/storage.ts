@@ -4,12 +4,33 @@ import { FileWithHandle } from "browser-fs-access";
 import { get, set } from "idb-keyval";
 import { getConvosFromCloud } from "./cloud-storage";
 import { auth } from "./auth/firebase-auth";
+import { SimpleCrypto } from "./simplecrypto";
 
 const root = await navigator.storage.getDirectory();
 
 let saveWorker = new Worker(new URL('./storage-worker.ts', import.meta.url), { type: 'module' });
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || isFirefox;
+
+async function handleCypherKey() {
+    const key = await get("cypherkey");
+    if (!key) {
+        const newKey = await SimpleCrypto.generateKey();
+        const jwk = await SimpleCrypto.exportKey(newKey);
+
+        const importedKey = await SimpleCrypto.importKey(jwk);
+        console.log("Imported Key:", importedKey);
+
+        await set("cypherkey", jwk);
+        return importedKey;
+    }
+    else {
+        const importedKey = await SimpleCrypto.importKey(key);
+        console.log("Imported Key:", importedKey);
+        return importedKey;
+    }
+}
 
 export async function saveConversation(name: string, convo: any[]): Promise<void> {
     return new Promise(async (resolve) => {
@@ -29,9 +50,22 @@ export async function saveConversation(name: string, convo: any[]): Promise<void
             }
         }
         else {
-
             const noteID = generateRandoID();
             const noteDate = new Date().getTime();
+
+            const cryptoKey = await handleCypherKey();
+
+            let encrypted;
+
+            try {
+                encrypted = await SimpleCrypto.encrypt(cryptoKey, JSON.stringify(convo));
+                console.log("encrypted", encrypted);
+                if (encrypted && encrypted.length > 0) {
+                    (convo as unknown as string) = encrypted;
+                }
+            } catch (error) {
+                console.error("Error encrypting convo", error);
+            }
 
             const noteObject = {
                 name,
@@ -134,14 +168,18 @@ export async function getConversations(): Promise<any> {
             }
 
             conversations.push(entry.getFile().then((file: FileWithHandle) => {
-                return file.text().then((text: string) => {
+                return file.text().then(async (text: string) => {
                     // return {
                     //     name: file.name,
                     //     content: JSON.parse(text),
                     //     date: file.lastModified,
                     //     id: generateRandoID()
                     // }
-                    return JSON.parse(text);
+
+                    const parsedObject = JSON.parse(text);
+                    await decryptConvo(parsedObject);
+
+                    return parsedObject;
                 })
             }));
         }
@@ -152,9 +190,20 @@ export async function getConversations(): Promise<any> {
 
         let cloudConvosParsed: any[] = [];
         const cloudConvos = await getConvosFromCloud();
-        (cloudConvos || []).forEach((convo: any) => {
+        (cloudConvos || []).forEach(async (convo: any) => {
+            if (!convo.convo) {
+                convo.convo = convo.content;
+            }
+
             console.log("cloud convo", convo);
             convo.convo = JSON.parse(convo.convo);
+
+            if (typeof (convo.convo) === 'string') {
+                const key = await handleCypherKey();
+                const decrypted = await SimpleCrypto.decrypt(key, convo.convo);
+                convo.convo = JSON.parse(decrypted);
+            }
+
             // cloudConvosParsed.push({
             //     name: convo.name,
             //     content: JSON.parse(convo.convo),
@@ -181,6 +230,19 @@ export async function getConversations(): Promise<any> {
         });
 
         return uniqueConvos;
+    }
+}
+
+export async function decryptConvo(parsedObject: any) {
+    if (typeof (parsedObject.convo) === 'string') {
+        const key = await handleCypherKey();
+        const decrypted = await SimpleCrypto.decrypt(key, parsedObject.convo);
+        parsedObject.convo = JSON.parse(decrypted);
+
+        return parsedObject;
+    }
+    else {
+        return null;
     }
 }
 

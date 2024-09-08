@@ -3,6 +3,7 @@ import { property, state, customElement } from 'lit/decorators.js';
 
 import { fluentAnchor, provideFluentDesignSystem } from '@fluentui/web-components';
 import { router } from '../router';
+import { checkPlusSub } from '../services/settings';
 
 provideFluentDesignSystem().register(fluentAnchor());
 
@@ -11,11 +12,16 @@ export class AppHeader extends LitElement {
   @property({ type: String }) title = 'Skipper AI';
 
   @state() enableBack: boolean = false;
+  @state() pro: boolean = false;
 
   static get styles() {
     return css`
       :host {
         --theme-color: transparent;
+      }
+
+      #pro-link {
+        background: #ffffff0f;
       }
 
       header {
@@ -35,14 +41,14 @@ export class AppHeader extends LitElement {
         padding-left: 10px;
         padding-right: 10px;
 
-        position: unset;
+        position: fixed;
         left: env(titlebar-area-x, 0);
         top: env(titlebar-area-y, 0);
         height: env(titlebar-area-height, 30px);
         width: calc(env(titlebar-area-width, 100%) - 18px);
         -webkit-app-region: drag;
 
-        z-index: 1
+        z-index: 1;
       }
 
       app-login {
@@ -132,12 +138,24 @@ export class AppHeader extends LitElement {
         padding-top: 0;
       }
 
+      #pro-mode-activated {
+          color: #8c6ee0;
+    font-size: 12px;
+    background: #262626;
+    padding: 6px;
+    border-radius: 6px;
+    }
+
       @media(prefers-color-scheme: light) {
         header {
           color: black;
           background: var(--theme-color);
         }
 
+        #pro-mode-activated {
+          color: #8c6ee0;
+          background: #E7E7E7;
+        }
 
 
         nav a {
@@ -147,6 +165,10 @@ export class AppHeader extends LitElement {
         fluent-anchor::part(control), fluent-button::part(control) {
           background: transparent;
           color: black;
+        }
+
+        fluent-anchor#pro-link {
+          background: #E7E7E7;
         }
       }
 
@@ -181,6 +203,20 @@ export class AppHeader extends LitElement {
           display: none;
         }
       }
+
+      fluent-tooltip {
+                --neutral-layer-card-container: #8c6ee0;
+                --fill-color: #8c6ee0;
+                color: white;
+                border: none;
+                display: block;
+
+                animation: quickup 0.3s ease;
+              }
+
+              fluent-tooltip span {
+                color: white;
+              }
 
 
       @keyframes quickSlideFromleft {
@@ -223,6 +259,9 @@ export class AppHeader extends LitElement {
 
       console.log("enable back", this.enableBack)
     });
+
+    const proFlag = await checkPlusSub();
+    this.pro = proFlag;
     // this.enableBack = true;
   }
 
@@ -260,6 +299,9 @@ export class AppHeader extends LitElement {
         <div id="header-actions">
 
           <!-- add new notes button -->
+           ${!this.enableBack && !this.pro ? html`<fluent-anchor id="pro-link" href="/pro">
+              Get Skipper Pro
+            </fluent-anchor>` : html`<fluent-tooltip anchor="pro-mode-activated"><span>Skipper Pro Activated</span></fluent-tooltip> <div id="pro-mode-activated">Skipper Pro</div>`}
 
           ${!this.enableBack ? html`
               <fluent-anchor href="/photo">

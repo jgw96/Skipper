@@ -144,12 +144,18 @@ export class AppHome extends LitElement {
     // handle custom model loading
     window.addEventListener('model-loading', async () => {
       this.modelLoading = true;
+      this.aiSource = "local";
     });
 
     window.addEventListener('model-loaded', async () => {
       this.modelLoading = false;
       this.localModelLoaded = true;
     })
+
+    if (this.modelShipper === "phi3") {
+      const { loadAndSetupLocal } = await import('../../services/ai');
+      loadAndSetupLocal();
+    }
   }
 
   public async handleModelChange(model: string): Promise<void> {
@@ -225,36 +231,80 @@ export class AppHome extends LitElement {
   }
 
   async addImageToConvo(base64data?: string | undefined) {
-    if (base64data) {
-      this.currentPhoto = base64data;
-      this.inPhotoConvo = true;
-      return;
-    }
 
     const { fileOpen } = await import('browser-fs-access');
 
-    const blob = await fileOpen({
-      mimeTypes: ['image/*'],
+    const file = await fileOpen({
+      mimeTypes: ['image/*', 'audio/*', 'text/*'],
+      multiple: false
     });
 
-    let blobFromFile = undefined;
+    // for (const file of files) {
+    if (file.type.includes("image")) {
+      if (base64data) {
+        this.currentPhoto = base64data;
+        this.inPhotoConvo = true;
+        return;
+      }
 
-    if (blob.handle) {
-      blobFromFile = await blob.handle.getFile();
-    }
-    else {
-      blobFromFile = blob;
-    }
+      let blobFromFile = undefined;
 
-    // turn blobFromFile to base64
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result;
-      this.currentPhoto = base64data as string;
-      this.inPhotoConvo = true;
-    }
+      if (file.handle) {
+        blobFromFile = await file.handle.getFile();
+      }
+      else {
+        blobFromFile = file;
+      }
 
-    reader.readAsDataURL(blobFromFile);
+      // turn blobFromFile to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        this.currentPhoto = base64data as string;
+        this.inPhotoConvo = true;
+      }
+
+      reader.readAsDataURL(blobFromFile);
+    }
+    else if ((file.type.includes("audio"))) {
+      const { doSpeechToText } = await import("../../services/ai");
+      const text = await doSpeechToText(file);
+
+      const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+      input.value = text;
+    }
+    else if ((file.type.includes("text"))) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result;
+
+        const input: any = this.shadowRoot?.querySelector('fluent-text-area');
+        input.value = text;
+      }
+
+      reader.readAsText(file);
+
+    }
+    // }
+
+    // let blobFromFile = undefined;
+
+    // if (blob.handle) {
+    //   blobFromFile = await blob.handle.getFile();
+    // }
+    // else {
+    //   blobFromFile = blob;
+    // }
+
+    // // turn blobFromFile to base64
+    // const reader = new FileReader();
+    // reader.onloadend = () => {
+    //   const base64data = reader.result;
+    //   this.currentPhoto = base64data as string;
+    //   this.inPhotoConvo = true;
+    // }
+
+    // reader.readAsDataURL(blobFromFile);
   }
 
   async openCamera() {
@@ -610,7 +660,6 @@ export class AppHome extends LitElement {
             }
           }
           else {
-            this.showMessageLoader = false;
 
             this.previousMessages = [
               ...this.previousMessages,
@@ -621,6 +670,10 @@ export class AppHome extends LitElement {
             ];
 
             data.data.onmessage = async (event: any) => {
+              if (this.showMessageLoader === true) {
+                this.showMessageLoader = false;
+              }
+
               console.log("event.data", event.data);
               if (event.data.includes("Chat Completed")) {
                 data.data.close();
@@ -719,8 +772,14 @@ export class AppHome extends LitElement {
   async startConvo(convo: any) {
     this.previousMessages = [];
 
-    if (typeof convo.convo === "string") {
-      convo.convo = JSON.parse(convo.convo);
+    if (!convo.convo) {
+      convo.convo = convo.content;
+    }
+
+    if (convo.convo && typeof convo.convo === "string") {
+      const { decryptConvo } = await import('../../services/storage');
+      const decrypted = await decryptConvo(convo);
+      convo.convo = decrypted.convo;
     }
 
     if (convo.convo[0].image && convo.convo[0].image.length > 0) {
@@ -830,7 +889,14 @@ export class AppHome extends LitElement {
 
   async handleDictate(event: any) {
     console.log("handle dictate", event.detail.messageData)
-    const text = event.detail.messageData[0];
+    // const text = event.detail.messageData[0] || event.detail.text.transcription;
+    let text;
+    if (event.detail.messageData) {
+      text = event.detail.messageData;
+    }
+    else {
+      text = event.detail.text.transcription;
+    }
 
     const input: any = this.shadowRoot?.querySelector('fluent-text-area');
     input.value = text;
@@ -838,10 +904,10 @@ export class AppHome extends LitElement {
     await this.send();
     console.log("sent");
 
-    if (this.sayIT === false) {
-      const dictate: any = this.shadowRoot?.querySelector('app-dictate');
-      dictate.dictate();
-    }
+    // if (this.sayIT === false) {
+    //   const dictate: any = this.shadowRoot?.querySelector('app-dictate');
+    //   dictate.dictate();
+    // }
   }
 
   handleContinuiousDictate(event: any) {
@@ -1135,7 +1201,7 @@ export class AppHome extends LitElement {
         <div id="extra-actions">
           <div id="inner-extra-actions">
           ${this.modelShipper === "openai" || this.modelShipper === "google" ? html`<fluent-button @click="${() => this.addImageToConvo()}" id="add-image-to-convo" size="small">
-          <img src="/assets/image-outline.svg" alt="image icon">
+          <img src="/assets/attach-outline.svg" alt="image icon">
           </fluent-button>
           <fluent-tooltip anchor="add-image-to-convo"><span>Add an image</span></fluent-tooltip>
 
@@ -1147,7 +1213,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
-          ${this.modelShipper === "phi3" ? html`<local-dictate></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
+          ${this.modelShipper === "phi3" ? html`<local-dictate @got-text=${this.handleDictate}></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">
@@ -1210,6 +1276,8 @@ export class AppHome extends LitElement {
     </div>
       </div>
       </div>
+
+      <span id="bottom">Skipper AI can make mistakes. Check important info.</span>
       </main>
     `;
   }
