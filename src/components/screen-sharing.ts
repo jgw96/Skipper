@@ -22,6 +22,7 @@ export class ScreenSharing extends LitElement {
                 padding: 8px;
                 border-radius: 8px;
                 backdrop-filter: blur(64px);
+                -webkit-backdrop-filter: blur(64px);
                 background: rgb(36 36 36);
 
                 display: flex;

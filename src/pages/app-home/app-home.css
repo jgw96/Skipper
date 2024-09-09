@@ -229,6 +229,8 @@ fluent-search {
     padding: 0;
     margin: 0;
 
+    gap: 8px;
+
     animation: quickup 0.3s ease;
 }
 
@@ -239,8 +241,6 @@ fluent-search {
 
 .system ul,
 .assistant ul {
-    padding: 0;
-    margin: 0;
     list-style: initial;
 }
 
@@ -275,7 +275,7 @@ fluent-card {
     animation: quickup 0.3s ease;
     border: none;
     content-visibility: auto;
-
+    height: auto;
 }
 
 #extra-actions {
@@ -313,7 +313,7 @@ fluent-card {
 }
 
 ul {
-    list-style: none;
+    /* list-style: none;
     margin: 0;
 
 
@@ -324,7 +324,7 @@ ul {
 
     padding-left: 10px;
 
-    overflow: scroll;
+    overflow: scroll; */
 }
 
 #toolbar {
@@ -472,8 +472,14 @@ main {
     display: grid;
     grid-template-columns: 18vw 82vw;
 
-    height: calc(100vh - env(titlebar-area-height, 30px));
-    padding-top: env(titlebar-area-height, 30px);
+    /* height: calc(100vh - env(titlebar-area-height, 30px)); */
+    overflow-y: hidden;
+
+    position: fixed;
+    bottom: 0;
+    top: 30px;
+    left: 0;
+    right: 0;
 }
 
 #saved {
@@ -488,7 +494,8 @@ main {
     animation: slideStart 0.3s ease;
 
     margin-left: 8px;
-    margin-bottom: 7px;
+    margin-bottom: 11px;
+    margin-top: 8px;
     border-radius: 8px;
 }
 
@@ -503,13 +510,21 @@ main {
 }
 
 #convo-list {
-    width: 97%;
+    /* width: 97%;
 
     contain: strict;
 
-    /* height: 80vh; */
+    height: 80vh;
     flex: 1;
     padding-bottom: 123px;
+
+    display: none; */
+
+    height: 70vh;
+    overflow-y: scroll;
+    list-style: none;
+
+    padding-left: 10px;
 }
 
 #convo-list code {
@@ -519,6 +534,7 @@ main {
     border-radius: 8px;
     margin: 10px;
     overflow-x: auto;
+    max-width: 60vw;
 }
 
 #convo-list code::-webkit-scrollbar {
@@ -526,9 +542,9 @@ main {
 }
 
 #mainBlock>div {
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; */
 }
 
 #saved fluent-card span,
@@ -563,7 +579,7 @@ main {
 fluent-text-area {
     border-radius: 8px;
 
-    --theme-color: #262626;
+    --theme-color: #26262678;
 }
 
 fluent-text-area::part(root) {
@@ -590,7 +606,8 @@ li {
 li.user {
     align-self: flex-end;
     background: #8769dc;
-    margin-left: 10vw;
+    margin-left: 40vw;
+    margin-right: 10px;
 
     animation: quickup 0.3s ease;
 }
@@ -624,10 +641,13 @@ li.assistant {
 
 #saved ul {
     padding: 0px;
-    max-height: 83vh;
+    height: 80vh;
     overflow: hidden auto;
     position: sticky;
-    top: 38px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 0;
 }
 
 #input-block {
@@ -876,6 +896,19 @@ li.assistant {
     background: #ffffff0f;
 }
 
+li.user,
+li.system,
+li.assistant {
+    /* min-width: 30vw;
+    max-width: 45vw; */
+    box-shadow: var(--elevation-shadow-card-rest);
+    margin-bottom: 10px;
+}
+
+#mobileSaved fluent-card {
+    margin-bottom: 10px;
+}
+
 @media(min-width: 860px) {
     #convo-name {
         left: 20vw;
@@ -919,14 +952,6 @@ li.assistant {
 
     #no-messages {
         margin-top: 7vh;
-    }
-
-    li.user,
-    li.system,
-    li.assistant {
-        min-width: 30vw;
-        max-width: 45vw;
-        box-shadow: var(--elevation-shadow-card-rest);
     }
 
     #saved ul {
