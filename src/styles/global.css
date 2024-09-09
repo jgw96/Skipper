@@ -31,7 +31,7 @@ html, body {
   margin: 0;
   overflow: hidden;
 
-  height: 100vh;
+  /* height: 100vh; */
 
   overflow-y: hidden;
 
@@ -45,14 +45,15 @@ html::-webkit-scrollbar {
 
 @media (prefers-color-scheme: dark) {
   html {
-    background: linear-gradient(117deg, #202020, #8769dc 71%, #202020 89%);
+    /* background: linear-gradient(117deg, #202020, #8769dc 71%, #202020 89%); */
+    background: #272731;
   }
 
   html[data-theme="fluent"], html[data-theme="fluent"] body {
-    --theme-color: #212121;
+    --theme-color: #272731;
     color: white;
     --neutral-foreground-rest: white;
-    background-color: #232323eb !important;
+    background-color: #272731 !important;
   }
 
   /* html[data-theme="fluent"] {

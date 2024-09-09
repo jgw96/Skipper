@@ -41,7 +41,7 @@ export class AppHeader extends LitElement {
         padding-left: 10px;
         padding-right: 10px;
 
-        position: fixed;
+        position: unset;
         left: env(titlebar-area-x, 0);
         top: env(titlebar-area-y, 0);
         height: env(titlebar-area-height, 30px);

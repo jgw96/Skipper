@@ -10,7 +10,7 @@ export const styles = css`
   }
 
   main {
-    height: calc(100vh - 2rem);
+    // height: calc(100vh - 2rem);
   }
 
   fluent-card{

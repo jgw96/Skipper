@@ -19,7 +19,6 @@ fluent-progress-ring {
 
 main {
     height: calc(100vh - env(titlebar-area-height, 30px));
-    padding-top: env(titlebar-area-height, 30px);
 }
 
 #regen-button::part(control) {

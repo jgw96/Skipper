@@ -58,6 +58,9 @@ export class RightClick extends LitElement {
             #context-menu.visible {
                 display: block;
                 pointer-events: auto;
+                background: #0000001f;
+                backdrop-filter: blur(40px);
+                -webkit-backdrop-filter: blur(40px);
             }
 
         `

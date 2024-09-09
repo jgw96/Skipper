@@ -18,6 +18,7 @@ export class AppIndex extends LitElement {
         padding-top: env(titlebar-area-height, initial);
         background: transparent;
         backdrop-filter: blur(46px);
+        -webkit-backdrop-filter: blur(46px);
       }
 
       fluent-button, fluent-text-area, fluent-listbox, fluent-card, fluent-tooltip {
