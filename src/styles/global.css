@@ -53,7 +53,7 @@ html::-webkit-scrollbar {
     --theme-color: #272731;
     color: white;
     --neutral-foreground-rest: white;
-    background-color: #272731; !important;
+    background-color: #272731 !important;
   }
 
   /* html[data-theme="fluent"] {

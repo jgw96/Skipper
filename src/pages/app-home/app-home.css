@@ -1022,10 +1022,6 @@ li.assistant {
         width: 100%;
     }
 
-    ul {
-        padding: 6px;
-    }
-
     #input-block {
         left: 0px;
         right: 0px;
@@ -1041,6 +1037,9 @@ li.assistant {
 
     #mobileSaved {
         padding-bottom: 0;
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
 
     #suggested,
