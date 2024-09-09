@@ -71,6 +71,7 @@ export class AppSuccess extends LitElement {
         window.dispatchEvent(new CustomEvent('plus-sub'));
 
         router.navigate('/');
+        location.reload();
     }
 
     render() {
