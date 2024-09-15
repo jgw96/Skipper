@@ -113,14 +113,30 @@ async function saveUsingIDB(name: string, convo: any[]) {
         await set('convos', [newConvo]);
     }
     else {
-        const newConvo = {
-            name: name,
-            content: JSON.stringify(convo),
-            date: noteDate,
-            id: noteID
-        };
 
-        await set('convos', [...currentConversations, newConvo]);
+        // check if convo already exists and remove if it does
+        const existingConvo = currentConversations.find((convo: any) => convo.name === name);
+        if (existingConvo) {
+            const filteredConversations = currentConversations.filter((convo: any) => convo.name !== name);
+            const newConvo = {
+                name: name,
+                content: JSON.stringify(convo),
+                date: noteDate,
+                id: noteID
+            };
+
+            await set('convos', [newConvo, ...filteredConversations]);
+        }
+        else {
+            const newConvo = {
+                name: name,
+                content: JSON.stringify(convo),
+                date: noteDate,
+                id: noteID
+            };
+
+            await set('convos', [newConvo, ...currentConversations]);
+        }
     }
 }
 
