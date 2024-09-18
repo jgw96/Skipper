@@ -1176,13 +1176,12 @@ export class AppHome extends LitElement {
 
        ` : html`
           <div id="no-messages" class="main-content">
-            <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
+            <img src="/assets/icons/256-icon.png" alt="chat" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
               ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
