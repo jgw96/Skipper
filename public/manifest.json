@@ -8,10 +8,10 @@
   "display": "standalone",
   "start_url": "/",
   "short_name": "Skipper",
-  "theme_color": "#272731",
+  "theme_color": "#202020",
   "description": "Meet Skipper, your all-in-one chat app for any device. Enjoy Dark and Light modes, private on-device conversations, and easy image integration. Share your screen for instant help and have responses read back with lifelike voices. Skipper also supports speech-to-text and lets you generate images or check the weather and news. It’s designed to make your life simpler, wherever you are.",
   "orientation": "any",
-  "background_color": "#272731",
+  "background_color": "#202020",
   "related_applications": [],
   "prefer_related_applications": false,
   "display_override": [
