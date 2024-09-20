@@ -1,9 +1,11 @@
 import { LitElement, PropertyValues, html, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 import cssModule from './app-image.css?inline';
 
 import { fluentTextArea, fluentProgressRing, provideFluentDesignSystem } from '@fluentui/web-components';
+import { fileOpen } from 'browser-fs-access';
 
 provideFluentDesignSystem().register(fluentTextArea(), fluentProgressRing());
 
@@ -12,6 +14,10 @@ export class AppImage extends LitElement {
     @state() loading = false;
     @state() generated: boolean = false;
     @state() currentPrompt: string = '';
+    @state() currentStyle: string = 'photographic';
+    @state() currentRatio: string = '1:1';
+
+    @state() originalImage: any;
 
     static styles = [
         unsafeCSS(cssModule)
@@ -36,15 +42,34 @@ export class AppImage extends LitElement {
     }
 
     async doGenerate() {
+        // const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
+        // console.log("textArea", textArea?.value)
+        // if (textArea?.value) {
+        //     this.currentPrompt = textArea.value;
+
+        //     const { generateImage } = await import('../../services/ai');
+        //     this.loading = true;
+        //     const url = await generateImage(textArea.value);
+        //     console.log('url', url);
+        //     this.loading = false;
+
+        //     this.generated = true;
+
+        //     await this.updateComplete;
+
+        //     const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        //     displayImage.src = url;
+
+        //     textArea.value = '';
+        // }
+
         const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
-        console.log("textArea", textArea?.value)
         if (textArea?.value) {
             this.currentPrompt = textArea.value;
 
-            const { generateImage } = await import('../../services/ai');
+            const { generatePhotoWithStableCore } = await import('../../services/images/stability');
             this.loading = true;
-            const url = await generateImage(textArea.value);
-            console.log('url', url);
+            const blob = await generatePhotoWithStableCore(textArea.value, this.currentStyle, this.currentRatio);
             this.loading = false;
 
             this.generated = true;
@@ -52,7 +77,7 @@ export class AppImage extends LitElement {
             await this.updateComplete;
 
             const displayImage: any = this.shadowRoot?.querySelector('#display-image');
-            displayImage.src = url;
+            displayImage.src = URL.createObjectURL(blob);
 
             textArea.value = '';
         }
@@ -60,8 +85,11 @@ export class AppImage extends LitElement {
     }
 
     quickStyle(style: string) {
-        const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
-        textArea.value = `${textArea.value} In a ${style} style.`;
+        this.currentStyle = style;
+    }
+
+    quickRatio(ratio: string) {
+        this.currentRatio = ratio;
     }
 
     downloadImage() {
@@ -147,6 +175,68 @@ export class AppImage extends LitElement {
         }
     }
 
+    async importImage() {
+        const fileHandle = await fileOpen({
+            mimeTypes: ['image/*'],
+            extensions: ['.png', '.jpg']
+        });
+
+        if (fileHandle) {
+            this.generated = true;
+            await this.updateComplete;
+            this.originalImage = fileHandle;
+            const url = URL.createObjectURL(fileHandle);
+            const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+            displayImage.src = url;
+        }
+    }
+
+    async doRemoveBackground() {
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const { removeBackground } = await import('../../services/images/stability');
+        this.loading = true;
+        const newBlob = await removeBackground(blob);
+        this.loading = false;
+
+        displayImage.src = URL.createObjectURL(newBlob);
+    }
+
+    async doUpscale() {
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const { upscaleImage } = await import('../../services/images/stability');
+        this.loading = true;
+        const newBlob = (await upscaleImage(blob) as Blob);
+        this.loading = false;
+
+        displayImage.src = URL.createObjectURL(newBlob);
+    }
+
+    async doOutpaint() {
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const { outpaint } = await import('../../services/images/stability');
+        this.loading = true;
+        const newBlob = await outpaint(blob);
+        this.loading = false;
+
+        displayImage.src = URL.createObjectURL(newBlob);
+    }
+
+
     render() {
         return html`
           <main>
@@ -176,22 +266,52 @@ export class AppImage extends LitElement {
                 ${this.generated ? html`
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
               ` : html`
-                <h2>Generate an image of anything using AI</h2>
+                <h2>Generate an image of anything</h2>
               `}
             </div>
 
 
             <div id="image-input-outer">
                 <div id="image-input-block">
+                    <!-- <fluent-button @click="${() => this.importImage()}" id="upload-button" appearance="accent" type="primary">
+                        Import Image
+                    </fluent-button> -->
 
-                    <div id="quick-styles">
-                        <p>Style Modifiers</p>
+                    <!-- ${this.generated ? html`<div id="quick-actions">
+                        <fluent-button id="remove-bg-button" @click="${this.doRemoveBackground}">
+                            Remove Background
+                        </fluent-button>
+
+                        <fluent-button id="upscale-button" @click="${this.doUpscale}">
+                            Upscale
+                        </fluent-button>
+
+                        <fluent-button id="outpaint-button" @click="${this.doOutpaint}">
+                            Generative Fill
+                        </fluent-button>
+                    </div>` : null} -->
+
+                    <div class="quick-actions">
+                        <p>Style</p>
 
                         <div id="style-buttons">
-                        <fluent-button @click="${() => this.quickStyle("cartoon")}">Cartoon</fluent-button>
-                        <fluent-button @click="${() => this.quickStyle("sketch")}">Sketch</fluent-button>
-                        <fluent-button @click="${() => this.quickStyle("oil painting")}">Oil Painting</fluent-button>
-                        <fluent-button @click="${() => this.quickStyle("realistic")}">Realistic</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "3d-model"})}" @click="${() => this.quickStyle("3d-model")}">3d model</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "analog-film"})}" @click="${() => this.quickStyle("analog-film")}">Analog Film</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "anime"})}" @click="${() => this.quickStyle("anime")}">Anime</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "fantasy-art"})}" @click="${() => this.quickStyle("fantasy-art")}">Fantasy</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "comic-book"})}" @click="${() => this.quickStyle("comic-book")}">Comic Book</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "neon-punk"})}" @click="${() => this.quickStyle("neon-punk")}">Neon</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "low-poly"})}" @click="${() => this.quickStyle("low-poly")}">Low Poly</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentStyle === "pixel-art"})}" @click="${() => this.quickStyle("pixel-art")}">Pixel Art</fluent-button>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <p>Aspect Ratio</p>
+                        <div id="style-buttons">
+                            <fluent-button class="${classMap({selected: this.currentRatio === "16:9"})}" @click="${() => this.quickRatio("16:9")}">Desktop</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentRatio === "9:21"})}" @click="${() => this.quickRatio("9:21")}">Mobile</fluent-button>
+                            <fluent-button class="${classMap({selected: this.currentRatio === "1:1"})}" @click="${() => this.quickRatio("1:1")}">Social</fluent-button>
                         </div>
                     </div>
 

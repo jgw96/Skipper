@@ -31,11 +31,14 @@ main {
     position: fixed;
     bottom: 0;
     left: 0;
-    right: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
+
+    top: 30px;
+    display: initial;
+    right: initial;
 }
 
 #generated-buttons {
@@ -50,23 +53,33 @@ main {
     animation: quickup 0.3s ease-in-out;
 }
 
+fluent-button,
+fluent-text-field,
+fluent-listbox,
+fluent-card,
+fluent-anchor {
+
+}
+
 #image-input-block {
     display: flex;
     flex-direction: column;
 
     bottom: 8px;
-    width: 46vw;
     right: 8px;
     padding: 8px;
     background: #ffffff0f;
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
 
     gap: 8px;
 
+    width: 22vw;
+    height: 90vh;
+    border-radius: 8px;
+
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border-radius: 6px;
 
 
     animation: quickup 0.3s ease;
@@ -84,11 +97,19 @@ main {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    flex-direction: column;
+
+    margin-top: 18px;
 }
 
 #image-input-inner fluent-button {
     align-self: end;
     margin-bottom: 1px;
+}
+
+#image-input-inner fluent-text-area {
+    width: 100%;
 }
 
 #image-input-block fluent-button img {
@@ -97,8 +118,20 @@ main {
     margin-top: 6px;
 }
 
-#quick-styles fluent-button::part(control) {
+.quick-actions fluent-button {
+    width: 100%;
+}
+
+.quick-actions fluent-button::part(control) {
     background: #202020;
+}
+
+.quick-actions p {
+    margin: 0;
+    margin-bottom: 14px;
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 #quick-styles p {
@@ -120,11 +153,13 @@ fluent-text-area::part(root) {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    margin-top: 8vh;
+    margin-top: 10vh;
 
     flex-direction: column;
     gap: 8px;
+
+    margin-left: 216px;
+    width: initial;
 }
 
 #image-block h2 {
@@ -167,12 +202,20 @@ fluent-text-area::part(root) {
 }
 
 #style-buttons {
-    display: flex;
-    gap: 4px;
+    gap: 8px;
+
+    display: grid;
+
+    grid-template-columns: auto auto;
+}
+
+#style-buttons fluent-button.selected::part(control) {
+    background: #8769dc;
 }
 
 #image-block img {
-    width: 48vw;
+    max-width: 68vw;
+    max-height: 80vh;
     border-radius: 8px;
     box-shadow: 0px 0px 10px 0px #202020;
     animation: fadein 0.3s ease-in-out;
@@ -197,7 +240,7 @@ fluent-text-area::part(root) {
     }
 
     fluent-text-area::part(control) {
-        background: var(--theme-color);
+        background: #202020;
         color: white;
         backdrop-filter: blur(40px);
         -webkit-backdrop-filter: blur(40px);
@@ -212,7 +255,7 @@ fluent-text-area::part(root) {
 
     #image-input-block,
     #generating-spinner {
-        background: #8769dc73;
+        background: rgb(219 219 219);
     }
 
     #generating-spinner {
@@ -231,6 +274,18 @@ fluent-text-area::part(root) {
     #image-block img {
         box-shadow: 0px 0px 18px 0px #202020a1;
     }
+
+    .quick-actions fluent-button::part(control) {
+        background: white;
+    }
+
+    .quick-actions fluent-button.selected::part(control) {
+        color: white;
+    }
+
+    #image-input-block fluent-button img {
+        filter: invert(1);
+    }
 }
 
 @media(max-width: 800px) {
@@ -238,10 +293,13 @@ fluent-text-area::part(root) {
         position: fixed;
         width: initial;
         left: 8px;
+
+        height: initial;
     }
 
     #image-block {
-        top: 10vh;
+        margin-top: 2vh;
+        margin-left: 10px;
     }
 
     #image-block h2 {
@@ -255,6 +313,7 @@ fluent-text-area::part(root) {
     #generated-buttons {
         justify-content: center;
         top: 36px;
+        right: 0;
     }
 
     #generating-spinner {
