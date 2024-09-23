@@ -231,9 +231,10 @@ export class AppImage extends LitElement {
         displayImage.src = URL.createObjectURL(newBlob);
     }
 
-
     render() {
         return html`
+
+
           <main>
 
           <sl-dialog class="upgrade-dialog" label="Upgrade to Skipper Pro" modal no-header>
@@ -261,7 +262,7 @@ export class AppImage extends LitElement {
             </div>
 
 
-            <div id="image-input-outer">
+            <div id="image-input-outer" class="desktop">
                 <div id="image-input-block">
                     <div class="generation-block">
                     <fluent-button @click="${() => this.importImage()}" id="upload-button" appearance="accent" type="primary">
@@ -296,7 +297,7 @@ export class AppImage extends LitElement {
                         </div>
                     </div>
 
-                    <div class="quick-actions">
+                    <div class="quick-actions aspect-ratio">
                         <p>Aspect Ratio</p>
                         <div id="style-buttons">
                             <fluent-button class="${classMap({selected: this.currentRatio === "16:9"})}" @click="${() => this.quickRatio("16:9")}">Desktop</fluent-button>

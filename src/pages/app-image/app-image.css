@@ -15,8 +15,6 @@ fluent-progress-ring {
     --accent-stroke-control-hover: #8769dc;
 }
 
-
-
 main {
     height: calc(100vh - env(titlebar-area-height, 30px));
 }
@@ -250,6 +248,34 @@ fluent-text-area::part(root) {
     margin-top: 0;
 }
 
+#start-mobile-button {
+    position: fixed;
+    bottom: 48px;
+    right: 16px;
+
+    display: none;
+}
+
+sl-drawer::part(panel) {
+    --size: 62vh;
+    border-radius: 8px;
+}
+
+#start-mobile-button::part(control) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    height: 64px;
+    width: 64px;
+}
+
+#start-mobile-button img {
+    height: 24px;
+    width: 24px;
+    margin-top: 5px;
+}
+
 @media(prefers-color-scheme: dark) {
     fluent-text-area {
         background: var(--theme-color);
@@ -314,6 +340,19 @@ fluent-text-area::part(root) {
         left: 8px;
 
         height: initial;
+    }
+
+    #start-mobile-button {
+        display: initial;
+    }
+
+    .aspect-ratio {
+        display: none;
+    }
+
+    #style-buttons {
+        max-height: 91px;
+        overflow-y: auto;
     }
 
     #image-block {

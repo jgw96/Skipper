@@ -66,6 +66,13 @@ registerRoute(
     })
 );
 
+registerRoute(
+    ({ url }) => url.pathname.includes(".svg"),
+    new CacheFirst({
+        cacheName: 'webp-cache',
+    })
+);
+
 // widgets
 // Listen to the widgetinstall event.
 self.addEventListener("widgetinstall", event => {
