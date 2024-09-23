@@ -19,6 +19,10 @@ main {
     height: calc(100vh - env(titlebar-area-height, 30px));
 }
 
+#styles-header {
+    margin-top: 0;
+}
+
 #regen-button::part(control) {
     background: #ffffff0f;
     backdrop-filter: blur(40px);
@@ -130,11 +134,16 @@ fluent-anchor {
     background: #202020;
 }
 
+#sub-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .quick-actions p {
     margin: 0;
     margin-bottom: 14px;
     margin-top: 14px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
 }
 
@@ -357,7 +366,8 @@ sl-drawer::part(panel) {
 
     #image-block {
         margin-top: 2vh;
-        margin-left: 10px;
+        margin-left: 0px;
+        width: 100%;
     }
 
     #image-block h2 {
@@ -365,7 +375,7 @@ sl-drawer::part(panel) {
     }
 
     #image-block img {
-        width: 90vw;
+        max-width: 90vw;
     }
 
     #generated-buttons {

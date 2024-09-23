@@ -95,11 +95,63 @@ export class AppImage extends LitElement {
     }
 
     downloadImage() {
-        console.log("download image");
+        // download the image
         const displayImage: any = this.shadowRoot?.querySelector('#display-image');
         const url = displayImage.src;
 
-        window.open(url, '_blank')
+        // make a blob from displayImage
+        const a = document.createElement('a');
+        a.href = url;
+
+        // get the filename
+        const filename = url.split('/').pop();
+        a.download = filename;
+        a.click();
+    }
+
+    async shareImage() {
+        // share the image
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        const image = await fetch(url).then(response => response.blob());
+        const fileEnding = this.originalImage.type.split('/')[1];
+        const newFile = new File([image], `generated-image.${fileEnding}`, { type: this.originalImage.type });
+
+        // share a blob of the image with the web share api
+        if (navigator.share) {
+            await navigator.share({
+                title: 'Generated Image',
+                text: 'Check out this generated image!',
+                url: "",
+                files: [newFile]
+            })
+        }
+    }
+
+    async copyImage() {
+        // copy the image to the clipboard
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        const image = await fetch(url).then(response => response.blob());
+        const imageType = 'image/png';
+
+        const clippy = new ClipboardItem({
+            [imageType]: image
+        })
+
+        navigator.clipboard.write([
+            clippy
+        ]);
+    }
+
+    async openImage() {
+        // open the image in a new tab
+        const displayImage: any = this.shadowRoot?.querySelector('#display-image');
+        const url = displayImage.src;
+
+        window.open(url, '_blank');
     }
 
     regen() {
@@ -276,6 +328,20 @@ export class AppImage extends LitElement {
                             <fluent-button id="remove-bg-button" @click="${this.doRemoveBackground}">
                                 Remove Background
                             </fluent-button>
+
+                            <div id="sub-actions">
+                                <fluent-button id="upscale-button" @click="${this.downloadImage}">
+                                    <img src="/assets/attach-outline.svg" alt="download" />
+                                </fluent-button>
+
+                                <fluent-button id="upscale-button" @click="${this.shareImage}">
+                                    <img src="/assets/share-social-outline.svg" alt="share" />
+                                </fluent-button>
+
+                                <fluent-button id="upscale-button" @click="${this.openImage}">
+                                    <img src="/assets/copy-outline.svg" alt="copy" />
+                                </fluent-button>
+                            </div>
                         </div>
                     </div>` : null}
                     </div>
@@ -283,26 +349,26 @@ export class AppImage extends LitElement {
                     <div class="generation-block">
 
                     <div class="quick-actions">
-                        <p>Style</p>
+                        <p id="styles-header">Styles</p>
 
                         <div id="style-buttons">
-                            <fluent-button class="${classMap({selected: this.currentStyle === "3d-model"})}" @click="${() => this.quickStyle("3d-model")}">3d model</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "analog-film"})}" @click="${() => this.quickStyle("analog-film")}">Analog Film</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "anime"})}" @click="${() => this.quickStyle("anime")}">Anime</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "fantasy-art"})}" @click="${() => this.quickStyle("fantasy-art")}">Fantasy</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "comic-book"})}" @click="${() => this.quickStyle("comic-book")}">Comic Book</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "neon-punk"})}" @click="${() => this.quickStyle("neon-punk")}">Neon</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "low-poly"})}" @click="${() => this.quickStyle("low-poly")}">Low Poly</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentStyle === "pixel-art"})}" @click="${() => this.quickStyle("pixel-art")}">Pixel Art</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "3d-model" })}" @click="${() => this.quickStyle("3d-model")}">3d model</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "analog-film" })}" @click="${() => this.quickStyle("analog-film")}">Analog Film</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "anime" })}" @click="${() => this.quickStyle("anime")}">Anime</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "fantasy-art" })}" @click="${() => this.quickStyle("fantasy-art")}">Fantasy</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "comic-book" })}" @click="${() => this.quickStyle("comic-book")}">Comic Book</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "neon-punk" })}" @click="${() => this.quickStyle("neon-punk")}">Neon</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "low-poly" })}" @click="${() => this.quickStyle("low-poly")}">Low Poly</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentStyle === "pixel-art" })}" @click="${() => this.quickStyle("pixel-art")}">Pixel Art</fluent-button>
                         </div>
                     </div>
 
                     <div class="quick-actions aspect-ratio">
                         <p>Aspect Ratio</p>
                         <div id="style-buttons">
-                            <fluent-button class="${classMap({selected: this.currentRatio === "16:9"})}" @click="${() => this.quickRatio("16:9")}">Desktop</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentRatio === "9:21"})}" @click="${() => this.quickRatio("9:21")}">Mobile</fluent-button>
-                            <fluent-button class="${classMap({selected: this.currentRatio === "1:1"})}" @click="${() => this.quickRatio("1:1")}">Social</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentRatio === "16:9" })}" @click="${() => this.quickRatio("16:9")}">Desktop</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentRatio === "9:21" })}" @click="${() => this.quickRatio("9:21")}">Mobile</fluent-button>
+                            <fluent-button class="${classMap({ selected: this.currentRatio === "1:1" })}" @click="${() => this.quickRatio("1:1")}">Social</fluent-button>
                         </div>
                     </div>
 
