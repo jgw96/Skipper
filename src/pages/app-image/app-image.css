@@ -68,9 +68,8 @@ fluent-anchor {
     bottom: 8px;
     right: 8px;
     padding: 8px;
-    background: #ffffff0f;
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
 
     gap: 8px;
 
@@ -83,6 +82,13 @@ fluent-anchor {
 
 
     animation: quickup 0.3s ease;
+}
+
+#actions-block {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    flex-direction: column;
 }
 
 #cancel-link {
@@ -129,9 +135,15 @@ fluent-anchor {
 .quick-actions p {
     margin: 0;
     margin-bottom: 14px;
-    margin-top: 8px;
+    margin-top: 14px;
     font-size: 18px;
     font-weight: bold;
+}
+
+.generation-block {
+    background: #ffffff1f;
+    padding: 8px;
+    border-radius: 8px;
 }
 
 #quick-styles p {
@@ -153,13 +165,17 @@ fluent-text-area::part(root) {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 10vh;
+    margin-top: 3vh;
 
     flex-direction: column;
     gap: 8px;
 
     margin-left: 216px;
     width: initial;
+}
+
+#upload-button {
+    width: 100%;
 }
 
 #image-block h2 {
@@ -215,7 +231,7 @@ fluent-text-area::part(root) {
 
 #image-block img {
     max-width: 68vw;
-    max-height: 80vh;
+    max-height: 90vh;
     border-radius: 8px;
     box-shadow: 0px 0px 10px 0px #202020;
     animation: fadein 0.3s ease-in-out;
@@ -253,13 +269,16 @@ fluent-text-area::part(root) {
 
 @media(prefers-color-scheme: light) {
 
-    #image-input-block,
     #generating-spinner {
         background: rgb(219 219 219);
     }
 
+    .generation-block {
+        background: #00000014;
+    }
+
     #generating-spinner {
-        color: white;
+        color: black;
     }
 
     #quick-styles fluent-button::part(control) {

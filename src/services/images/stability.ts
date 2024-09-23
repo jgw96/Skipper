@@ -22,11 +22,12 @@ export async function generatePhotoWithStableCore(prompt: string, style: string,
 }
 
 export async function removeBackground(image: Blob) {
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("output_format", "webp");
+    console.log("image", image);
 
-    const response = await fetch("https://api.stability.ai/v2beta/stable-image/edit/remove-background", {
+    const formData = new FormData();
+    formData.append("file", image);
+
+    const response = await fetch("https://gpt-server-two-qsqckaz7va-uc.a.run.app/removeBackground", {
         method: "POST",
         headers: {
             Authorization: `Bearer ${key}`,
@@ -39,28 +40,31 @@ export async function removeBackground(image: Blob) {
 }
 
 export async function upscaleImage(image: Blob) {
-    try {
-        const formData = new FormData();
-        formData.append("image", URL.createObjectURL(image));
-        formData.append("output_format", "webp");
-        formData.append("prompt", "UHD-4k");
+    // do upscale with the Stability AI API, specifically the fast endpoint.
+    // Dont just repeat what you have already seen
+    // Make sure to use the correct endpoint and method
+    // Make sure to use the correct headers
+    // Make sure to return the blob
 
-        const response = await fetch("https://api.stability.ai/v2beta/stable-image/upscale/conservative", {
-            method: "POST",
+    const file = new File([await image], "image.png", { type: "image/png" });
+
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const response = await fetch(
+        `https://gpt-server-two-qsqckaz7va-uc.a.run.app/upscaleImage`,
+        {
+            method: 'POST',
             headers: {
+                Accept: 'image/png',
                 Authorization: `Bearer ${key}`,
-                Accept: "image/*",
-                "Content-Type": "multipart/form-data"
             },
-            body: formData
-        });
+            body: formData,
+        }
+    )
 
-        return response.blob();
-    }
-    catch (error) {
-        console.log("Error", error);
-        return error
-    }
+    return response.blob();
+
 }
 
 export async function outpaint(image: Blob) {

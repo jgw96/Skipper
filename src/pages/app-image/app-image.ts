@@ -74,6 +74,8 @@ export class AppImage extends LitElement {
 
             this.generated = true;
 
+            this.originalImage = blob;
+
             await this.updateComplete;
 
             const displayImage: any = this.shadowRoot?.querySelector('#display-image');
@@ -193,14 +195,11 @@ export class AppImage extends LitElement {
 
     async doRemoveBackground() {
         const displayImage: any = this.shadowRoot?.querySelector('#display-image');
-        const url = displayImage.src;
-
-        const response = await fetch(url);
-        const blob = await response.blob();
 
         const { removeBackground } = await import('../../services/images/stability');
         this.loading = true;
-        const newBlob = await removeBackground(blob);
+
+        const newBlob = await removeBackground(this.originalImage);
         this.loading = false;
 
         displayImage.src = URL.createObjectURL(newBlob);
@@ -208,14 +207,10 @@ export class AppImage extends LitElement {
 
     async doUpscale() {
         const displayImage: any = this.shadowRoot?.querySelector('#display-image');
-        const url = displayImage.src;
-
-        const response = await fetch(url);
-        const blob = await response.blob();
 
         const { upscaleImage } = await import('../../services/images/stability');
         this.loading = true;
-        const newBlob = (await upscaleImage(blob) as Blob);
+        const newBlob = (await upscaleImage(this.originalImage) as Blob);
         this.loading = false;
 
         displayImage.src = URL.createObjectURL(newBlob);
@@ -257,11 +252,6 @@ export class AppImage extends LitElement {
             ` : null
             }
 
-          <div id="generated-buttons">
-                  ${this.generated ? html`<fluent-button id="download-button" size="small" appearance="accent" @click="${this.downloadImage}">Download</fluent-button>` : null}
-                  ${this.generated ? html`<fluent-button id="regen-button" size="small" @click="${this.regen}">Regenerate</fluent-button>` : null}
-    </div>
-
             <div id="image-block">
                 ${this.generated ? html`
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
@@ -273,23 +263,23 @@ export class AppImage extends LitElement {
 
             <div id="image-input-outer">
                 <div id="image-input-block">
-                    <!-- <fluent-button @click="${() => this.importImage()}" id="upload-button" appearance="accent" type="primary">
+                    <div class="generation-block">
+                    <fluent-button @click="${() => this.importImage()}" id="upload-button" appearance="accent" type="primary">
                         Import Image
-                    </fluent-button> -->
+                    </fluent-button>
 
-                    <!-- ${this.generated ? html`<div id="quick-actions">
-                        <fluent-button id="remove-bg-button" @click="${this.doRemoveBackground}">
-                            Remove Background
-                        </fluent-button>
+                    ${this.generated ? html`<div class="quick-actions">
+                        <p>Actions</p>
 
-                        <fluent-button id="upscale-button" @click="${this.doUpscale}">
-                            Upscale
-                        </fluent-button>
+                        <div id="actions-block">
+                            <fluent-button id="remove-bg-button" @click="${this.doRemoveBackground}">
+                                Remove Background
+                            </fluent-button>
+                        </div>
+                    </div>` : null}
+                    </div>
 
-                        <fluent-button id="outpaint-button" @click="${this.doOutpaint}">
-                            Generative Fill
-                        </fluent-button>
-                    </div>` : null} -->
+                    <div class="generation-block">
 
                     <div class="quick-actions">
                         <p>Style</p>
@@ -321,6 +311,8 @@ export class AppImage extends LitElement {
                                 <img src="/assets/send-outline.svg" alt="send" />
                             </fluent-button>
                         </div>
+
+                    </div>
                 </div>
             </div>
           </main>
