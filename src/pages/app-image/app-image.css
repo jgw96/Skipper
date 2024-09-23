@@ -75,8 +75,8 @@ fluent-anchor {
 
     gap: 8px;
 
-    width: 22vw;
-    height: 90vh;
+    width: 20vw;
+    height: 92vh;
     border-radius: 8px;
 
     backdrop-filter: blur(40px);
@@ -172,7 +172,7 @@ fluent-text-area::part(root) {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 3vh;
+    margin-top: 4vh;
 
     flex-direction: column;
     gap: 8px;
@@ -241,7 +241,20 @@ fluent-text-area::part(root) {
     max-height: 90vh;
     border-radius: 8px;
     box-shadow: 0px 0px 10px 0px #202020;
-    animation: fadein 0.3s ease-in-out;
+
+}
+
+#image-block p {
+    font-weight: bold;
+    max-width: 528px;
+    color: #8769dc;
+    margin-top: 0;
+    text-wrap: pretty;
+    text-shadow: none;
+    font-size: 38px;
+    text-align: center;
+    padding-left: 12px;
+    padding-right: 12px;
 }
 
 #upgrade-link {
@@ -283,6 +296,32 @@ sl-drawer::part(panel) {
     height: 24px;
     width: 24px;
     margin-top: 5px;
+}
+
+#intro-img {
+    margin-top: 10vh;
+    width: 100px;
+    height: 100px;
+
+    animation: 1s ease 0s infinite normal none running bounce;
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-2px);
+    }
+
+    60% {
+        transform: translateY(2px);
+    }
 }
 
 @media(prefers-color-scheme: dark) {
@@ -351,6 +390,10 @@ sl-drawer::part(panel) {
         height: initial;
     }
 
+    #image-input-inner {
+        flex-direction: row;
+    }
+
     #start-mobile-button {
         display: initial;
     }
@@ -360,8 +403,20 @@ sl-drawer::part(panel) {
     }
 
     #style-buttons {
-        max-height: 91px;
-        overflow-y: auto;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #style-buttons::-webkit-scrollbar {
+        display: none;
+    }
+
+    #style-buttons fluent-button {
+        width: 100%;
+        flex: 0 0 auto;
+        margin-right: -4px;
+        width: 120px;
     }
 
     #image-block {
@@ -388,6 +443,12 @@ sl-drawer::part(panel) {
         left: 10vw;
         right: 10vw;
         top: 40px;
+    }
+}
+
+@media(min-width: 820px) {
+    #image-input-block {
+        padding-left: 0;
     }
 }
 

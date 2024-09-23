@@ -41,6 +41,60 @@ export class AppImage extends LitElement {
         }
     }
 
+    setupPinchZoom(img: HTMLImageElement) {
+        let initialDistance: any = null;
+        let scale = 1;
+        let originX = 0;
+        let originY = 0;
+
+        img.addEventListener('touchstart', function (event) {
+            if (event.touches.length === 2) {
+                event.preventDefault();
+
+                // Get the midpoint between the two fingers as the pinch starting point
+                const touch1 = event.touches[0];
+                const touch2 = event.touches[1];
+                originX = (touch1.pageX + touch2.pageX) / 2;
+                originY = (touch1.pageY + touch2.pageY) / 2;
+
+                // Set the transform origin to the pinch point
+                const imgRect = img.getBoundingClientRect();
+                const offsetX = originX - imgRect.left;
+                const offsetY = originY - imgRect.top;
+                img.style.transformOrigin = `${(offsetX / imgRect.width) * 100}% ${(offsetY / imgRect.height) * 100}%`;
+
+                // Calculate the initial distance between fingers
+                initialDistance = Math.hypot(touch2.pageX - touch1.pageX, touch2.pageY - touch1.pageY);
+            }
+        });
+
+        img.addEventListener('touchmove', function (event) {
+            if (event.touches.length == 2) {
+                event.preventDefault(); // Prevent page scroll
+
+                const touch1 = event.touches[0];
+                const touch2 = event.touches[1];
+
+                // Calculate the current distance between fingers
+                const currentDistance = Math.hypot(touch2.pageX - touch1.pageX, touch2.pageY - touch1.pageY);
+
+                if (initialDistance) {
+                    // Adjust the scale based on the distance change
+                    scale = currentDistance / initialDistance;
+
+                    // Apply the zoom scale to the image
+                    img.style.transform = `scale(${scale})`;
+                }
+            }
+        });
+
+        img.addEventListener('touchend', function (event) {
+            if (event.touches.length < 2) {
+                initialDistance = null; // Reset when pinch gesture ends
+            }
+        });
+    }
+
     async doGenerate() {
         // const textArea: any = this.shadowRoot?.querySelector('fluent-text-area');
         // console.log("textArea", textArea?.value)
@@ -82,6 +136,8 @@ export class AppImage extends LitElement {
             displayImage.src = URL.createObjectURL(blob);
 
             textArea.value = '';
+
+            this.setupPinchZoom(displayImage);
         }
 
     }
@@ -242,6 +298,8 @@ export class AppImage extends LitElement {
             const url = URL.createObjectURL(fileHandle);
             const displayImage: any = this.shadowRoot?.querySelector('#display-image');
             displayImage.src = url;
+
+            this.setupPinchZoom(displayImage);
         }
     }
 
@@ -309,7 +367,9 @@ export class AppImage extends LitElement {
                 ${this.generated ? html`
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
               ` : html`
-                <h2>Generate an image of anything</h2>
+                <img id="intro-img" src="/assets/icons/256-icon.png" alt="Generated Image" />
+
+                <p>Start by importing an image or generating a new image</p>
               `}
             </div>
 
