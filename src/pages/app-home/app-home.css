@@ -538,7 +538,7 @@ main {
     padding-left: 10px;
 }
 
-#convo-list code {
+#convo-list pre, #convo-list code {
     display: block;
     padding: 8px;
     background: #202020;
@@ -546,9 +546,12 @@ main {
     margin: 10px;
     overflow-x: auto;
     max-width: 60vw;
+
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
-#convo-list code::-webkit-scrollbar {
+#convo-list pre::-webkit-scrollbar, #convo-list code::-webkit-scrollbar {
     display: none;
 }
 
