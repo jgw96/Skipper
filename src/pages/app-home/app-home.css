@@ -538,7 +538,8 @@ main {
     padding-left: 10px;
 }
 
-#convo-list pre, #convo-list code {
+#convo-list pre,
+#convo-list code {
     display: block;
     padding: 8px;
     background: #202020;
@@ -551,7 +552,8 @@ main {
     word-wrap: break-word;
 }
 
-#convo-list pre::-webkit-scrollbar, #convo-list code::-webkit-scrollbar {
+#convo-list pre::-webkit-scrollbar,
+#convo-list code::-webkit-scrollbar {
     display: none;
 }
 
@@ -754,6 +756,9 @@ li.assistant {
     font-size: 38px;
     text-align: center;
 }
+
+/* Optional styling */
+
 
 @media(prefers-color-scheme: dark) {
     fluent-text-area::part(root) {
@@ -1247,6 +1252,7 @@ li.assistant {
 }
 
 @keyframes bounce {
+
     0%,
     20%,
     50%,
