@@ -226,12 +226,14 @@ export class ScreenSharing extends LitElement {
 
     console.log(img);
 
-    // fire custom event with goodSrc
-    this.dispatchEvent(new CustomEvent('screenshotTaken', {
-      detail: {
-        src: goodSrc
-      }
-    }));
+    // // fire custom event with goodSrc
+    // this.dispatchEvent(new CustomEvent('screenshotTaken', {
+    //   detail: {
+    //     src: goodSrc
+    //   }
+    // }));
+
+    return goodSrc;
 
   }
 

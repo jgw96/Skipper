@@ -139,6 +139,12 @@ export class AppSearch extends LitElement {
               }
             }
 
+            @media(prefers-color-scheme: light) {
+                fluent-search::part(root) {
+                    background: white;
+                }
+            }
+
             @keyframes slideDownFromTop {
                 0% {
                     transform: translateY(-30px);

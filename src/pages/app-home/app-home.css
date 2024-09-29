@@ -237,6 +237,12 @@ fluent-search {
 
 #suggested li {
     animation: quickup 0.3s ease;
+    border: solid 1px #00000030;
+    transition: background 0.3s ease;
+}
+
+#suggested li:hover {
+    background: #ffffff2b;
 }
 
 .system ul,
@@ -276,6 +282,8 @@ fluent-card {
     border: none;
     content-visibility: auto;
     height: auto;
+
+    transition: box-shadow 0.3s ease;
 }
 
 #extra-actions {
@@ -480,6 +488,9 @@ main {
     top: 30px;
     left: 0;
     right: 0;
+
+    background: #ffffff00;
+    backdrop-filter: blur(46px);
 }
 
 #saved {
@@ -527,6 +538,7 @@ main {
     padding-left: 10px;
 }
 
+#convo-list pre,
 #convo-list code {
     display: block;
     padding: 8px;
@@ -535,8 +547,12 @@ main {
     margin: 10px;
     overflow-x: auto;
     max-width: 60vw;
+
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
+#convo-list pre::-webkit-scrollbar,
 #convo-list code::-webkit-scrollbar {
     display: none;
 }
@@ -579,7 +595,7 @@ main {
 fluent-text-area {
     border-radius: 8px;
 
-    --theme-color: #26262678;
+    --theme-color: #23232378;
 }
 
 fluent-text-area::part(root) {
@@ -719,29 +735,30 @@ li.assistant {
 }
 
 #no-messages img {
-    width: 220px;
-    height: 220px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
 
-    animation: fadein 0.8s ease;
-
-    display: none;
+    animation: bounce 1s ease infinite;
 }
 
 #no-messages.main-content #greeting-text {
     font-weight: bold;
-    font-size: 38px;
     width: 420px;
 
     color: #8769dc;
-    font-size: 54px;
     margin-top: 0;
     text-wrap: pretty;
 
-    text-shadow: #8769dc82 2px 2px;
-
     view-transition-name: greeting-caption;
+
+    text-shadow: none;
+    font-size: 38px;
+    text-align: center;
 }
+
+/* Optional styling */
+
 
 @media(prefers-color-scheme: dark) {
     fluent-text-area::part(root) {
@@ -760,6 +777,12 @@ li.assistant {
     fluent-card {
         background: rgba(255, 255, 255, 0.06);
         border: none;
+
+        transition: background 0.3s ease;
+    }
+
+    fluent-card:hover {
+        background: rgba(255, 255, 255, 0.12);
     }
 
     fluent-card fluent-button::part(control),
@@ -842,6 +865,11 @@ li.assistant {
     fluent-card {
         background: white;
     }
+
+    fluent-card:hover {
+        box-shadow: 0px 2px 5px #0000004a;
+    }
+
 
     .delete-button::part(base) {
         background: transparent;
@@ -930,8 +958,15 @@ li.assistant {
 
         display: grid;
         grid-template-columns: 26vw 26vw;
-        width: 56vw;
         max-width: unset;
+
+        display: flex;
+
+        position: fixed;
+        bottom: 160px;
+        width: unset;
+
+        justify-content: center;
     }
 
     #suggested li {
@@ -1048,8 +1083,14 @@ li.assistant {
     }
 
     #suggested {
-        margin-bottom: 52px;
-        width: 90%;
+        width: 95%;
+
+        display: flex;
+
+        position: fixed;
+        bottom: 22vh;
+
+        justify-content: center;
     }
 
     #open-camera-button {
@@ -1207,5 +1248,24 @@ li.assistant {
 
     to {
         opacity: 1;
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-2px);
+    }
+
+    60% {
+        transform: translateY(2px);
     }
 }

@@ -15,7 +15,6 @@ provideFluentDesignSystem().register(fluentButton(), fluentTextArea(), fluentOpt
 import { styles } from '../../styles/shared-styles';
 import cssModule from './app-home.css?inline';
 
-import "../../components/app-dictate";
 import "../../components/local-dictate";
 import "../../components/right-click";
 import "../../components/web-search";
@@ -51,6 +50,8 @@ export class AppHome extends LitElement {
   @state() currentImageSrc: string | undefined;
 
   @state() aiSource: string = "cloud";
+
+  @state() convoID: string | undefined;
 
   captureStream: any;
   modelShipper: string = "";
@@ -232,6 +233,12 @@ export class AppHome extends LitElement {
 
   async addImageToConvo(base64data?: string | undefined) {
 
+    if (base64data) {
+      this.currentPhoto = base64data;
+      this.inPhotoConvo = true;
+      return;
+    }
+
     const { fileOpen } = await import('browser-fs-access');
 
     const file = await fileOpen({
@@ -241,12 +248,6 @@ export class AppHome extends LitElement {
 
     // for (const file of files) {
     if (file.type.includes("image")) {
-      if (base64data) {
-        this.currentPhoto = base64data;
-        this.inPhotoConvo = true;
-        return;
-      }
-
       let blobFromFile = undefined;
 
       if (file.handle) {
@@ -318,11 +319,11 @@ export class AppHome extends LitElement {
       (appCamera as any)!.stopCameraAndCleanup();
     })
 
-    appCamera?.addEventListener("photo-taken", async (event: any) => {
+    appCamera?.addEventListener("camera-photo-taken", async (event: any) => {
       await drawer.hide();
 
       const base64data = event.detail.photo;
-      this.addImageToConvo(base64data);
+      this.currentPhoto = base64data;
     });
 
     drawer.show();
@@ -397,7 +398,10 @@ export class AppHome extends LitElement {
         if (this.sharingScreen === true) {
           const screen: any = this.shadowRoot?.querySelector('screen-sharing');
           if (screen) {
-            screen.takeScreenshotFromStreamCont();
+            console.log("taking screenshot");
+            this.currentPhoto = await screen.takeScreenshotFromStreamCont();
+            this.inPhotoConvo = true;
+            console.log("screenshot taken");
           }
 
           this.sharingScreen = false;
@@ -414,78 +418,75 @@ export class AppHome extends LitElement {
 
         this.handleScroll(list);
 
-        console.log("this.currentPhoto", this.currentPhoto);
-        console.log("this.inPhotoConvo", this.inPhotoConvo);
 
+        // if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
 
-        if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
+        //   this.previousMessages = [
+        //     ...this.previousMessages,
+        //     {
+        //       role: "assistant",
+        //       content: "<message-skeleton></message-skeleton>",
+        //       // content: data
+        //     }
+        //   ];
 
-          this.previousMessages = [
-            ...this.previousMessages,
-            {
-              role: "assistant",
-              content: "<message-skeleton></message-skeleton>",
-              // content: data
-            }
-          ];
+        //   const { makeAIRequestWithImage } = await import('../../services/ai');
+        //   const data = await makeAIRequestWithImage(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
 
-          const { makeAIRequestWithImage } = await import('../../services/ai');
-          const data = await makeAIRequestWithImage(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+        //   if (this.currentPhoto) {
+        //     this.currentPhoto = undefined;
+        //     this.inPhotoConvo = true;
+        //   }
 
-          if (this.currentPhoto) {
-            this.currentPhoto = undefined;
-            this.inPhotoConvo = true;
-          }
+        //   await this.doSayIt(data.choices[0].message.content);
 
-          await this.doSayIt(data.choices[0].message.content);
+        //   // this.previousMessages = [
+        //   //   ...this.previousMessages,
+        //   //   {
+        //   //     role: "assistant",
+        //   //     content: data.choices[0].message.content,
+        //   //     // content: data
+        //   //   }
+        //   // ];
 
-          // this.previousMessages = [
-          //   ...this.previousMessages,
-          //   {
-          //     role: "assistant",
-          //     content: data.choices[0].message.content,
-          //     // content: data
-          //   }
-          // ];
+        //   // replace content of last message with the actual content
+        //   this.previousMessages[this.previousMessages.length - 1].content = data.choices[0].message.content;
 
-          // replace content of last message with the actual content
-          this.previousMessages[this.previousMessages.length - 1].content = data.choices[0].message.content;
+        //   this.handleScroll(list);
 
-          this.handleScroll(list);
+        //   if (this.previousMessages.length > 1) {
+        //     console.log("look here", this.convoName, this.previousMessages);
 
-          if (this.previousMessages.length > 1) {
-            console.log("look here", this.convoName, this.previousMessages);
+        //     const { marked } = await import('marked');
 
-            const { marked } = await import('marked');
+        //     this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
 
-            this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(this.previousMessages[this.previousMessages.length - 1].content);
+        //     const goodMessages = this.previousMessages;
 
-            const goodMessages = this.previousMessages;
+        //     console.log("goodMessages", goodMessages)
 
-            console.log("goodMessages", goodMessages)
+        //     const { saveConversation } = await import('../../services/storage');
+        //     await saveConversation(this.convoName as string, goodMessages);
 
-            const { saveConversation } = await import('../../services/storage');
-            await saveConversation(this.convoName as string, goodMessages);
+        //     const { getConversations } = await import('../../services/storage');
+        //     this.savedConvos = await getConversations();
 
-            const { getConversations } = await import('../../services/storage');
-            this.savedConvos = await getConversations();
+        //     console.log("this.savedConvos", this.savedConvos)
 
-            console.log("this.savedConvos", this.savedConvos)
+        //     this.loading = false;
 
-            this.loading = false;
+        //     this.handleScroll(list);
 
-            this.handleScroll(list);
+        //     resolve();
+        //   }
 
-            resolve();
-          }
+        //   this.loading = false;
 
-          this.loading = false;
+        //   this.handleScroll(list);
 
-          this.handleScroll(list);
-
-          resolve();
-        }
-        else if (modelShipper === "phi3") {
+        //   resolve();
+        // }
+        /*else */if (modelShipper === "phi3") {
           console.log("phi3 model", this.localModelLoaded);
           this.aiSource = "local";
           // if (this.localModelLoaded === false) {
@@ -598,8 +599,19 @@ export class AppHome extends LitElement {
 
           this.showMessageLoader = true;
 
+          this.handleScroll(list);
+
           const { makeAIRequest } = await import('../../services/ai');
-          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages);
+
+          const threadID = this.convoID || Math.floor(Math.random() * 1000000).toString();
+          this.convoID = threadID;
+
+          const data = await makeAIRequest(this.currentPhoto ? this.currentPhoto : "", inputValue as string, this.previousMessages, false, threadID);
+
+          if (this.currentPhoto) {
+            this.currentPhoto = undefined;
+            this.inPhotoConvo = true;
+          }
 
           const { marked } = await import('marked');
           let message = "";
@@ -660,89 +672,126 @@ export class AppHome extends LitElement {
             }
           }
           else {
+            if (!data.data.url) {
+              console.log("data", data);
+              message = data.data;
 
-            this.previousMessages = [
-              ...this.previousMessages,
-              {
-                role: "assistant",
-                content: ""
-              }
-            ];
+              this.previousMessages = [
+                ...this.previousMessages,
+                {
+                  role: "assistant",
+                  content: await marked.parse(message)
+                }
+              ];
 
-            data.data.onmessage = async (event: any) => {
-              if (this.showMessageLoader === true) {
+              this.doSayIt(message);
+
+              this.handleScroll(list);
+
+              if (this.previousMessages.length > 1) {
+                console.log("look here", this.convoName, this.previousMessages);
+
+                const goodMessages = this.previousMessages;
+
+                console.log("goodMessages", goodMessages)
+
+                const { saveConversation } = await import('../../services/storage');
+                await saveConversation(this.convoName as string, goodMessages, this.convoID);
+
+                const { getConversations } = await import('../../services/storage');
+                this.savedConvos = await getConversations();
+
+                console.log("this.savedConvos", this.savedConvos)
+
+                this.loading = false;
+
                 this.showMessageLoader = false;
-              }
-
-              console.log("event.data", event.data);
-              if (event.data.includes("Chat Completed")) {
-                data.data.close();
-                // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
-                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
-                // this.requestUpdate();
-
-                this.doSayIt(message);
 
                 this.handleScroll(list);
 
-                if (this.previousMessages.length > 1) {
-                  console.log("look here", this.convoName, this.previousMessages);
 
-                  const goodMessages = this.previousMessages;
-
-                  console.log("goodMessages", goodMessages)
-
-                  const { saveConversation } = await import('../../services/storage');
-                  await saveConversation(this.convoName as string, goodMessages);
-
-                  const { getConversations } = await import('../../services/storage');
-                  this.savedConvos = await getConversations();
-
-                  console.log("this.savedConvos", this.savedConvos)
-
-                  this.loading = false;
-
-                  this.handleScroll(list);
-
-                  resolve();
-                }
-                else {
-                  this.loading = false;
-
-                  this.handleScroll(list);
-
-                  resolve();
-                }
+                resolve();
               }
               else {
-                console.log("event", message, marked);
-                message += event.data || "";
-                this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                this.loading = false;
 
-                this.requestUpdate();
+                this.showMessageLoader = false;
+
+                this.handleScroll(list);
+
+                resolve();
               }
-            };
 
-            // message = data.data.choices[0].message.content;
-            // this.previousMessages = [
-            //   ...this.previousMessages,
-            //   {
-            //     role: "assistant",
-            //     content: await marked.parse(data.data.choices[0].message.content)
-            //   }
-            // ]
+            }
+            else {
+              this.previousMessages = [
+                ...this.previousMessages,
+                {
+                  role: "assistant",
+                  content: "<message-skeleton></message-skeleton>"
+                }
+              ];
+
+              data.data.onmessage = async (event: any) => {
+                if (this.showMessageLoader === true) {
+                  this.showMessageLoader = false;
+                }
+
+                console.log("event.data", event.data);
+                if (event.data.includes("Chat Completed")) {
+                  data.data.close();
+                  // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                  this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(message);
+                  // this.requestUpdate();
+
+                  this.doSayIt(message);
+
+                  this.handleScroll(list);
+
+                  if (this.previousMessages.length > 1) {
+                    console.log("look here", this.convoName, this.previousMessages);
+
+                    const goodMessages = this.previousMessages;
+
+                    console.log("goodMessages", goodMessages)
+
+                    const { saveConversation } = await import('../../services/storage');
+                    await saveConversation(this.convoName as string, goodMessages);
+
+                    const { getConversations } = await import('../../services/storage');
+                    this.savedConvos = await getConversations();
+
+                    console.log("this.savedConvos", this.savedConvos)
+
+                    this.loading = false;
+
+                    this.handleScroll(list);
+
+                    resolve();
+                  }
+                  else {
+                    this.loading = false;
+
+                    this.handleScroll(list);
+
+                    resolve();
+                  }
+                }
+                else {
+                  console.log("event", message, marked);
+                  message += event.data || "";
+                  this.previousMessages[this.previousMessages.length - 1].content = await marked.parseInline(message);
+
+                  this.requestUpdate();
+                }
+              };
+            }
+
+
+
+
+
           }
-
-          // const { marked } = await import('marked');
-          // // this.previousMessages[this.previousMessages.length - 1].content = await marked.parse(data.choices[0].message.content);
-          // this.previousMessages = [
-          //   ...this.previousMessages,
-          //   {
-          //     role: "assistant",
-          //     content: await marked.parse(data.choices[0].message.content)
-          //   }
-          // ]
-
         }
 
       }
@@ -770,6 +819,7 @@ export class AppHome extends LitElement {
   }
 
   async startConvo(convo: any) {
+    console.log("convo", convo);
     this.previousMessages = [];
 
     if (!convo.convo) {
@@ -799,6 +849,8 @@ export class AppHome extends LitElement {
 
     await this.updated;
 
+    this.convoID = convo.id;
+
     this.handleScroll(this.shadowRoot?.querySelector('#convo-list'))
 
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
@@ -815,6 +867,7 @@ export class AppHome extends LitElement {
     this.convoName = undefined;
     this.currentPhoto = undefined;
     this.inPhotoConvo = false;
+    this.convoID = undefined;
 
     // if (this.modelShipper === "redpajama") {
     //   const { resetLocal } = await import('../../services/local-ai');
@@ -1176,13 +1229,12 @@ export class AppHome extends LitElement {
 
        ` : html`
           <div id="no-messages" class="main-content">
-            <img src="/assets/icons/maskable_icon_x512.png" alt="chat" />
+            <img src="/assets/icons/256-icon.png" alt="chat" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Write some JavaScript code to make a request to an api")}">Write some JavaScript code to make a request to an api</li>` : null}
               ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
                   <li @click="${() => this.preDefinedChat("Send an email")}">Send an email</li>
@@ -1213,7 +1265,7 @@ export class AppHome extends LitElement {
           <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
-          ${this.modelShipper === "phi3" ? html`<local-dictate @got-text=${this.handleDictate}></local-dictate>` : html`<app-dictate @got-text=${this.handleDictate}></app-dictate>`}
+          <local-dictate @got-text=${this.handleDictate}></local-dictate>
 
           ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">

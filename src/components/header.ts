@@ -309,12 +309,6 @@ export class AppHeader extends LitElement {
               </fluent-anchor>
               ` : null
       }
-          ${!this.enableBack ? html`
-              <fluent-anchor href="/voice">
-                <img src="/assets/headset-outline.svg">
-              </fluent-anchor>
-              ` : null
-      }
           <fluent-button @click="${this.openSettings}">
             <img src="/assets/settings-outline.svg">
           </fluent-button>

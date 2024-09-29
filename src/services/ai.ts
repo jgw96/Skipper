@@ -11,7 +11,7 @@ export let chosenModelShipper: "openai" | "google" | "redpajama" | "llama" | "ge
 let GPTKey = await getOpenAIKey();
 const proFlag = await checkPlusSub();
 
-const systemPrompt = "You're Skipper, a helpful, creative, and accurate AI assistant. Your primary goal is to assist users with their queries and tasks in a concise and efficient manner. You should always strive to provide accurate information, thoughtful suggestions, and innovative solutions. Your responses should be clear and to the point, ensuring the user gets the information they need without unnecessary elaboration. Remember, your personality should be friendly and supportive, making every interaction pleasant and productive. Finally, remember that your answers should always be in well formatted HTML. Just return the HTML, never wrapped in a code element, always just the plain HTML. This is vitally important.";
+const systemPrompt = "You are Skipper, an AI language assistant designed to provide clear, accurate, and helpful information in response to user inquiries. You have no gender. Your tone is friendly, professional, and non-judgmental, using positive and affirming language to enhance the user's experience. Always strive to fully understand the user's question before responding. Provide concise and relevant answers, including additional helpful details and practical examples when appropriate. Use proper formatting to enhance readability, such as bullet points, numbered lists, or headings when presenting multiple items, steps, or complex information. If you are unsure about an answer, express uncertainty and suggest consulting a professional or authoritative source. Avoid personal opinions, biases, or judgmental language. Stay updated based on your knowledge cutoff to maintain accuracy. Focus on delivering trustworthy and objective information to assist the user effectively, adapting your responses to the user's level of understanding when possible.";
 
 // @ts-ignore
 window.addEventListener("gpt-key-changed", (e: CustomEvent) => {
@@ -73,7 +73,7 @@ export async function makeAIRequestWithGemini(base64data: string, prompt: string
 
 
 let localLLMInit = false;
-export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[], forceLocal: boolean = false) {
+export async function makeAIRequest(base64data: string, prompt: string, previousMessages: any[], forceLocal: boolean = false, thread: string = "100") {
     console.log("makeAIRequest", base64data, prompt, previousMessages)
     currentBase64Data = base64data;
 
@@ -90,17 +90,38 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             content: systemPrompt
         });
     }
+    // will do device check
+    const { deviceCheck } = await import("../services/utils");
+    const deviceCheckFlag = await deviceCheck();
 
-    const authToken = localStorage.getItem("accessToken");
-    const taskListID = localStorage.getItem("taskListID");
-    const lat = localStorage.getItem("lat");
-    const long = localStorage.getItem("long");
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const { checkIfOnline } = await import('../services/utils');
+    const isOnline = await checkIfOnline();
 
-    // if there is an image, go to the cloud
-    // otherwise, lets try something
-    if (currentBase64Data && currentBase64Data.length > 0) {
-        const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+    if (forceLocal || (isOnline === false) || deviceCheckFlag) {
+        if (localLLMInit === false) {
+            localLLMInit = true;
+
+            await loadAndSetupLocal();
+        }
+
+        const { makeLocalAIRequest } = await import("../services/local-llm/local-llm");
+        const data = await makeLocalAIRequest(previousMessages);
+        console.log(data);
+
+        return {
+            data,
+            source: "local"
+        };
+    }
+    else {
+        const authToken = localStorage.getItem("accessToken");
+        const taskListID = localStorage.getItem("taskListID");
+        const lat = localStorage.getItem("lat");
+        const long = localStorage.getItem("long");
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const urlToCall = proFlag === true ? `https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendagent?prompt=${prompt}&thread=${thread}` : `https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`
+        const response = await fetch(`${urlToCall}`, {
             method: 'POST',
             headers: new Headers({
                 "Content-Type": "application/json",
@@ -108,62 +129,18 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             body: JSON.stringify({
                 image: currentBase64Data || base64data,
                 previousMessages: previousMessages,
-                key: GPTKey,
-                lat: lat,
-                long: long
+                key: GPTKey
             })
         });
 
-        const data = await response.json();
-        console.log(data.choices[0]);
-
-        return {
-            data,
-            source: "cloud"
-        };
-    }
-    else {
-        // will do device check
-        const { deviceCheck } = await import("../services/utils");
-        const deviceCheckFlag = await deviceCheck();
-
-        const { checkIfOnline } = await import('../services/utils');
-        const isOnline = await checkIfOnline();
-
-        if (forceLocal || (isOnline === false) || deviceCheckFlag) {
-            if (localLLMInit === false) {
-                localLLMInit = true;
-
-                await loadAndSetupLocal();
-            }
-
-            const { makeLocalAIRequest } = await import("../services/local-llm/local-llm");
-            const data = await makeLocalAIRequest(previousMessages);
-            console.log(data);
-
+        if (proFlag === true) {
+            const data = await response.text();
             return {
                 data,
-                source: "local"
-            };
+                source: "cloud"
+            }
         }
         else {
-            // const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
-            //     method: 'POST',
-            //     headers: new Headers({
-            //         "Content-Type": "application/json",
-            //     }),
-            //     body: JSON.stringify({
-            //         image: currentBase64Data || base64data,
-            //         previousMessages: previousMessages,
-            //         key: GPTKey,
-            //         lat: lat,
-            //         long: long
-            //     })
-            // });
-
-            // const data = await response.json();
-            // console.log(data.choices[0]);
-
             const stringifiedPreviousMessages = JSON.stringify(previousMessages);
 
             const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
@@ -176,13 +153,13 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
                 data: evtSource,
                 source: "cloud"
             }
-
-
-            // return {
-            //     data,
-            //     source: "cloud"
-            // };
         }
+
+        // return {
+        //     data,
+        //     source: "cloud"
+        // };
+        // }
     }
 }
 
@@ -318,6 +295,7 @@ export async function doTextToSpeech(script: string) {
         }
         else {
             if (chosenModelShipper === "phi3") {
+                // @ts-ignore
                 const { textToSpeech } = await import("web-ai-toolkit");
                 const data: Float32Array = (await textToSpeech(script) as Float32Array);
                 const audioCtx = new AudioContext();

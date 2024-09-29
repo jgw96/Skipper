@@ -10,7 +10,7 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { getOpenAIKey } from "../keys";
 
-const key = await getOpenAIKey();
+const key = await getOpenAIKey() || "";
 
 const llm = new ChatOpenAI({
   model: "gpt-4o-mini",

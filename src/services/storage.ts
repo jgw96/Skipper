@@ -32,7 +32,7 @@ async function handleCypherKey() {
     }
 }
 
-export async function saveConversation(name: string, convo: any[]): Promise<void> {
+export async function saveConversation(name: string, convo: any[], id?: string): Promise<void> {
     return new Promise(async (resolve) => {
         const currentUser = auth.currentUser;
 
@@ -50,7 +50,7 @@ export async function saveConversation(name: string, convo: any[]): Promise<void
             }
         }
         else {
-            const noteID = generateRandoID();
+            const noteID = id ? id : generateRandoID();
             const noteDate = new Date().getTime();
 
             const cryptoKey = await handleCypherKey();
@@ -308,7 +308,7 @@ export async function editConvoName(oldName: string, newName: string) {
     await file.rename(newName);
 }
 
-function generateRandoID() {
+export function generateRandoID() {
     // generate random id using web crypto
     const array = new Uint32Array(8);
     window.crypto.getRandomValues(array);
