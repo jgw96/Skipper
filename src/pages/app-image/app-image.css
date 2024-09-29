@@ -303,12 +303,14 @@ sl-drawer::part(panel) {
     margin-top: 5px;
 }
 
-#intro-img {
+#image-block img#intro-img {
     margin-top: 10vh;
     width: 100px;
     height: 100px;
 
     animation: 1s ease 0s infinite normal none running bounce;
+
+    box-shadow: none;
 }
 
 @keyframes bounce {
@@ -353,7 +355,7 @@ sl-drawer::part(panel) {
     }
 
     .generation-block {
-        background: #00000014;
+        background: #1e1e1e0f;
     }
 
     #generating-spinner {
