@@ -135,7 +135,7 @@ export class AppCamera extends LitElement {
         reader.readAsDataURL(photoBlob);
         reader.onloadend = () => {
             // fire event with the photo
-            this.dispatchEvent(new CustomEvent('photo-taken', {
+            this.dispatchEvent(new CustomEvent('camera-photo-taken', {
                 detail: {
                     photo: reader.result
                 }

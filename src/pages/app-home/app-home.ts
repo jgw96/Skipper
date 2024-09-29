@@ -233,6 +233,12 @@ export class AppHome extends LitElement {
 
   async addImageToConvo(base64data?: string | undefined) {
 
+    if (base64data) {
+      this.currentPhoto = base64data;
+      this.inPhotoConvo = true;
+      return;
+    }
+
     const { fileOpen } = await import('browser-fs-access');
 
     const file = await fileOpen({
@@ -242,12 +248,6 @@ export class AppHome extends LitElement {
 
     // for (const file of files) {
     if (file.type.includes("image")) {
-      if (base64data) {
-        this.currentPhoto = base64data;
-        this.inPhotoConvo = true;
-        return;
-      }
-
       let blobFromFile = undefined;
 
       if (file.handle) {
@@ -319,11 +319,11 @@ export class AppHome extends LitElement {
       (appCamera as any)!.stopCameraAndCleanup();
     })
 
-    appCamera?.addEventListener("photo-taken", async (event: any) => {
+    appCamera?.addEventListener("camera-photo-taken", async (event: any) => {
       await drawer.hide();
 
       const base64data = event.detail.photo;
-      this.addImageToConvo(base64data);
+      this.currentPhoto = base64data;
     });
 
     drawer.show();
@@ -398,7 +398,10 @@ export class AppHome extends LitElement {
         if (this.sharingScreen === true) {
           const screen: any = this.shadowRoot?.querySelector('screen-sharing');
           if (screen) {
-            screen.takeScreenshotFromStreamCont();
+            console.log("taking screenshot");
+            this.currentPhoto = await screen.takeScreenshotFromStreamCont();
+            this.inPhotoConvo = true;
+            console.log("screenshot taken");
           }
 
           this.sharingScreen = false;
@@ -414,9 +417,6 @@ export class AppHome extends LitElement {
         ];
 
         this.handleScroll(list);
-
-        console.log("this.currentPhoto", this.currentPhoto);
-        console.log("this.inPhotoConvo", this.inPhotoConvo);
 
 
         // if (this.inPhotoConvo === true || (this.currentPhoto && this.currentPhoto !== "")) {
