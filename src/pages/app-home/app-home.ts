@@ -263,6 +263,8 @@ export class AppHome extends LitElement {
         const base64data = reader.result;
         this.currentPhoto = base64data as string;
         this.inPhotoConvo = true;
+
+        console.log('image setup', this.currentPhoto, this.inPhotoConvo);
       }
 
       reader.readAsDataURL(blobFromFile);
@@ -1262,7 +1264,7 @@ export class AppHome extends LitElement {
           </fluent-button>
           ` : null}
 
-          <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
+          <screen-sharing @streamStarted="${() => this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
           <local-dictate @got-text=${this.handleDictate}></local-dictate>
