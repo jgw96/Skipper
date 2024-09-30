@@ -263,8 +263,6 @@ export class AppHome extends LitElement {
         const base64data = reader.result;
         this.currentPhoto = base64data as string;
         this.inPhotoConvo = true;
-
-        console.log('image setup', this.currentPhoto, this.inPhotoConvo);
       }
 
       reader.readAsDataURL(blobFromFile);

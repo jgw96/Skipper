@@ -280,10 +280,10 @@ fluent-search {
 fluent-card {
     animation: quickup 0.3s ease;
     border: none;
-    content-visibility: auto;
     height: auto;
 
     transition: box-shadow 0.3s ease;
+    content-visibility: auto;
 }
 
 #extra-actions {
@@ -851,8 +851,8 @@ li.assistant {
 
     }
 
-    #convo-list code {
-        background: white;
+    #convo-list code, #convo-list pre {
+        background: #e8e8e8;
     }
 
     #saved fluent-card .title-bar .date-display,
@@ -931,6 +931,7 @@ li.assistant {
     max-width: 45vw; */
     box-shadow: var(--elevation-shadow-card-rest);
     margin-bottom: 10px;
+    content-visibility: auto;
 }
 
 #mobileSaved fluent-card {
@@ -1192,6 +1193,20 @@ li.assistant {
     }
 
     #convo-list {}
+}
+
+@media(min-width: 1300px) {
+    main {
+        grid-template-columns: 15vw 84vw;
+    }
+
+    #toolbar {
+        width: 13vw;
+    }
+
+    #input-block {
+        left: 15vw;
+    }
 }
 
 @media (horizontal-viewport-segments: 2) {
