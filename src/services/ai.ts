@@ -134,47 +134,64 @@ export async function makeAIRequest(base64data: string, prompt: string, previous
             }
         }
         else {
-            const authToken = localStorage.getItem("accessToken");
-            const taskListID = localStorage.getItem("taskListID");
-            const lat = localStorage.getItem("lat");
-            const long = localStorage.getItem("long");
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendagentfree?prompt=${prompt}&thread=${thread}`, {
+                method: 'POST',
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                }),
+                body: JSON.stringify({
+                    image: currentBase64Data || base64data,
+                    previousMessages: previousMessages,
+                    key: GPTKey
+                })
+            });
 
-            if (currentBase64Data && currentBase64Data.length > 0) {
-                const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
-                    method: 'POST',
-                    headers: new Headers({
-                        "Content-Type": "application/json",
-                    }),
-                    body: JSON.stringify({
-                        image: currentBase64Data || base64data,
-                        previousMessages: previousMessages,
-                        key: GPTKey,
-                        lat: lat,
-                        long: long
-                    })
-                });
-
-                const data = await response.json();
-                console.log(data.choices[0]);
-
-                return {
-                    data: data.choices[0].message.content,
-                    source: "cloud"
-                };
+            const data = await response.text();
+            return {
+                data,
+                source: "cloud"
             }
-            else {
+            // const authToken = localStorage.getItem("accessToken");
+            // const taskListID = localStorage.getItem("taskListID");
+            // const lat = localStorage.getItem("lat");
+            // const long = localStorage.getItem("long");
+            // const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-                const stringifiedPreviousMessages = JSON.stringify(previousMessages);
+            // if (currentBase64Data && currentBase64Data.length > 0) {
+            //     const response = await fetch(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendchatwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&msAuthToken=${authToken}&taskListID="${taskListID}&lat=${lat}&long=${long}&timezone=${timezone}`, {
+            //         method: 'POST',
+            //         headers: new Headers({
+            //             "Content-Type": "application/json",
+            //         }),
+            //         body: JSON.stringify({
+            //             image: currentBase64Data || base64data,
+            //             previousMessages: previousMessages,
+            //             key: GPTKey,
+            //             lat: lat,
+            //             long: long
+            //         })
+            //     });
 
-                const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
-                console.log("evtSource", evtSource);
+            //     const data = await response.json();
+            //     console.log(data.choices[0]);
 
-                return {
-                    data: evtSource,
-                    source: "cloud"
-                }
-            }
+            //     return {
+            //         data: data.choices[0].message.content,
+            //         source: "cloud"
+            //     };
+            // }
+            // else {
+
+            //     const stringifiedPreviousMessages = JSON.stringify(previousMessages);
+
+            //     const evtSource = new EventSource(`https://gpt-server-two-qsqckaz7va-uc.a.run.app/sendwithactions?prompt=${prompt}&key=${GPTKey}&pro=${proFlag}&image=${base64data}&previousMessages=${encodeURIComponent(stringifiedPreviousMessages)}&lat=${lat}&long=${long}&timezone=${timezone}}&msAuthToken=${authToken}&taskListID=${taskListID}`);
+            //     console.log("evtSource", evtSource);
+
+            //     return {
+            //         data: evtSource,
+            //         source: "cloud"
+            //     }
+            // }
         }
 
         // return {

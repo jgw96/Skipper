@@ -239,6 +239,14 @@ fluent-search {
     animation: quickup 0.3s ease;
     border: solid 1px #00000030;
     transition: background 0.3s ease;
+
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    height: 100px;
+    /* background-position: center; */
+    font-size: 18px;
+    font-weight: normal;
 }
 
 #suggested li:hover {
@@ -268,13 +276,13 @@ fluent-search {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: #ffffff0f;
     font-size: 16px;
     cursor: pointer;
-
     padding: 10px;
-    min-height: 50px;
     max-width: 128px;
+    background: linear-gradient(to bottom right, #826ad5, #5839c3);
+    backdrop-filter: blur(46px);
+    /* background-color: black; */
 }
 
 fluent-card {
@@ -486,11 +494,21 @@ main {
     position: fixed;
     bottom: 0;
     top: 30px;
-    left: 0;
-    right: 0;
+    left: 12vw;
+    right: 12vw;
 
     background: #ffffff00;
     backdrop-filter: blur(46px);
+
+    display: initial;
+}
+
+.desktop-saved::part(panel) {
+    padding-top: env(titlebar-area-height, initial);
+    background: transparent;
+    backdrop-filter: blur(46px);
+    -webkit-backdrop-filter: blur(46px);
+    content-visibility: auto;
 }
 
 #saved {
@@ -521,16 +539,6 @@ main {
 }
 
 #convo-list {
-    /* width: 97%;
-
-    contain: strict;
-
-    height: 80vh;
-    flex: 1;
-    padding-bottom: 123px;
-
-    display: none; */
-
     height: 70vh;
     overflow-y: scroll;
     list-style: none;
@@ -672,8 +680,8 @@ li.assistant {
     display: flex;
     justify-content: space-between;
 
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
     margin-bottom: 12px;
 
     gap: 8px;
@@ -685,7 +693,7 @@ li.assistant {
     position: fixed;
     bottom: 0px;
     right: 0px;
-    left: 18vw;
+    left: 0px;
 }
 
 #bottom {
@@ -732,6 +740,25 @@ li.assistant {
     max-height: 70vh;
 
     animation: fadein 0.5s ease;
+}
+
+.desktop-saved #mobileSaved {
+    margin-left: 0;
+    padding: 0;
+}
+
+#desktop-drawer-button {
+    margin-left: 12px;
+    margin-top: 15px;
+    border-radius: 50%;
+    height: 46px;
+    width: 46px;
+}
+
+#desktop-drawer-button img {
+    height: 22px;
+    width: 22px;
+    margin-top: 4px;
 }
 
 #no-messages img {
@@ -817,10 +844,14 @@ li.assistant {
         background: white;
     }
 
-    #big-time-button img {
+    #big-time-button img, #desktop-drawer-button img {
 
         filter: invert(1);
 
+    }
+
+    .desktop-saved::part(panel) {
+        background: #eaeaea;
     }
 
     sl-dropdown sl-menu {
@@ -1015,8 +1046,8 @@ li.assistant {
     }
 
     #suggested li {
-        min-height: 46px;
         max-width: initial;
+        height: 26px;
     }
 
     #convo-name h2 {
@@ -1043,6 +1074,8 @@ li.assistant {
 
     main {
         display: flex;
+        left: 0;
+        right: 0;
     }
 
     #convo-list {
@@ -1058,11 +1091,18 @@ li.assistant {
         width: 100%;
     }
 
+    #desktop-drawer-button {
+        display: none;
+    }
+
     #input-block {
         left: 0px;
         right: 0px;
         bottom: 0px;
         border-radius: 8px;
+
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
     #mobileSaved li {
@@ -1089,9 +1129,19 @@ li.assistant {
         display: flex;
 
         position: fixed;
-        bottom: 22vh;
+        bottom: 20vh;
 
         justify-content: center;
+
+        flex-direction: column;
+        margin-left: 10px;
+        margin-right: 10px;
+
+        flex-direction: row;
+        overflow-y: scroll;
+        white-space: nowrap;
+        /* left: 0; */
+        justify-content: flex-start;
     }
 
     #open-camera-button {
@@ -1165,14 +1215,12 @@ li.assistant {
     main {
         display: grid;
         grid-template-columns: 24vw 76vw;
+
+        display: initial;
     }
 
     #saved {
         display: initial;
-    }
-
-    #input-block {
-        left: 31vw;
     }
 
     #new-convo::part(control) {
@@ -1205,7 +1253,8 @@ li.assistant {
     }
 
     #input-block {
-        left: 15vw;
+        left: 13vw;
+        right: 13vw;
     }
 }
 

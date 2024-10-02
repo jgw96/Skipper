@@ -855,6 +855,9 @@ export class AppHome extends LitElement {
 
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
     await drawer?.hide();
+
+    const drawerTwo: any = this.shadowRoot?.querySelector('.desktop-saved');
+    await drawerTwo?.hide();
   }
 
   async openVoiceMode() {
@@ -880,10 +883,19 @@ export class AppHome extends LitElement {
 
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
     await drawer?.hide();
+
+    const drawerTwo: any = this.shadowRoot?.querySelector('.desktop-saved');
+    await drawerTwo?.hide();
   }
 
   async openMobileDrawer() {
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
+    await drawer?.show();
+  }
+
+  async openDesktopDrawer() {
+    const drawer: any = this.shadowRoot?.querySelector('.desktop-saved');
+    console.log('drawer', drawer);
     await drawer?.show();
   }
 
@@ -1082,6 +1094,37 @@ export class AppHome extends LitElement {
         <web-search .searchTerm="${this.convoName}"></web-search>
       </sl-drawer>` : null}
 
+      <sl-drawer class="desktop-saved" placement="start" has-header label="Saved Conversations">
+        <div>
+
+        ${this.savedConvos.length > 0 ? html`
+          <ul id="mobileSaved">
+            ${this.savedConvos.map((convo) => {
+      return html`<fluent-card @click="${() => this.startConvo(convo)}">
+              <div class="title-bar">
+                <span>${convo.name}</span>
+
+                <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
+              </div>
+            </fluent-card>`
+    }
+
+    )}
+          </ul>
+          ` : html`
+          <div id="no-messages">
+            <img src="/assets/robot-shrugs.webp">
+            <p>No saved conversations</p>
+          </div>
+          `
+      }
+       </div>
+
+       <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
+       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
+      </sl-drawer>
+
       <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
         <div>
 
@@ -1113,9 +1156,13 @@ export class AppHome extends LitElement {
        <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
       </sl-drawer>
 
+      <fluent-button id="desktop-drawer-button" appearance="accent" @click="${() => this.openDesktopDrawer()}">
+        <img src="/assets/menu-outline.svg" alt="menu" />
+      </fluent-button>
+
       <main>
 
-      <div id="saved">
+      <!-- <div id="saved">
       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
         ${this.savedConvos.length > 0 ? html`
           <ul>
@@ -1143,7 +1190,7 @@ export class AppHome extends LitElement {
           </div>
           `
       }
-       </div>
+       </div> -->
 
       <div id="mainBlock">
 
@@ -1233,7 +1280,9 @@ export class AppHome extends LitElement {
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">
+                What is the weather like?
+              </li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
