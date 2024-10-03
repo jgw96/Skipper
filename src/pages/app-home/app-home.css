@@ -280,7 +280,7 @@ fluent-search {
     cursor: pointer;
     padding: 10px;
     max-width: 128px;
-    background: linear-gradient(to bottom right, #826ad5, #5839c3);
+    background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(46px);
     /* background-color: black; */
 }
@@ -304,6 +304,16 @@ fluent-card {
     background: transparent;
     border: none;
     color: white;
+}
+
+#extra-actions fluent-button#global-new-convo {
+    margin-right: 8px;
+    height: 28px;
+    font-size: 12px;
+}
+
+#extra-actions fluent-button#global-new-convo::part(control) {
+    background: #262626;
 }
 
 #input-block.drag-over {
@@ -831,6 +841,12 @@ li.assistant {
         background: var(--theme-color);
     }
 
+    #extra-actions fluent-button#global-new-convo::part(control) {
+        background: white;
+        color: black;
+    }
+
+
     #loading-message {
         background: white;
     }
@@ -844,7 +860,8 @@ li.assistant {
         background: white;
     }
 
-    #big-time-button img, #desktop-drawer-button img {
+    #big-time-button img,
+    #desktop-drawer-button img {
 
         filter: invert(1);
 
@@ -882,7 +899,8 @@ li.assistant {
 
     }
 
-    #convo-list code, #convo-list pre {
+    #convo-list code,
+    #convo-list pre {
         background: #e8e8e8;
     }
 
@@ -1042,6 +1060,10 @@ li.assistant {
 
 @media(max-width: 860px) {
     #saved {
+        display: none;
+    }
+
+    #extra-actions fluent-button#global-new-convo {
         display: none;
     }
 

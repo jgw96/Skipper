@@ -1122,7 +1122,7 @@ export class AppHome extends LitElement {
 
        <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
        ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
-       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Session</fluent-button>
       </sl-drawer>
 
       <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
@@ -1131,16 +1131,16 @@ export class AppHome extends LitElement {
         ${this.savedConvos.length > 0 ? html`
           <ul id="mobileSaved">
             ${this.savedConvos.map((convo) => {
-      return html`<fluent-card @click="${() => this.startConvo(convo)}">
+        return html`<fluent-card @click="${() => this.startConvo(convo)}">
               <div class="title-bar">
                 <span>${convo.name}</span>
 
                 <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
               </div>
             </fluent-card>`
-    }
+      }
 
-    )}
+      )}
           </ul>
           ` : html`
           <div id="no-messages">
@@ -1153,7 +1153,7 @@ export class AppHome extends LitElement {
 
        <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
        ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
-       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Session</fluent-button>
       </sl-drawer>
 
       <fluent-button id="desktop-drawer-button" appearance="accent" @click="${() => this.openDesktopDrawer()}">
@@ -1356,6 +1356,9 @@ export class AppHome extends LitElement {
         </div>
 
         <div id="inner-extra-actions">
+          <fluent-button id="global-new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">
+            New Session
+          </fluent-button>
 
           ${this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
       }
