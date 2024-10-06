@@ -185,6 +185,11 @@ fluent-text-field::part(root) {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border-radius: 12px 12px 0px 0px;
+
+    background: #47474721;
+    backdrop-filter: blur(46px);
+    -webkit-backdrop-filter: blur(46px);
+    content-visibility: auto;
 }
 
 fluent-search {
@@ -313,7 +318,7 @@ fluent-card {
 }
 
 #extra-actions fluent-button#global-new-convo::part(control) {
-    background: #262626;
+    background: #846bd6;
 }
 
 #input-block.drag-over {
@@ -794,10 +799,24 @@ li.assistant {
     text-align: center;
 }
 
+.open-image-button {
+    width: 210px;
+    margin-left: 12px;
+}
+
 /* Optional styling */
 
 
 @media(prefers-color-scheme: dark) {
+
+    #image-viewer-drawer::part(panel) {
+        padding-top: env(titlebar-area-height, initial);
+        background: transparent;
+        backdrop-filter: blur(46px);
+        -webkit-backdrop-filter: blur(46px);
+        content-visibility: auto;
+    }
+
     fluent-text-area::part(root) {
         background: var(--theme-color);
         color: white;
@@ -841,9 +860,8 @@ li.assistant {
         background: var(--theme-color);
     }
 
-    #extra-actions fluent-button#global-new-convo::part(control) {
-        background: white;
-        color: black;
+    .mobile-saved::part(panel) {
+        background: #f1f1f1;
     }
 
 
@@ -1013,7 +1031,7 @@ li.assistant {
         display: flex;
 
         position: fixed;
-        bottom: 160px;
+        bottom: 150px;
         width: unset;
 
         justify-content: center;

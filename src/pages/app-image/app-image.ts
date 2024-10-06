@@ -355,22 +355,29 @@ export class AppImage extends LitElement {
             <fluent-anchor id="cancel-link" href="/" appearance="light">Go Back Home</fluent-anchor>
           </sl-dialog>
 
-          ${this.loading === true ? html`
+          <!-- ${this.loading === true ? html`
               <div id="generating-spinner">
                 <p>Generating Image...</p>
                 <fluent-progress-ring></fluent-progress-ring>
           </div>
             ` : null
-            }
+            } -->
 
             <div id="image-block">
+                ${
+                    this.loading === true && this.generated === false ? html`
+                    <div class="gen-image-block">
+                      <fluent-progress-ring></fluent-progress-ring>
+                    </div>
+                    ` : null
+                }
                 ${this.generated ? html`
               <img id="display-image" src="/assets/icons/maskable_icon_x192.png" alt="Generated Image" />
-              ` : html`
+              ` : this.loading === false ? html`
                 <img id="intro-img" src="/assets/icons/256-icon.png" alt="Generated Image" />
 
                 <p>Start by importing an image or generating a new image</p>
-              `}
+              ` : null}
             </div>
 
 

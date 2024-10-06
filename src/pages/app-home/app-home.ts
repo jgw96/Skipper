@@ -599,8 +599,6 @@ export class AppHome extends LitElement {
 
           this.showMessageLoader = true;
 
-          this.handleScroll(list);
-
           const { makeAIRequest } = await import('../../services/ai');
 
           const threadID = this.convoID || Math.floor(Math.random() * 1000000).toString();
@@ -1256,7 +1254,7 @@ export class AppHome extends LitElement {
             </div>
 
             <div class="content-bar">
-              ${message.image ? html`<div><img src="${message.image}" alt="photo" /></div>` : html``}
+              ${message.image ? html`<div><img src="${message.image}" alt="avatar" /></div>` : html``}
               <div .innerHTML="${message.content}"></div>
 
               ${message.content.includes("<img") ? html`<fluent-button class="open-image-button" @click="${() => this.openInViewer(message.content)}" size="small">Open Image</fluent-button>` : null}
@@ -1269,14 +1267,14 @@ export class AppHome extends LitElement {
         })
         }
 
-                  ${this.showMessageLoader === true ? html`<div id="loading-message">Generating... <fluent-progress-ring size="small"></fluent-progress-ring></div>` : null
+                  ${this.showMessageLoader === true ? html`<div id="loading-message">Thinking... <fluent-progress-ring size="small"></fluent-progress-ring></div>` : null
         }
         </ul>
 
 
        ` : html`
           <div id="no-messages" class="main-content">
-            <img src="/assets/icons/256-icon.png" alt="chat" />
+            <img src="/assets/icons/256-icon.png" role="presentation" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
@@ -1316,7 +1314,7 @@ export class AppHome extends LitElement {
 
           <local-dictate @got-text=${this.handleDictate}></local-dictate>
 
-          ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
+          <!-- ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">
           </fluent-button>
           <fluent-tooltip anchor="do-speech"><span>Read Aloud</span></fluent-tooltip>
@@ -1324,7 +1322,7 @@ export class AppHome extends LitElement {
             <fluent-button id="dont-speak" @click="${this.doSpeech}" appearance="accent" size="small">
               <img src="/assets/volume-mute-outline.svg" alt="mic icon">
             </fluent-button>
-          `}
+          `} -->
 
           <fluent-tooltip anchor="modes-button-anchor"><span>Choose a Mode, such as Math Teacher</span></fluent-tooltip>
 
