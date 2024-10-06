@@ -185,6 +185,11 @@ fluent-text-field::part(root) {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border-radius: 12px 12px 0px 0px;
+
+    background: #47474721;
+    backdrop-filter: blur(46px);
+    -webkit-backdrop-filter: blur(46px);
+    content-visibility: auto;
 }
 
 fluent-search {
@@ -239,6 +244,14 @@ fluent-search {
     animation: quickup 0.3s ease;
     border: solid 1px #00000030;
     transition: background 0.3s ease;
+
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    height: 100px;
+    /* background-position: center; */
+    font-size: 18px;
+    font-weight: normal;
 }
 
 #suggested li:hover {
@@ -268,22 +281,22 @@ fluent-search {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: #ffffff0f;
     font-size: 16px;
     cursor: pointer;
-
     padding: 10px;
-    min-height: 50px;
     max-width: 128px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(46px);
+    /* background-color: black; */
 }
 
 fluent-card {
     animation: quickup 0.3s ease;
     border: none;
-    content-visibility: auto;
     height: auto;
 
     transition: box-shadow 0.3s ease;
+    content-visibility: auto;
 }
 
 #extra-actions {
@@ -296,6 +309,16 @@ fluent-card {
     background: transparent;
     border: none;
     color: white;
+}
+
+#extra-actions fluent-button#global-new-convo {
+    margin-right: 8px;
+    height: 28px;
+    font-size: 12px;
+}
+
+#extra-actions fluent-button#global-new-convo::part(control) {
+    background: #846bd6;
 }
 
 #input-block.drag-over {
@@ -486,11 +509,21 @@ main {
     position: fixed;
     bottom: 0;
     top: 30px;
-    left: 0;
-    right: 0;
+    left: 12vw;
+    right: 12vw;
 
     background: #ffffff00;
     backdrop-filter: blur(46px);
+
+    display: initial;
+}
+
+.desktop-saved::part(panel) {
+    padding-top: env(titlebar-area-height, initial);
+    background: transparent;
+    backdrop-filter: blur(46px);
+    -webkit-backdrop-filter: blur(46px);
+    content-visibility: auto;
 }
 
 #saved {
@@ -521,16 +554,6 @@ main {
 }
 
 #convo-list {
-    /* width: 97%;
-
-    contain: strict;
-
-    height: 80vh;
-    flex: 1;
-    padding-bottom: 123px;
-
-    display: none; */
-
     height: 70vh;
     overflow-y: scroll;
     list-style: none;
@@ -672,8 +695,8 @@ li.assistant {
     display: flex;
     justify-content: space-between;
 
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
     margin-bottom: 12px;
 
     gap: 8px;
@@ -685,7 +708,7 @@ li.assistant {
     position: fixed;
     bottom: 0px;
     right: 0px;
-    left: 18vw;
+    left: 0px;
 }
 
 #bottom {
@@ -734,6 +757,25 @@ li.assistant {
     animation: fadein 0.5s ease;
 }
 
+.desktop-saved #mobileSaved {
+    margin-left: 0;
+    padding: 0;
+}
+
+#desktop-drawer-button {
+    margin-left: 12px;
+    margin-top: 15px;
+    border-radius: 50%;
+    height: 46px;
+    width: 46px;
+}
+
+#desktop-drawer-button img {
+    height: 22px;
+    width: 22px;
+    margin-top: 4px;
+}
+
 #no-messages img {
     width: 100px;
     height: 100px;
@@ -757,10 +799,24 @@ li.assistant {
     text-align: center;
 }
 
+.open-image-button {
+    width: 210px;
+    margin-left: 12px;
+}
+
 /* Optional styling */
 
 
 @media(prefers-color-scheme: dark) {
+
+    #image-viewer-drawer::part(panel) {
+        padding-top: env(titlebar-area-height, initial);
+        background: transparent;
+        backdrop-filter: blur(46px);
+        -webkit-backdrop-filter: blur(46px);
+        content-visibility: auto;
+    }
+
     fluent-text-area::part(root) {
         background: var(--theme-color);
         color: white;
@@ -804,6 +860,11 @@ li.assistant {
         background: var(--theme-color);
     }
 
+    .mobile-saved::part(panel) {
+        background: #f1f1f1;
+    }
+
+
     #loading-message {
         background: white;
     }
@@ -817,10 +878,15 @@ li.assistant {
         background: white;
     }
 
-    #big-time-button img {
+    #big-time-button img,
+    #desktop-drawer-button img {
 
         filter: invert(1);
 
+    }
+
+    .desktop-saved::part(panel) {
+        background: #eaeaea;
     }
 
     sl-dropdown sl-menu {
@@ -851,8 +917,9 @@ li.assistant {
 
     }
 
-    #convo-list code {
-        background: white;
+    #convo-list code,
+    #convo-list pre {
+        background: #e8e8e8;
     }
 
     #saved fluent-card .title-bar .date-display,
@@ -931,6 +998,7 @@ li.assistant {
     max-width: 45vw; */
     box-shadow: var(--elevation-shadow-card-rest);
     margin-bottom: 10px;
+    content-visibility: auto;
 }
 
 #mobileSaved fluent-card {
@@ -963,7 +1031,7 @@ li.assistant {
         display: flex;
 
         position: fixed;
-        bottom: 160px;
+        bottom: 150px;
         width: unset;
 
         justify-content: center;
@@ -1013,9 +1081,13 @@ li.assistant {
         display: none;
     }
 
+    #extra-actions fluent-button#global-new-convo {
+        display: none;
+    }
+
     #suggested li {
-        min-height: 46px;
         max-width: initial;
+        height: 26px;
     }
 
     #convo-name h2 {
@@ -1042,6 +1114,8 @@ li.assistant {
 
     main {
         display: flex;
+        left: 0;
+        right: 0;
     }
 
     #convo-list {
@@ -1057,11 +1131,18 @@ li.assistant {
         width: 100%;
     }
 
+    #desktop-drawer-button {
+        display: none;
+    }
+
     #input-block {
         left: 0px;
         right: 0px;
         bottom: 0px;
         border-radius: 8px;
+
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
     #mobileSaved li {
@@ -1088,9 +1169,19 @@ li.assistant {
         display: flex;
 
         position: fixed;
-        bottom: 22vh;
+        bottom: 20vh;
 
         justify-content: center;
+
+        flex-direction: column;
+        margin-left: 10px;
+        margin-right: 10px;
+
+        flex-direction: row;
+        overflow-y: scroll;
+        white-space: nowrap;
+        /* left: 0; */
+        justify-content: flex-start;
     }
 
     #open-camera-button {
@@ -1164,14 +1255,12 @@ li.assistant {
     main {
         display: grid;
         grid-template-columns: 24vw 76vw;
+
+        display: initial;
     }
 
     #saved {
         display: initial;
-    }
-
-    #input-block {
-        left: 31vw;
     }
 
     #new-convo::part(control) {
@@ -1192,6 +1281,21 @@ li.assistant {
     }
 
     #convo-list {}
+}
+
+@media(min-width: 1300px) {
+    main {
+        grid-template-columns: 15vw 84vw;
+    }
+
+    #toolbar {
+        width: 13vw;
+    }
+
+    #input-block {
+        left: 13vw;
+        right: 13vw;
+    }
 }
 
 @media (horizontal-viewport-segments: 2) {

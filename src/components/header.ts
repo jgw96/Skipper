@@ -9,7 +9,7 @@ provideFluentDesignSystem().register(fluentAnchor());
 
 @customElement('app-header')
 export class AppHeader extends LitElement {
-  @property({ type: String }) title = 'Skipper AI';
+  @property({ type: String }) title = 'Skipper';
 
   @state() enableBack: boolean = false;
   @state() pro: boolean = false;
@@ -139,7 +139,7 @@ export class AppHeader extends LitElement {
       }
 
       #pro-mode-activated {
-          color: #8c6ee0;
+          color: #a17fff;
     font-size: 12px;
     background: #262626;
     padding: 6px;
@@ -153,7 +153,7 @@ export class AppHeader extends LitElement {
         }
 
         #pro-mode-activated {
-          color: #8c6ee0;
+          color: #a17fff;
           background: #E7E7E7;
         }
 
@@ -287,7 +287,7 @@ export class AppHeader extends LitElement {
           </fluent-anchor>` : null}
 
           ${!this.enableBack ? html`
-          <img @click="${this.goHome}" id="home-icon" src="/assets/icons/64-icon.png" alt="app icon">
+          <img role="presentation" @click="${this.goHome}" id="home-icon" src="/assets/icons/64-icon.png" alt="app icon">
 
           <h1>${this.title}</h1>
 
@@ -304,13 +304,13 @@ export class AppHeader extends LitElement {
             </fluent-anchor>` : html`<fluent-tooltip anchor="pro-mode-activated"><span>Skipper Pro Activated</span></fluent-tooltip> <div id="pro-mode-activated">Skipper Pro</div>`}
 
           ${!this.enableBack ? html`
-              <fluent-anchor href="/photo">
-                <img src="/assets/image-outline.svg">
+              <fluent-anchor aria-label="Go To Photo mode" href="/photo">
+                <img role="presentation" src="/assets/image-outline.svg">
               </fluent-anchor>
               ` : null
       }
-          <fluent-button @click="${this.openSettings}">
-            <img src="/assets/settings-outline.svg">
+          <fluent-button @click="${this.openSettings}" aria-label="Open Settings">
+            <img role="presentation" src="/assets/settings-outline.svg">
           </fluent-button>
         </div>
       </header>

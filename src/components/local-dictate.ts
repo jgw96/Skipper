@@ -228,8 +228,8 @@ export class LocalDictate extends LitElement {
     render() {
         return html`
               ${this.started === false
-                ? html`<fluent-button id="dictate" @click="${() => this.dictate()}">
-                <img src="/assets/mic-outline.svg" />
+                ? html`<fluent-button aria-label="Start Speech to text" id="dictate" @click="${() => this.dictate()}">
+                <img src="/assets/mic-outline.svg" role="presentation" />
           </fluent-button>
           <fluent-tooltip anchor="dictate"><span>Dictate</span></fluent-tooltip>
           `

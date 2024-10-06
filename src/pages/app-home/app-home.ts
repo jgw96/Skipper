@@ -599,8 +599,6 @@ export class AppHome extends LitElement {
 
           this.showMessageLoader = true;
 
-          this.handleScroll(list);
-
           const { makeAIRequest } = await import('../../services/ai');
 
           const threadID = this.convoID || Math.floor(Math.random() * 1000000).toString();
@@ -855,6 +853,9 @@ export class AppHome extends LitElement {
 
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
     await drawer?.hide();
+
+    const drawerTwo: any = this.shadowRoot?.querySelector('.desktop-saved');
+    await drawerTwo?.hide();
   }
 
   async openVoiceMode() {
@@ -880,10 +881,19 @@ export class AppHome extends LitElement {
 
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
     await drawer?.hide();
+
+    const drawerTwo: any = this.shadowRoot?.querySelector('.desktop-saved');
+    await drawerTwo?.hide();
   }
 
   async openMobileDrawer() {
     const drawer: any = this.shadowRoot?.querySelector('.mobile-saved');
+    await drawer?.show();
+  }
+
+  async openDesktopDrawer() {
+    const drawer: any = this.shadowRoot?.querySelector('.desktop-saved');
+    console.log('drawer', drawer);
     await drawer?.show();
   }
 
@@ -1082,7 +1092,7 @@ export class AppHome extends LitElement {
         <web-search .searchTerm="${this.convoName}"></web-search>
       </sl-drawer>` : null}
 
-      <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
+      <sl-drawer class="desktop-saved" placement="start" has-header label="Saved Conversations">
         <div>
 
         ${this.savedConvos.length > 0 ? html`
@@ -1110,12 +1120,47 @@ export class AppHome extends LitElement {
 
        <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
        ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
-       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Chat</fluent-button>
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Session</fluent-button>
       </sl-drawer>
+
+      <sl-drawer class="mobile-saved" placement="bottom" has-header label="Saved Conversations">
+        <div>
+
+        ${this.savedConvos.length > 0 ? html`
+          <ul id="mobileSaved">
+            ${this.savedConvos.map((convo) => {
+        return html`<fluent-card @click="${() => this.startConvo(convo)}">
+              <div class="title-bar">
+                <span>${convo.name}</span>
+
+                <span class="date-display">${new Date(convo.date).toLocaleDateString()}</span>
+              </div>
+            </fluent-card>`
+      }
+
+      )}
+          </ul>
+          ` : html`
+          <div id="no-messages">
+            <img src="/assets/robot-shrugs.webp">
+            <p>No saved conversations</p>
+          </div>
+          `
+      }
+       </div>
+
+       <!-- <fluent-search slot="footer" @change="${this.handleSearch}"></fluent-search> -->
+       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search slot="footer" @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
+       <fluent-button slot="footer" id="new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">New Session</fluent-button>
+      </sl-drawer>
+
+      <fluent-button id="desktop-drawer-button" appearance="accent" @click="${() => this.openDesktopDrawer()}">
+        <img src="/assets/menu-outline.svg" alt="menu" />
+      </fluent-button>
 
       <main>
 
-      <div id="saved">
+      <!-- <div id="saved">
       ${this.savedConvos && this.savedConvos.length > 0 ? html`<app-search @open-convo="${($event: any) => this.startConvo($event.detail.convo)}" .savedConvos=${this.savedConvos}></app-search>` : null}
         ${this.savedConvos.length > 0 ? html`
           <ul>
@@ -1143,7 +1188,7 @@ export class AppHome extends LitElement {
           </div>
           `
       }
-       </div>
+       </div> -->
 
       <div id="mainBlock">
 
@@ -1209,7 +1254,7 @@ export class AppHome extends LitElement {
             </div>
 
             <div class="content-bar">
-              ${message.image ? html`<div><img src="${message.image}" alt="photo" /></div>` : html``}
+              ${message.image ? html`<div><img src="${message.image}" alt="avatar" /></div>` : html``}
               <div .innerHTML="${message.content}"></div>
 
               ${message.content.includes("<img") ? html`<fluent-button class="open-image-button" @click="${() => this.openInViewer(message.content)}" size="small">Open Image</fluent-button>` : null}
@@ -1222,18 +1267,20 @@ export class AppHome extends LitElement {
         })
         }
 
-                  ${this.showMessageLoader === true ? html`<div id="loading-message">Generating... <fluent-progress-ring size="small"></fluent-progress-ring></div>` : null
+                  ${this.showMessageLoader === true ? html`<div id="loading-message">Thinking... <fluent-progress-ring size="small"></fluent-progress-ring></div>` : null
         }
         </ul>
 
 
        ` : html`
           <div id="no-messages" class="main-content">
-            <img src="/assets/icons/256-icon.png" alt="chat" />
+            <img src="/assets/icons/256-icon.png" role="presentation" />
             <p id="greeting-text">Hello! How may I help you today?</p>
 
             <ul id="suggested">
-              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">What is the weather like?</li>` : null}
+              ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("What is the weather like?")}">
+                What is the weather like?
+              </li>` : null}
               ${this.modelShipper === "openai" ? html`<li @click="${() => this.preDefinedChat("Give me the latest news")}">Give me the latest news</li>` : null}
               ${this.authToken && this.authToken.length > 0 && this.modelShipper === "openai" ? html`
                   <li @click="${() => this.preDefinedChat("What is my latest email?")}">What is my latest email?</li>
@@ -1262,12 +1309,12 @@ export class AppHome extends LitElement {
           </fluent-button>
           ` : null}
 
-          <screen-sharing @streamStarted="${this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
+          <screen-sharing @streamStarted="${() => this.sharingScreen = true}" @screenshotTaken="${($event: any) => this.addImageToConvo($event.detail.src)}"></screen-sharing>
 
 
           <local-dictate @got-text=${this.handleDictate}></local-dictate>
 
-          ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
+          <!-- ${this.sayIT === false ? html`<fluent-button @click="${this.doSpeech}" id="do-speech" size="small">
             <img src="/assets/volume-high-outline.svg" alt="mic icon">
           </fluent-button>
           <fluent-tooltip anchor="do-speech"><span>Read Aloud</span></fluent-tooltip>
@@ -1275,7 +1322,7 @@ export class AppHome extends LitElement {
             <fluent-button id="dont-speak" @click="${this.doSpeech}" appearance="accent" size="small">
               <img src="/assets/volume-mute-outline.svg" alt="mic icon">
             </fluent-button>
-          `}
+          `} -->
 
           <fluent-tooltip anchor="modes-button-anchor"><span>Choose a Mode, such as Math Teacher</span></fluent-tooltip>
 
@@ -1307,6 +1354,9 @@ export class AppHome extends LitElement {
         </div>
 
         <div id="inner-extra-actions">
+          <fluent-button id="global-new-convo" size="small" appearance="accent" @click="${() => this.newConvo()}">
+            New Session
+          </fluent-button>
 
           ${this.aiSource === "cloud" ? html`<span id="ai-source">Cloud AI</span>` : html`<span id="ai-source">Local AI</span>`
       }

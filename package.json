@@ -4,13 +4,13 @@
   "description": "A starter kit for building PWAs!",
   "main": "index.js",
   "scripts": {
-    "dev-server": "vite --open --port 3003",
+    "dev-server": "vite --open --port 3005",
     "dev": "npm run dev-server",
     "dev-task": "vite",
     "deploy": " npx @azure/static-web-apps-cli login --no-use-keychain && npx @azure/static-web-apps-cli deploy",
     "build": "tsc && vite build",
     "start": "npm run dev",
-    "start-remote": "vite --host --port 3003",
+    "start-remote": "vite --host --port 3005",
     "test": "playwright test",
     "generate-screenshots": "node screenshots.js"
   },

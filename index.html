@@ -1147,6 +1147,17 @@
     }
   </script>
 
+  <script>
+    // if changed to dark mode, change the theme to dark
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (e.matches) {
+        document.documentElement.classList.add('sl-theme-dark');
+      } else {
+        document.documentElement.classList.remove('sl-theme-dark');
+      }
+    });
+  </script>
+
 
 </body>
 

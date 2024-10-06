@@ -44,11 +44,6 @@ html::-webkit-scrollbar {
 }
 
 @media (prefers-color-scheme: dark) {
-  html {
-    /* background: linear-gradient(117deg, #202020, #8769dc 71%, #202020 89%); */
-
-  }
-
   html[data-theme="fluent"], html[data-theme="fluent"] body {
     --theme-color: #272731;
     color: white;
